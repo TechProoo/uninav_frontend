@@ -1,26 +1,98 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poiret+One&display=swap");
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --bg-main: hsl(208, 100%, 97%);
+  --bg-submain: hsl(208, 100%, 73%);
+  --bg-dark: hsl(208, 100%, 20%);
+  --text-color: hsl(0, 0%, 0%);
+  --text-color-light: hsl(208, 100%, 73%);
+  --text-color-dark: hsl(0, 0%, 20%);
+  --text-color-light-dark: hsl(208, 100%, 20%);
+  --border-color: hsl(208, 100%, 73%);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Montserrat", sans-serif;
+  background-color: var(--bg-main);
+}
+
+.fst {
+  font-family: "Poiret";
+}
+
+/* NAVBAR */
+
+.nav_link {
+  font-family: "Poiret";
+  font-size: 17px;
+  letter-spacing: 10px;
+  transition: 0.5s ease-in-out;
+  color: var(--text-color);
+  position: relative;
+}
+
+.nav_link::before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  right: 0;
+  top: -5px;
+  background-color: var(--bg-submain);
+  transition: 0.5s ease-in-out;
+}
+
+.nav_link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  left: 0;
+  bottom: -5px;
+  background-color: var(--bg-submain);
+  transition: 0.5s ease-in-out;
+}
+
+.nav_link:hover {
+  font-weight: 900;
+}
+
+.nav_link:hover::before,
+.nav_link:hover::after {
+  width: 100%;
+}
+
+/* HERO */
+
+.hero_img {
+  height: 400px;
+}
+
+.hero_img .hero_img_main {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.book {
+  filter: drop-shadow(2px 2px 2px hsla(208, 100%, 73%, 0.409))
+}
+
+/* ABOUT */
+
+.about_bg {
+  background-image: url("../../public/Image/bg_image.png");
+  height: 500px;
+  width: 100%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.border_b {
+  border: 1px solid var(--border-color);
 }
