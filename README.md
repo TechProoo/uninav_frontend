@@ -34,7 +34,7 @@ Clone the repository:
 bash
 Copy
 Edit
-git clone https://github.com/your-username/uninav-frontend.git
+git clone https://github.com/TechProoo/uninav_frontend
 Navigate to the project directory:
 
 bash
