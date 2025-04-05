@@ -7,10 +7,10 @@
   --bg-dark: hsl(208, 100%, 20%);
   --text-color: hsl(0, 0%, 0%);
   --text-color-light: hsl(208, 100%, 73%);
+  --text-color-light-two: hsl(208, 100%, 97%);
   --text-color-dark: hsl(0, 0%, 20%);
   --text-color-light-dark: hsl(208, 100%, 20%);
   --border-color: hsl(208, 100%, 73%);
-
 }
 
 body {
@@ -20,6 +20,7 @@ body {
 
 .fst {
   font-family: "Poiret";
+  color: var(--text-color-light-dark);
 }
 
 /* NAVBAR */
@@ -79,20 +80,64 @@ body {
 }
 
 .book {
-  filter: drop-shadow(2px 2px 2px hsla(208, 100%, 73%, 0.409))
+  filter: drop-shadow(2px 2px 2px hsla(208, 100%, 73%, 0.409));
 }
 
 /* ABOUT */
 
 .about_bg {
   background-image: url("../../public/Image/bg_image.png");
-  height: 500px;
+  height: 100%;
   width: 100%;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  position: relative;
+  z-index: 1;
 }
 
-.border_b {
+.about_left {
+  height: 270px;
+  background-color: var(--bg-main);
+}
+
+.border_c {
   border: 1px solid var(--border-color);
+}
+
+.about_first {
+  /* background-color: var(--bg-submain) !important; */
+  background: linear-gradient(
+    347deg,
+    #1e5799 0%,
+    #2989d8 50%,
+    #207cca 51%,
+    #7db9e8 100%
+  );
+}
+
+.about_first h1 {
+  color: var(--text-color-light-two);
+}
+
+.about_first p {
+  color: var(--text-color-light);
+}
+
+.about_right {
+  height: 250px;
+  background-color: var(--bg-main);
+}
+
+.about_img {
+  background-image: url("../../public/Image/0fb8abfa-3422-4c1b-b047-1425d0735ed6.png");
+  height: 700px;
+  width: 100%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-attachment: fixed;
+  transition: 0.5s ease-in-out;
 }
