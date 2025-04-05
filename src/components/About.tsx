@@ -134,6 +134,7 @@ const About = () => {
         </div>
       </div>
       <div className="about_img"></div>
+      <div className="h-[300px] w-full"></div>
     </div>
   );
 };

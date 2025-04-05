@@ -3,7 +3,7 @@
 
 :root {
   --bg-main: hsl(208, 100%, 97%);
-  --bg-submain: hsl(208, 100%, 73%);
+  --bg-submain: #75bfff;
   --bg-dark: hsl(208, 100%, 20%);
   --text-color: hsl(0, 0%, 0%);
   --text-color-light: hsl(208, 100%, 73%);
@@ -141,3 +141,25 @@ body {
   background-attachment: fixed;
   transition: 0.5s ease-in-out;
 }
+
+/* LOGIN */
+
+.login_container {
+  background-color: var(--bg-dark);
+}
+
+.form_cover {
+  background-color: var(--bg-main);
+}
+
+.form_cover label {
+  color: var(--text-color-dark);
+}
+
+.form_cover input {
+  border: 2px solid var(--bg-dark);
+}
+
+/* .forgot_password {
+  
+} */

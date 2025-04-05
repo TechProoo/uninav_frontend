@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
+import { usePathname } from "next/navigation";
+import { shouldHideNavbar } from "@/checkPath";
 
 export const metadata: Metadata = {
   title: "UNINAV",
@@ -15,8 +17,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>
-        <Navbar />
+      <body className="antialiased">
+        {!shouldHideNavbar && <Navbar />}
         {children}
       </body>
     </html>
