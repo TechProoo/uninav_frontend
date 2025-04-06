@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllFaculty } from "@/department";
+import { getAllFaculty } from "@/components/api/department.api";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../loading";
 
@@ -23,12 +23,12 @@ export const SelectDemo = () => {
     queryFn: getAllFaculty,
   });
 
-//   if (isLoading)
-//     return (
-//       <div className="fixed left-0 right-0 bottom-0 top-0 w-screen h-screen flex justify-center items-center bg-[#003666]/80 backdrop-blur-sm z-50">
-//         <Loader />
-//       </div>
-//     );
+  //   if (isLoading)
+  //     return (
+  //       <div className="top-0 right-0 bottom-0 left-0 z-50 fixed flex justify-center items-center bg-[#003666]/80 backdrop-blur-sm w-screen h-screen">
+  //         <Loader />
+  //       </div>
+  //     );
   if (error) return <p>Failed to load faculties</p>;
 
   return (
