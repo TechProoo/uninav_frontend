@@ -5,12 +5,12 @@ import Book from "../../public/Image/blank-book-cover-white-vector-illustration.
 
 export default function Hero() {
   return (
-    <div className="hero_container relative">
-      <div className="hero_bg absolute top-0 md:left-150">
+    <div className="hero_container relative ">
+      <div className="hero_bg md:block hidden absolute top-0 md:left-150">
         <Image className="w-40 book" src={Book} alt="Book" />
       </div>
-      <div className="grid grid-cols-12 items-center h-screen md:w-10/12 mx-auto">
-        <div className="md:col-span-6">
+      <div className="grid grid-cols-12 items-center h-screen w-11/12 md:w-10/12 mx-auto">
+        <div className="md:col-span-6 col-span-12">
           <div className="hero_left">
             <div className="flex items-center hero_left_top gap-2">
               <div className="w-7">
@@ -39,7 +39,7 @@ export default function Hero() {
               <h1 className="text-5xl  fst">
                 The Ultimate Study Platform for University Students
               </h1>
-              <div className="absolute top-0 right-20 w-10">
+              <div className="absolute top-0 md:right-20 right-10  w-10">
                 <svg
                   viewBox="0 0 512 512"
                   xmlns="http://www.w3.org/2000/svg"
@@ -70,7 +70,7 @@ export default function Hero() {
             <div className="hero_left_bottom flex gap-5 mt-10">
               <Button text={"Get Started"} />
               <Button text={"Learn More"} />
-              <div className="w-20">
+              <div className="w-20 absolute md:relative right-0 top-45">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -113,7 +113,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
-        <div className="md:col-span-6">
+        <div className="md:col-span-6 col-span-12">
           <div className="hero_img">
             <Image className="hero_img_main" src={Bag} alt="Person" />
           </div>

@@ -48,7 +48,7 @@ const Navbar = () => {
           <div className="nav_logo">
             <Image className="w-50" src={Logo} alt="" />
           </div>
-          <ul>
+          <ul className="md:flex hidden">
             <li className="nav_li flex gap-10 items-center">
               <Link href={"/dashboard"} className="nav_link">
                 Home
@@ -61,7 +61,7 @@ const Navbar = () => {
               </Link>
             </li>
           </ul>
-          <div className="nav_btn flex gap-6">
+          <div className="nav_btn md:flex hidden gap-6">
             <Button text={"Login"} />
             <Button text="SignUp" />
           </div>
