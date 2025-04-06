@@ -32,9 +32,9 @@ const StyledWrapper = styled.div`
 
   /* button styling */
   .button {
-    --border-right: 6px;
+    --border-right: 4px;
     --text-stroke-color: hsl(0, 0%, 0%);
-    --animation-color: hsl(208, 100%, 73%);
+    --animation-color:	#3F53F1;
     --fs-size: 17px;
     letter-spacing: 3px;
     text-decoration: none;
@@ -61,10 +61,10 @@ const StyledWrapper = styled.div`
     -webkit-text-stroke: 1px var(--animation-color);
   }
   /* hover */
-  .button:hover .hover-text {
-    width: 100%;
-    filter: drop-shadow(0 0 23px var(--animation-color));
-  }
+  // .button:hover .hover-text {
+  //   width: 100%;
+  //   filter: drop-shadow(0 0 23px var(--animation-color));
+  // }
 `;
 
 export default Button;

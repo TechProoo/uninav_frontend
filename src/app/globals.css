@@ -7,7 +7,7 @@
 
 :root {
   --bg-main: hsl(208, 100%, 97%);
-  --bg-submain: hsl(208, 100%, 73%);
+  --bg-submain:hsl(233, 86%, 60%);
   --bg-dark: hsl(208, 100%, 20%);
   --text-color: hsl(0, 0%, 0%);
   --text-color-light: hsl(208, 100%, 73%);
@@ -50,21 +50,20 @@
 }
 
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif !important;
   background-color: var(--bg-main);
 }
 
 .fst {
-  font-family: "Poiret";
+  /* font-family: "Poiret"; */
+  font-family: "Montserrat", sans-serif;  
   color: var(--text-color-light-dark);
 }
 
 /* NAVBAR */
 
 .nav_link {
-  font-family: "Poiret";
   font-size: 17px;
-  letter-spacing: 10px;
   transition: 0.5s ease-in-out;
   color: var(--text-color);
   position: relative;
@@ -157,7 +156,7 @@ body {
 }
 
 .about_first p {
-  color: var(--text-color-light);
+  color: var(--text-color-light-two);
 }
 
 .about_right {
@@ -166,7 +165,7 @@ body {
 }
 
 .about_img {
-  background-image: url("../../public/Image/0fb8abfa-3422-4c1b-b047-1425d0735ed6.png");
+  /* background-image: url("../../public/Image/0fb8abfa-3422-4c1b-b047-1425d0735ed6.png"); */
   height: 700px;
   width: 100%;
   background-position: center;
