@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-// import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/Navbar";
-import { usePathname } from "next/navigation";
-import { shouldHideNavbar } from "@/checkPath";
+import QueryProvider from "@/components/QueryProvider";
+import ConditionalNavbar from "@/components/checkPath";
 
 export const metadata: Metadata = {
   title: "UNINAV",
@@ -18,8 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {!shouldHideNavbar && <Navbar />}
-        {children}
+        <ConditionalNavbar />
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

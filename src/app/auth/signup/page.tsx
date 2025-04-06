@@ -6,6 +6,7 @@ import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
 import Button from "@/components/ui/Button";
 import Link from "next/link";
+import { SelectDemo } from "@/components/ui/SelectDrop";
 
 defineElement(lottie.loadAnimation);
 
@@ -128,15 +129,9 @@ const page = () => {
                   htmlFor="departmentId"
                   className="block text-sm font-medium text-gray-700 fst mb-1"
                 >
-                  Department ID
+                  Department 
                 </label>
-                <input
-                  type="text"
-                  id="departmentId"
-                  placeholder="ec105527-013e-49fa-ac2c-71afe85946a6"
-                  className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
+                <SelectDemo />
               </div>
 
               <div className="w-full">
