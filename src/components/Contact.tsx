@@ -40,8 +40,8 @@ const Contact = () => {
           <ContactBox
             icon={Mail}
             title="Email"
-            value="info@example.com"
-            link="mailto:info@example.com"
+            value="uninav.buildminds@gmail.com"
+            link="mailto:uninav.buildminds@gmail.com"
             linkText="Send an email"
           />
           <ContactBox
