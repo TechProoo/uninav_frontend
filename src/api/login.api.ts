@@ -9,7 +9,7 @@ export const login = async (data: loginData) => {
     });
 
     const config = {
-      method: "post",
+      method: "POST",
       url: "/auth/login",
       headers: {
         "Content-Type": "application/json",
