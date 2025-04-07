@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllFaculty } from "@/api/department.api";
 import Loader from "./loading";
 import { signup } from "@/api/student-signup.api";
-import { FormData } from "@/lib/data.type";
+import { FormData } from "@/lib/types/data.type";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/authContext";

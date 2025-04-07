@@ -1,6 +1,6 @@
 "use client";
 
-import { loginData } from "@/lib/data.type";
+import { loginData } from "@/lib/types/data.type";
 import {
   createContext,
   useContext,

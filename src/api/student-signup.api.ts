@@ -1,4 +1,4 @@
-import { FormData } from "@/lib/data.type";
+import { FormData } from "@/lib/types/data.type";
 import { api } from "./base.api";
 
 export const signup = async (formData: FormData) => {
