@@ -25,10 +25,10 @@ const page = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   useEffect(() => {
-    console.log(isAuthenticated)
+    console.log(isAuthenticated);
     if (isAuthenticated) {
       router.push("/dashboard");
     }
@@ -51,6 +51,8 @@ const page = () => {
       if (res.success) {
         toast.success("Login successful!");
         Cookies.set("uninav_", "Techpro", { expires: 7, path: "" });
+        setIsAuthenticated(true);
+        true;
         router.push("/dashboard");
       } else {
         toast.error("Invalid credentials");
