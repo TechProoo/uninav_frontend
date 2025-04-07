@@ -195,6 +195,10 @@ body {
   border: 2px solid var(--bg-dark);
 }
 
+.form_cover select {
+  border: 2px solid var(--bg-dark) !important;
+}
+
 /* .forgot_password {
 
 } */

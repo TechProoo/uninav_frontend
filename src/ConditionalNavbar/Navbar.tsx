@@ -1,14 +1,18 @@
+"use client";
+
 import React from "react";
 import Logo from "../../public/Image/logoo.png";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "./ui/Button";
-
-console.log(Logo);
-
-// const isLoggedIn = false;
+import Button from "../components/ui/Button";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const router = useRouter();
+
+  const handleNavigation = (path: string) => {
+    router.push(path);
+  };
   return (
     <div className=" relative shadow-md">
       <div className="absolute w-[70px] mx-1">
@@ -62,8 +66,14 @@ const Navbar = () => {
             </li>
           </ul>
           <div className="nav_btn md:flex hidden gap-6">
-            <Button text={"Login"} />
-            <Button text="SignUp" />
+            <Button
+              onClick={() => handleNavigation("/auth/login")}
+              text={"Login"}
+            />
+            <Button
+              onClick={() => handleNavigation("/auth/signup")}
+              text="SignUp"
+            />
           </div>
         </div>
       </nav>

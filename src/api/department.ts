@@ -1,9 +1,11 @@
+import { baseUrl } from "@/lib/server";
 import axios from "axios";
 
 export const getAllFaculty = async () => {
   try {
     const response = await axios.get(
-      "https://uninav-backend-production.up.railway.app/faculty",
+      `${baseUrl}/department
+`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -12,6 +14,10 @@ export const getAllFaculty = async () => {
     );
 
     console.log(response.data);
+
+    if (!response) {
+      throw Error("Couldn't get departments");
+    }
 
     return response.data;
   } catch (error) {
