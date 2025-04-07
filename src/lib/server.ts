@@ -1,1 +1,1 @@
-export const baseUrl = "http://uninav-backend.up.railway.app";
+export const baseUrl = "https://uninav-backend.up.railway.app";

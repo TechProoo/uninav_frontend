@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import QueryProvider from "@/tanstack/QueryProvider";
+import { Toaster } from "react-hot-toast";
 import ConditionalNavbar from "@/components/checkPath";
+import { AuthProvider } from "@/contexts/authContext";
 
 export const metadata: Metadata = {
   title: "UNINAV",
@@ -17,7 +19,10 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <ConditionalNavbar />
-        <QueryProvider>{children}</QueryProvider>
+        <AuthProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </AuthProvider>
+        <Toaster position="top-right" reverseOrder={false} />
       </body>
     </html>
   );

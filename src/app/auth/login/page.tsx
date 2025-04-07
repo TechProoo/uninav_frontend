@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
@@ -10,6 +10,10 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "../../../../public/Image/logoo.png";
+import { login } from "@/api/login";
+import toast from "react-hot-toast";
+import Loader from "./loading";
+import { useAuth } from "@/contexts/authContext";
 
 defineElement(lottie.loadAnimation);
 
@@ -19,28 +23,53 @@ const page = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
-  const token = Cookies.get("uninav_");
+  const { isAuthenticated } = useAuth();
 
-  // if(token) {
-  //   router.push("/dashboard")
-  // }
+  useEffect(() => {
+    console.log(isAuthenticated)
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
-    Cookies.set("uninav_", "Techpro", { expires: 7, path: "" });
-    console.log("Form Data:", formData);
-    router.push("/dashboard");
+    try {
+      const res = await login(formData);
+
+      if (!res) throw new Error("ERROR SIGNING IN");
+
+      if (res.success) {
+        toast.success("Login successful!");
+        Cookies.set("uninav_", "Techpro", { expires: 7, path: "" });
+        router.push("/dashboard");
+      } else {
+        toast.error("Invalid credentials");
+      }
+      console.log(formData);
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+
   return (
-    <div className="login_container form_cover">
+    <div className="login_container">
       <div className="absolute w-[70px] mx-1">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>

@@ -13,18 +13,22 @@ import {
   UploadCloud,
   Group,
   Bell,
+  BellIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChartNoAxesColumnDecreasing } from "lucide-react";
 import Logo from "../../../public/Image/logoo.png";
 import Image from "next/image";
 import ProtectedRoute from "@/auth/ProtectedRoute";
+import { BadgeDemo } from "@/components/ui/BadgeUi";
+import { TooltipDemo } from "@/components/ui/TooltipUi";
+import { useAuth } from "@/contexts/authContext";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: UploadCloud, label: "Posts", path: "/dashboard/uploadMaterials" },
   { icon: Group, label: "Posts", path: "/dashboard/groups" },
-  { icon: Bell, label: "Posts", path: "/dashboard/uploadMaterials" },
+  { icon: Bell, label: "Posts", path: "/dashboard/notifications" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },
 ];
 
@@ -33,9 +37,17 @@ interface LayoutProp {
 }
 
 const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+
+  const { logout, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/login");
+    }
+  }, [isAuthenticated, router]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -54,7 +66,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   }, [isSidebarOpen]);
 
   const handleLogout = () => {
-    console.log("Logout clicked");
+    logout();
   };
 
   const user = { username: "JohnDoe", email: "johndoe@example.com" };
@@ -65,7 +77,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
       <aside
         ref={sidebarRef}
         className="sidebar  relative hidden md:block h-full border-r overflow-y-auto"
-        // no inline width/opacity so GSAP can control them
       >
         <div className="absolute w-[70px] mx-1">
           <svg
@@ -153,12 +164,15 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
       <div className="flex-1 flex flex-col">
         <header className="p-4 dashboard_head border-b">
           <div className="flex gap-10">
-            <button className="p-2 rounded-md " onClick={toggleSidebar}>
+            <button
+              className="p-2 rounded-md md:block hidden"
+              onClick={toggleSidebar}
+            >
               {isSidebarOpen ? <ChevronRight size={18} /> : <Menu size={18} />}
             </button>
             <div className="w-[100%]">
               <div className="flex justify-between w-[100%]">
-                <div className="flex items-center border rounded-md overflow-hidden">
+                <div className="md:flex hidden items-center border rounded-md overflow-hidden">
                   <input
                     type="text"
                     placeholder="Search"
@@ -170,7 +184,13 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                     </span>
                   </button>
                 </div>
-                <div className="">df</div>
+                <div className="flex gap-2 items-center">
+                  <TooltipDemo
+                    text={<BellIcon size={15} color="#f0f8ff" />}
+                    notify="Notification"
+                  />
+                  <BadgeDemo text={"Welcome" + " " + "TechPro"} />
+                </div>
               </div>
             </div>
           </div>
