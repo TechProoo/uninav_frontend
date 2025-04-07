@@ -8,13 +8,14 @@ import Button from "@/components/ui/Button";
 import { SelectDemo } from "@/components/ui/SelectDrop";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
-import { getAllFaculty } from "@/api/department";
+import { getAllFaculty } from "@/api/department.api";
 import Loader from "./loading";
-import { signup } from "@/api/signup";
+import { signup } from "@/api/student-signup.api";
 import { FormData } from "@/lib/data.type";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/authContext";
+import toast from "react-hot-toast";
 
 defineElement(lottie.loadAnimation);
 
@@ -88,23 +89,21 @@ const Page = () => {
 
     try {
       setLoading(true);
-      console.log(formData);
       const response = await signup(formData);
-      if (!response) {
-        console.log(response);
+
+      if (response.success) {
+        Cookies.set("uninav_", response.token || "Techpro", {
+          expires: 7,
+          path: "",
+        });
+        setIsAuthenticated(true);
+        router.push("/dashboard");
+      } else {
+        throw new Error(response.message || "Signup failed");
       }
-
-      console.log(response);
-
-      Cookies.set("uninav_", "Techpro", { expires: 7, path: "" });
-      setIsAuthenticated(true);
-      // Redirect to the dashboard
-      router.push("/dashboard");
     } catch (error) {
-      // Handle any errors that might occur during the signup process
-      alert("An error has occurred");
-
-      // Optionally reset isSubmit if you want the form to be re-submittable
+      console.error(error);
+      toast.error("Something went wrong during signup!");
     } finally {
       setLoading(false);
     }
@@ -180,7 +179,7 @@ const Page = () => {
         <p>Failed to load faculties</p>
       ) : (
         <div className="grid grid-cols-12">
-          <div className="md:col-span-6 hidden md:block">
+          <div className="hidden md:block md:col-span-6">
             <div className="sticky" style={{ top: "1rem" }}>
               <div className="h-screen">
                 <DotLottieReact
@@ -192,10 +191,10 @@ const Page = () => {
             </div>
           </div>
 
-          <div className="md:col-span-6 col-span-12 md:h-auto h-screen md:m-0 m-3">
-            <div className="form_cover mt-10 w-10/12 md:p-5 p-2 md:px-10 rounded-lg m-auto">
-              <div className="form_head text-center">
-                <h1 className="md:text-4xl text-3xl fst flex items-center justify-center gap-5">
+          <div className="col-span-12 md:col-span-6 m-3 md:m-0 h-screen md:h-auto">
+            <div className="m-auto mt-10 p-2 md:p-5 md:px-10 rounded-lg w-10/12 form_cover">
+              <div className="text-center form_head">
+                <h1 className="flex justify-center items-center gap-5 text-3xl md:text-4xl fst">
                   Create Your Account
                   {/* @ts-ignore */}
                   <lord-icon
@@ -214,13 +213,13 @@ const Page = () => {
 
               {/* Progress Bar */}
               <div className="my-6">
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-gray-200 rounded-full w-full h-2">
                   <div
-                    className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                    className="bg-blue-500 rounded-full h-2 transition-all duration-500"
                     style={{ width: `${(step / totalSteps) * 100}%` }}
                   ></div>
                 </div>
-                <p className="text-center text-sm font-medium text-gray-600 mt-2">
+                <p className="mt-2 font-medium text-gray-600 text-sm text-center">
                   Step {step} of {totalSteps}
                 </p>
               </div>
@@ -232,7 +231,7 @@ const Page = () => {
                       <div>
                         <label
                           htmlFor="firstName"
-                          className="block text-sm font-medium text-gray-700 fst mb-1"
+                          className="block mb-1 font-medium text-gray-700 text-sm fst"
                         >
                           First Name
                         </label>
@@ -242,10 +241,10 @@ const Page = () => {
                           value={formData.firstName}
                           onChange={handleInputChange}
                           placeholder="John"
-                          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
                         {errors.firstName && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="mt-1 text-red-500 text-xs">
                             {errors.firstName}
                           </p>
                         )}
@@ -253,7 +252,7 @@ const Page = () => {
                       <div>
                         <label
                           htmlFor="lastName"
-                          className="block text-sm font-medium text-gray-700 fst mb-1"
+                          className="block mb-1 font-medium text-gray-700 text-sm fst"
                         >
                           Last Name
                         </label>
@@ -263,10 +262,10 @@ const Page = () => {
                           value={formData.lastName}
                           onChange={handleInputChange}
                           placeholder="Doe"
-                          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
                         {errors.lastName && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="mt-1 text-red-500 text-xs">
                             {errors.lastName}
                           </p>
                         )}
@@ -287,7 +286,7 @@ const Page = () => {
                       <div>
                         <label
                           htmlFor="username"
-                          className="block text-sm font-medium text-gray-700 fst mb-1"
+                          className="block mb-1 font-medium text-gray-700 text-sm fst"
                         >
                           Username
                         </label>
@@ -297,10 +296,10 @@ const Page = () => {
                           value={formData.username}
                           onChange={handleInputChange}
                           placeholder="johnd1oe"
-                          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
                         {errors.username && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="mt-1 text-red-500 text-xs">
                             {errors.username}
                           </p>
                         )}
@@ -308,7 +307,7 @@ const Page = () => {
                       <div>
                         <label
                           htmlFor="email"
-                          className="block text-sm font-medium text-gray-700 fst mb-1"
+                          className="block mb-1 font-medium text-gray-700 text-sm fst"
                         >
                           Email
                         </label>
@@ -318,10 +317,10 @@ const Page = () => {
                           value={formData.email}
                           onChange={handleInputChange}
                           placeholder="example@example.com"
-                          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
                         {errors.email && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="mt-1 text-red-500 text-xs">
                             {errors.email}
                           </p>
                         )}
@@ -346,7 +345,7 @@ const Page = () => {
                       <div>
                         <label
                           htmlFor="password"
-                          className="block text-sm font-medium text-gray-700 fst mb-1"
+                          className="block mb-1 font-medium text-gray-700 text-sm fst"
                         >
                           Password
                         </label>
@@ -356,10 +355,10 @@ const Page = () => {
                           value={formData.password}
                           onChange={handleInputChange}
                           placeholder="******"
-                          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
                         {errors.password && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="mt-1 text-red-500 text-xs">
                             {errors.password}
                           </p>
                         )}
@@ -376,7 +375,7 @@ const Page = () => {
                           <p>No faculty found</p>
                         )}
                         {errors.departmentId && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="mt-1 text-red-500 text-xs">
                             {errors.departmentId}
                           </p>
                         )}
@@ -385,7 +384,7 @@ const Page = () => {
                       <div>
                         <label
                           htmlFor="level"
-                          className="block text-sm font-medium text-gray-700 fst mb-1"
+                          className="block mb-1 font-medium text-gray-700 text-sm fst"
                         >
                           Level
                         </label>
@@ -395,7 +394,7 @@ const Page = () => {
                           onChange={(e) =>
                             handleLevelChange(Number(e.target.value))
                           }
-                          className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         >
                           <option value="">Select Level</option>
                           <option value={100}>100</option>
@@ -405,7 +404,7 @@ const Page = () => {
                           <option value={500}>500</option>
                         </select>
                         {errors.level && (
-                          <p className="text-red-500 text-xs mt-1">
+                          <p className="mt-1 text-red-500 text-xs">
                             {errors.level}
                           </p>
                         )}
