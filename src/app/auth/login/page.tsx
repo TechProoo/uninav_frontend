@@ -10,7 +10,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "../../../../public/Image/logoo.png";
-import { login } from "@/api/login";
+import { login } from "@/api/login.api";
 import toast from "react-hot-toast";
 import Loader from "./loading";
 import { useAuth } from "@/contexts/authContext";
@@ -20,7 +20,7 @@ defineElement(lottie.loadAnimation);
 const page = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    email: "",
+    email: "", // This will be used as emailOrMatricNo
     password: "",
   });
   const [loading, setLoading] = useState(false);
@@ -46,18 +46,16 @@ const page = () => {
     try {
       const res = await login(formData);
 
-      if (!res) throw new Error("ERROR SIGNING IN");
-
       if (res.success) {
         toast.success("Login successful!");
-        Cookies.set("uninav_", "Techpro", { expires: 7, path: "" });
-        setIsAuthenticated(true);
-        true;
+        Cookies.set("uninav_", res.token || "Techpro", {
+          expires: 7,
+          path: "",
+        });
         router.push("/dashboard");
       } else {
-        toast.error("Invalid credentials");
+        toast.error(res.message || "Invalid credentials");
       }
-      console.log(formData);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong!");
@@ -72,7 +70,7 @@ const page = () => {
 
   return (
     <div className="login_container">
-      <div className="absolute w-[70px] mx-1">
+      <div className="absolute mx-1 w-[70px]">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
           <g
@@ -107,11 +105,11 @@ const page = () => {
       <div className="">
         <Image className="w-50" src={Logo} alt="" />
       </div>
-      <div className="grid grid-cols-12 items-center">
-        <div className="md:col-span-6 col-span-12 md:h-auto h-vh my-auto md:pt-1">
-          <div className="form_cover md:w-10/12 md:p-5 p-3 md:px-10 md:rounded-lg w-full m-auto">
-            <div className="form_head text-center">
-              <h1 className="text-4xl fst flex items-center justify-center  gap-5">
+      <div className="items-center grid grid-cols-12">
+        <div className="col-span-12 md:col-span-6 my-auto md:pt-1 h-vh md:h-auto">
+          <div className="m-auto p-3 md:p-5 md:px-10 md:rounded-lg w-full md:w-10/12 form_cover">
+            <div className="text-center form_head">
+              <h1 className="flex justify-center items-center gap-5 text-4xl fst">
                 Welcome Back {/* @ts-ignore */}
                 <lord-icon
                   src="https://cdn.lordicon.com/jectmwqf.json"
@@ -124,7 +122,7 @@ const page = () => {
               <p>Your gateway to academic resources, study groups, and more.</p>
             </div>
             <form onSubmit={handleSubmit}>
-              <div className=" md:w-[80%] w-[100%]  mt-5">
+              <div className="mt-5 w-[100%] md:w-[80%]">
                 <div className="md:w-[100%]">
                   <label htmlFor="email" className="fst">
                     Email
@@ -134,15 +132,15 @@ const page = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="p-3 rounded-lg mt-2 w-full"
+                    className="mt-2 p-3 rounded-lg w-full"
                     required
                   />
                 </div>
               </div>
-              <div className="mt-5 md:w-[80%] w-[100%]">
+              <div className="mt-5 w-[100%] md:w-[80%]">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block mb-2 font-medium text-gray-700 text-sm"
                 >
                   Password
                 </label>
@@ -152,20 +150,20 @@ const page = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-md p-3"
+                  className="p-3 rounded-md w-full"
                   required
                 />
               </div>
               <div className="mt-2">
                 <p className="forgot_password fst">Forgot Password?</p>
               </div>
-              <div className="flex justify-center my-5 ">
+              <div className="flex justify-center my-5">
                 <Button type="submit" text="Login" />
               </div>
               <div className="text-center">
                 <p>
                   Don't have an account?{" "}
-                  <Link href={"/auth/signup"} className="fst font-black">
+                  <Link href={"/auth/signup"} className="font-black fst">
                     SignUp
                   </Link>
                 </p>
@@ -173,7 +171,7 @@ const page = () => {
             </form>
           </div>
         </div>
-        <div className="md:col-span-6 hidden md:block">
+        <div className="hidden md:block md:col-span-6">
           <div className="h-screen">
             <DotLottieReact
               src="https://lottie.host/c0771ae5-7778-4033-a945-a3b1c93b2bc6/xmSvWR3ayG.lottie"

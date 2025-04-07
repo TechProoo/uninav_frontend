@@ -17,14 +17,9 @@ interface dataProp {
   onChange: (value: string) => void;
 }
 
-export const SelectDemo: React.FC<dataProp> = ({
-  dept,
-  value,
-  onChange,
-}) => {
+export const SelectDemo: React.FC<dataProp> = ({ dept, value, onChange }) => {
   // Ensure data is an array and not empty
   const departments = dept?.data || []; // Access the array of departments from data.data
-
 
   if (!Array.isArray(departments) || departments.length === 0) {
     return <p>No faculties available</p>; // Handle case where data is empty or not an array
