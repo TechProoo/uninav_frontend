@@ -14,17 +14,14 @@ import { signup } from "@/api/signup";
 import { FormData } from "@/lib/data.type";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { useAuth } from "@/contexts/authContext";
 
 defineElement(lottie.loadAnimation);
 
 const Page = () => {
   const router = useRouter();
 
-  const token = Cookies.get("uninav_");
-
-  if (token) {
-    router.push("/dashboard");
-  }
+  const [loading, setLoading] = useState(false);
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
@@ -34,10 +31,9 @@ const Page = () => {
     email: "",
     password: "",
     departmentId: "",
-    level: "",
+    level: 100,
   });
   const [errors, setErrors] = useState<any>({});
-  const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
   const {
     data: faculties,
@@ -60,6 +56,14 @@ const Page = () => {
     );
   }, [step]);
 
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
+
   const totalSteps = 3;
 
   const animateStep = (direction: "next" | "back") => {
@@ -81,15 +85,15 @@ const Page = () => {
     e.preventDefault();
     if (!validateStep()) return;
 
-    // Set isSubmit to true to disable form submission and show loader
-    setIsSubmit(true);
-
     try {
-      // You can uncomment this line when you handle the signup API call
-      // const response = await signup(formData);
+      setLoading(true);
+      console.log(formData);
+      const response = await signup(formData);
+      if (!response) {
+        console.log(response);
+      }
 
-      // Assuming signup was successful, proceed with the next actions
-      alert("Successfully Signed up");
+      console.log(response);
 
       Cookies.set("uninav_", "Techpro", { expires: 7, path: "" });
 
@@ -100,7 +104,8 @@ const Page = () => {
       alert("An error has occurred");
 
       // Optionally reset isSubmit if you want the form to be re-submittable
-      setIsSubmit(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -145,7 +150,7 @@ const Page = () => {
     }));
   };
 
-  const handleLevelChange = (value: string) => {
+  const handleLevelChange = (value: number) => {
     setFormData((prev) => ({
       ...prev,
       level: value,
@@ -161,6 +166,10 @@ const Page = () => {
   const handleBack = () => {
     animateStep("back");
   };
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <div className="login_container">
@@ -382,15 +391,17 @@ const Page = () => {
                         <select
                           id="level"
                           value={formData.level}
-                          onChange={(e) => handleLevelChange(e.target.value)}
+                          onChange={(e) =>
+                            handleLevelChange(Number(e.target.value))
+                          }
                           className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="">Select Level</option>
-                          <option value="100">100</option>
-                          <option value="200">200</option>
-                          <option value="300">300</option>
-                          <option value="400">400</option>
-                          <option value="500">500</option>
+                          <option value={100}>100</option>
+                          <option value={200}>200</option>
+                          <option value={300}>300</option>
+                          <option value={400}>400</option>
+                          <option value={500}>500</option>
                         </select>
                         {errors.level && (
                           <p className="text-red-500 text-xs mt-1">

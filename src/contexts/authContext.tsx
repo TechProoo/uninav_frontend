@@ -9,10 +9,13 @@ import {
   useEffect,
 } from "react";
 import Cookies from "js-cookie";
+// import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+// import path from "path";
 
 interface AuthContextType {
-  user: loginData | null;
-  setUser: React.Dispatch<React.SetStateAction<loginData | null>>;
+  user: string | null;
+  setUser: React.Dispatch<React.SetStateAction<string | null>>;
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
   logout: () => void;
@@ -21,25 +24,30 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<loginData | null>(null);
+  const [user, setUser] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Check for user authentication status on mount using cookies
     const token = Cookies.get("uninav_");
 
     if (token) {
-      // Decode token and set user (pseudo-code)
-      // const decodedUser = jwtDecode<loginData>(token);
-      // setUser(decodedUser);
+      // const decodedUser: any = jwtDecode(token);
+      setUser(token);
+      console.log(token);
       setIsAuthenticated(true);
+    } else {
+      console.log("No toojen");
     }
   }, []);
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    Cookies.remove("uninav_"); // Remove the cookie
+    Cookies.remove("uninav_", { path: "" });
+
+    router.push("/auth/login");
   };
 
   return (

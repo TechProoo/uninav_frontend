@@ -14,7 +14,7 @@ export const login = async (data: loginData) => {
       throw new Error("Couldn't get a valid response from signup API");
     }
 
-    console.log("Signup successful:", response.data);
+    console.log("login successful:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error during signup:", error);

@@ -19,7 +19,7 @@ export interface FormData {
   email: string;
   password: string;
   departmentId: string;
-  level: string;
+  level: number ;
 }
 
 export interface loginData {
