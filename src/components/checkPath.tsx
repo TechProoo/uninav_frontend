@@ -2,9 +2,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "./Navbar";
+import Navbar from "../ConditionalNavbar/Navbar";
 
-const hiddenRoutes = ["/auth/login", "/auth/signup"];
+const hiddenRoutes = ["/auth/login", "/auth/signup", "/dashboard"];
 
 export default function ConditionalNavbar() {
   const pathname = usePathname();

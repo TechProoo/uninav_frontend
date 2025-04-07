@@ -24,9 +24,9 @@ const About = () => {
 
   return (
     <div className="about_bg">
-      <div className="w-10/12 m-auto py-10">
+      <div className="w-10/12 m-auto md:py-10 py-1">
         <div className="grid grid-cols-12 gap-5 items-center">
-          <div className="md:col-span-6">
+          <div className="md:col-span-6 col-span-12">
             <DotLottieReact
               src="https://lottie.host/77c6b78c-2671-41a6-9206-2870569a2fcb/xhS9lOc3bC.lottie"
               loop
@@ -45,10 +45,10 @@ const About = () => {
             </div>
           </div>
 
-          <div className="md:col-span-6">
+          <div className="md:col-span-6 col-span-12">
             <div className="grid grid-cols-12 gap-5">
-              <div className="col-span-6">
-                <div className="border_c about_first fst md:w-full md:py-5 py-3 about_right">
+              <div className="md:col-span-6 col-span-12">
+                <div className="border_c about_first fst mdw-full md:py-5 py-3 about_right">
                   <div className="w-11/12 m-auto">
                     <div>
                       {/* @ts-ignore */}
@@ -67,7 +67,7 @@ const About = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-span-6">
+              <div className="md:col-span-6 col-span-12">
                 <div className="border_c fst md:w-full md:py-5 py-3 about_right">
                   <div className="w-11/12 m-auto">
                     <div>
@@ -87,7 +87,7 @@ const About = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-span-6">
+              <div className="md:col-span-6 col-span-12">
                 <div className="border_c fst md:w-full md:py-5 py-3 about_right">
                   <div className="w-11/12 m-auto">
                     <div>
@@ -107,7 +107,7 @@ const About = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-span-6">
+              <div className="md:col-span-6 col-span-12">
                 <div className="border_c fst md:w-full md:py-5 py-3 about_right">
                   <div className="w-11/12 m-auto">
                     <div>
@@ -133,8 +133,8 @@ const About = () => {
           </div>
         </div>
       </div>
-      <div className="about_img"></div>
-      <div className="h-[300px] w-full"></div>
+      <div className="about_img h-[100%] md:h-[700px]"></div>
+      {/* <div className="h-[300px] w-full"></div> */}
     </div>
   );
 };

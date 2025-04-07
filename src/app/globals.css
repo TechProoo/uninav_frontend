@@ -167,7 +167,6 @@ body {
 
 .about_img {
   background-image: url("../../public/Image/0fb8abfa-3422-4c1b-b047-1425d0735ed6.png");
-  height: 700px;
   width: 100%;
   background-position: center;
   background-size: cover;
@@ -194,6 +193,10 @@ body {
 
 .form_cover input {
   border: 2px solid var(--bg-dark);
+}
+
+.form_cover select {
+  border: 2px solid var(--bg-dark) !important;
 }
 
 /* .forgot_password {

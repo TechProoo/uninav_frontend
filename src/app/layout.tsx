@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "../components/Navbar";
-import QueryProvider from "@/components/QueryProvider";
+import Navbar from "../ConditionalNavbar/Navbar";
+import QueryProvider from "@/tanstack/QueryProvider";
 import ConditionalNavbar from "@/components/checkPath";
 
 export const metadata: Metadata = {

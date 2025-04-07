@@ -9,37 +9,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getAllFaculty } from "@/components/api/department.api";
-import { useQuery } from "@tanstack/react-query";
-import Loader from "../loading";
+import { Department } from "@/lib/data.type";
 
-export const SelectDemo = () => {
-  const {
-    data: faculties,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["faculties"],
-    queryFn: getAllFaculty,
-  });
+interface dataProp {
+  dept: { message: string; status: string; data: Department[] }; // Updated to reflect the shape of your data
+  value: string;
+  onChange: (value: string) => void;
+}
 
-  //   if (isLoading)
-  //     return (
-  //       <div className="top-0 right-0 bottom-0 left-0 z-50 fixed flex justify-center items-center bg-[#003666]/80 backdrop-blur-sm w-screen h-screen">
-  //         <Loader />
-  //       </div>
-  //     );
-  if (error) return <p>Failed to load faculties</p>;
+export const SelectDemo: React.FC<dataProp> = ({ dept, value, onChange }) => {
+  // Ensure data is an array and not empty
+  const departments = dept?.data || []; // Access the array of departments from data.data
+
+  if (!Array.isArray(departments) || departments.length === 0) {
+    return <p>No faculties available</p>; // Handle case where data is empty or not an array
+  }
+
+  // Log the departments array
 
   return (
-    <Select>
-      <SelectTrigger className="w-[180px]">
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a faculty" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Faculties</SelectLabel>
-          {faculties?.map((n: any) => (
+          {/* Directly map over the departments array */}
+          {departments.map((n) => (
             <SelectItem key={n.id} value={n.id.toString()}>
               {n.name}
             </SelectItem>

@@ -6,7 +6,7 @@ export const getAllFaculty = async () => {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching faculty:", error);
-    throw new Error("Error finding faculty");
+    console.error("Error fetching faculties:", error);
+    throw error; // Rethrow the error to be handled by the calling function
   }
 };
