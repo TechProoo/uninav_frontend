@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // * Production
-const BASE_URL = "https://uninav-backend-production.up.railway.app";
+const BASE_URL = "https://uninav-backend.up.railway.app";
 // * Local
 // const BASE_URL = "http://localhost:3200";
 
