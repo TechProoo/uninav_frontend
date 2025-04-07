@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "../ConditionalNavbar/Navbar";
 import QueryProvider from "@/tanstack/QueryProvider";
 import ConditionalNavbar from "@/components/checkPath";
 
