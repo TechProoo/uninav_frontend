@@ -1,7 +1,10 @@
-import { loginData } from "@/lib/data.type";
+import { loginData } from "@/lib/types/data.type";
 import { api } from "./base.api";
+import { Response, UserProfile } from "@/lib/types/response.type";
 
-export const login = async (data: loginData) => {
+export const login = async (
+  data: loginData
+): Promise<{ token: string; data: Response<UserProfile> }> => {
   try {
     const requestData = JSON.stringify({
       emailOrMatricNo: data.email,
@@ -17,9 +20,9 @@ export const login = async (data: loginData) => {
       data: requestData,
     };
 
-    const response = await api(config);
+    const response = await api<Response<UserProfile>>(config);
     console.log(JSON.stringify(response.data));
-    return response.data;
+    return { token: response.headers.authorization, data: response.data };
   } catch (error) {
     console.error("Error during login:", error);
     throw error;

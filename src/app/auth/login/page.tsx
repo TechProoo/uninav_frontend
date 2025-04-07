@@ -6,7 +6,6 @@ import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
 import Button from "@/components/ui/Button";
 import Link from "next/link";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "../../../../public/Image/logoo.png";
@@ -14,6 +13,7 @@ import { login } from "@/api/login.api";
 import toast from "react-hot-toast";
 import Loader from "./loading";
 import { useAuth } from "@/contexts/authContext";
+import { storeSession } from "@/lib/utils";
 
 defineElement(lottie.loadAnimation);
 
@@ -44,17 +44,14 @@ const page = () => {
     setLoading(true);
 
     try {
-      const res = await login(formData);
+      const { token, data } = await login(formData);
 
-      if (res.success) {
-        toast.success("Login successful!");
-        Cookies.set("uninav_", res.token || "Techpro", {
-          expires: 7,
-          path: "",
-        });
+      if (data.status === "success") {
+        toast.success(data.message || "Login successful");
+        storeSession(token);
         router.push("/dashboard");
       } else {
-        toast.error(res.message || "Invalid credentials");
+        toast.error(data.message || "Invalid credentials");
       }
     } catch (error) {
       console.error(error);
