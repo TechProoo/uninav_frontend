@@ -33,6 +33,7 @@ const Page = () => {
     departmentId: "",
     level: 100,
   });
+
   const [errors, setErrors] = useState<any>({});
 
   const {
@@ -56,7 +57,7 @@ const Page = () => {
     );
   }, [step]);
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -96,7 +97,7 @@ const Page = () => {
       console.log(response);
 
       Cookies.set("uninav_", "Techpro", { expires: 7, path: "" });
-
+      setIsAuthenticated(true);
       // Redirect to the dashboard
       router.push("/dashboard");
     } catch (error) {
