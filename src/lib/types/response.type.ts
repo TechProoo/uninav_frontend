@@ -7,6 +7,32 @@ export type Response<T> = {
     statusCode: number;
   };
 };
+
+// Material Enum Types
+export enum ResourceType {
+  UPLOAD = "upload",
+  URL = "url",
+  GDRIVE = "GDrive",
+}
+
+export enum MaterialTypeEnum {
+  PDF = "pdf",
+  VIDEO = "video",
+  ARTICLE = "article",
+  IMAGE = "image",
+  OTHER = "other",
+}
+
+export enum VisibilityEnum {
+  PUBLIC = "public",
+  PRIVATE = "private",
+}
+
+export enum RestrictionEnum {
+  DOWNLOADABLE = "downloadable",
+  READONLY = "readonly",
+}
+
 export type UserProfile = {
   id: string;
   email: string;
@@ -65,17 +91,19 @@ export type Material = {
   id: string;
   type: string;
   tags: string[];
-  clickCount: number;
-  viewCount: number;
-  downloadCount: number;
+  clicks: number;
+  views: number;
+  downloads: number;
   likes: number;
   creatorId: string;
   label: string;
   description: string;
-  visibility: string;
-  restriction: string;
+  visibility: VisibilityEnum;
+  restriction: RestrictionEnum;
+  targetCourse?: string;
   reviewStatus: string;
   reviewedBy: string | null;
+  searchVector?: string;
   createdAt: string;
   updatedAt: string;
   creator: {
@@ -86,21 +114,22 @@ export type Material = {
     departmentId: string;
     level: number;
   };
-  resource: {
+  resource?: {
     materialId: string;
     resourceAddress: string;
-    resourceType: string;
-    fileKey: string;
-    metaData: any[];
+    resourceType: ResourceType;
+    fileKey: string | null;
+    metaData: string[];
     createdAt: string;
     updatedAt: string;
   };
 };
+
 export type Collection = {
   id: string;
   label: string;
   description: string;
-  visibility: "public" | "private";
+  visibility: VisibilityEnum;
   creatorId: string;
 
   creator: {
