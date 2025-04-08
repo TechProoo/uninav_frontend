@@ -1,274 +1,162 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Material } from "@/lib/types/response.type";
+import React from "react";
+import Card from "@/components/ui/card/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  toggleMaterialLike,
-  getMaterialDownloadUrl,
-  deleteMaterial,
-} from "@/api/material.api";
+  Material,
+  VisibilityEnum,
+  RestrictionEnum,
+} from "@/lib/types/response.type";
 import {
-  FileText,
+  Eye,
   Download,
   ThumbsUp,
-  BookOpen,
-  Calendar,
   Tag,
-  Eye,
-  Link,
-  Trash,
-  Edit,
+  Book,
+  Lock,
+  Globe,
+  FileIcon,
 } from "lucide-react";
+import { Button } from "../ui/button";
+import { getMaterialDownloadUrl } from "@/api/material.api";
 
 interface MaterialDetailProps {
-  material: Required<Material>;
-  onEdit: (material: Material) => void;
-  onDelete: (materialId: string) => void;
-  isOwner: boolean;
+  material: Material;
+  onClose?: () => void;
 }
 
 const MaterialDetail: React.FC<MaterialDetailProps> = ({
   material,
-  onEdit,
-  onDelete,
-  isOwner,
+  onClose,
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(material.likes || 0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleLikeToggle = async () => {
-    try {
-      setIsLoading(true);
-      const response = await toggleMaterialLike(material.id);
-
-      if (response && response.status === "success") {
-        setIsLiked(response.data.liked);
-        setLikesCount(response.data.likesCount);
-      } else {
-        setError("Failed to update like status");
-      }
-    } catch (err) {
-      console.error("Error toggling like:", err);
-      setError("An error occurred while updating like status");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleDownload = async () => {
     try {
-      setIsLoading(true);
       const response = await getMaterialDownloadUrl(material.id);
-
-      if (response && response.status === "success" && response.data.url) {
-        // Open the download url in a new tab
+      if (response?.data.url) {
         window.open(response.data.url, "_blank");
-      } else {
-        setError("Failed to generate download link");
       }
-    } catch (err) {
-      console.error("Error getting download url:", err);
-      setError("An error occurred while generating download link");
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error("Error downloading material:", error);
     }
   };
 
-  const handleDeleteConfirm = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this material? This action cannot be undone."
-      )
-    ) {
-      try {
-        setIsLoading(true);
-        const response = await deleteMaterial(material.id);
-
-        if (response && response.status === "success") {
-          onDelete(material.id);
-        } else {
-          setError("Failed to delete material");
-        }
-      } catch (err) {
-        console.error("Error deleting material:", err);
-        setError("An error occurred while deleting the material");
-      } finally {
-        setIsLoading(false);
-      }
+  const getFileIcon = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "pdf":
+        return <FileIcon className="w-6 h-6 text-red-500" />;
+      case "video":
+        return <FileIcon className="w-6 h-6 text-blue-500" />;
+      case "image":
+        return <FileIcon className="w-6 h-6 text-green-500" />;
+      default:
+        return <FileIcon className="w-6 h-6 text-gray-500" />;
     }
   };
 
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-      {/* Header */}
-      <div className="p-6 border-b">
-        <div className="flex justify-between items-start">
+    <Card className="bg-white/80 backdrop-blur-sm mx-auto p-6 max-w-4xl">
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex items-center gap-4">
+          {getFileIcon(material.type)}
           <div>
-            <h2 className="mb-1 font-semibold text-gray-900 text-2xl">
+            <h1 className="font-bold text-gray-900 text-2xl">
               {material.label}
-            </h2>
-            <p className="mb-2 font-medium text-blue-600 text-sm">
-              {material.type.replace("_", " ")}
+            </h1>
+            <p className="text-gray-600 text-sm">
+              by {material.creator.firstName} {material.creator.lastName}
             </p>
           </div>
-
-          {isOwner && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onEdit(material)}
-                disabled={isLoading}
-                title="Edit"
-              >
-                <Edit className="w-4 h-4" />
-                <span className="sr-only md:not-sr-only md:ml-2">Edit</span>
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={handleDeleteConfirm}
-                disabled={isLoading}
-                title="Delete"
-              >
-                <Trash className="w-4 h-4" />
-                <span className="sr-only md:not-sr-only md:ml-2">Delete</span>
-              </Button>
-            </div>
-          )}
         </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="bg-red-50 mt-4 p-3 rounded text-red-600">{error}</div>
-        )}
-
-        {/* Info Items */}
-        <div className="gap-4 grid grid-cols-1 md:grid-cols-2 mt-6">
-          <div className="flex items-center text-gray-600 text-sm">
-            <BookOpen className="mr-2 w-4 h-4" />
-            <span>
-              Created by: {material.creator.firstName}{" "}
-              {material.creator.lastName}
-            </span>
-          </div>
-
-          <div className="flex items-center text-gray-600 text-sm">
-            <Calendar className="mr-2 w-4 h-4" />
-            <span>
-              Created: {new Date(material.createdAt).toLocaleDateString()}
-            </span>
-          </div>
-
-          <div className="flex items-center text-gray-600 text-sm">
-            <Eye className="mr-2 w-4 h-4" />
-            <span>Views: {material.viewCount || 0}</span>
-          </div>
-
-          <div className="flex items-center text-gray-600 text-sm">
-            <ThumbsUp className="mr-2 w-4 h-4" />
-            <span>Likes: {likesCount}</span>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3 mt-6">
-          <Button
-            variant={isLiked ? "default" : "outline"}
-            size="sm"
-            onClick={handleLikeToggle}
-            disabled={isLoading}
-          >
-            <ThumbsUp className="mr-2 w-4 h-4" />
-            {isLiked ? "Liked" : "Like"}
+        {onClose && (
+          <Button variant="outline" onClick={onClose}>
+            Close
           </Button>
-
-          {material.resource.resourceType === "upload" && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDownload}
-              disabled={isLoading}
-            >
-              <Download className="mr-2 w-4 h-4" />
-              Download
-            </Button>
-          )}
-
-          {(material.resource.resourceType === "url" ||
-            material.resource.resourceType === "GDrive") && (
-            <Button
-              variant="outline"
-              size="sm"
-              as="a"
-              href={material.resource.resourceAddress}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Link className="mr-2 w-4 h-4" />
-              Open Link
-            </Button>
-          )}
-        </div>
+        )}
       </div>
 
-      {/* Body */}
-      <div className="p-6">
-        <div className="mb-6">
-          <h3 className="mb-2 font-medium text-gray-900 text-lg">
-            Description
-          </h3>
-          <p className="text-gray-600">
+      <div className="gap-6 grid grid-cols-1 md:grid-cols-2 mb-6">
+        <div>
+          <h3 className="mb-2 font-semibold text-lg">Description</h3>
+          <p className="text-gray-700">
             {material.description || "No description available"}
           </p>
-        </div>
 
-        {material.tags && material.tags.length > 0 && (
-          <div className="mb-6">
-            <h3 className="mb-2 font-medium text-gray-900 text-lg">Tags</h3>
+          {material.targetCourse && (
+            <div className="mt-4">
+              <h3 className="mb-2 font-semibold text-lg">Course</h3>
+              <div className="flex items-center gap-2 text-gray-700">
+                <Book className="w-4 h-4" />
+                <span>
+                  {material.targetCourse.courseCode} -{" "}
+                  {material.targetCourse.courseName}
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-4">
+            <h3 className="mb-2 font-semibold text-lg">Tags</h3>
             <div className="flex flex-wrap gap-2">
               {material.tags.map((tag) => (
-                <span
+                <Badge
                   key={tag}
-                  className="bg-blue-100 px-2.5 py-0.5 rounded text-blue-800 text-sm"
+                  variant="secondary"
+                  className="flex items-center gap-1"
                 >
+                  <Tag className="w-3 h-3" />
                   {tag}
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
-        )}
+        </div>
 
-        <div>
-          <h3 className="mb-2 font-medium text-gray-900 text-lg">
-            Resource Information
-          </h3>
-          <div className="bg-gray-50 p-4 rounded-md">
-            <div className="flex items-center">
-              <FileText className="mr-2 w-5 h-5 text-blue-600" />
-              <span className="font-medium">Type:</span>
-              <span className="ml-2">{material.resource.resourceType}</span>
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-4">
+            <div className="flex items-center gap-2 text-gray-600">
+              <Eye className="w-4 h-4" />
+              <span>{material.views} Views</span>
             </div>
-
-            {material.resource.resourceAddress && (
-              <div className="flex items-center mt-2">
-                <Link className="mr-2 w-5 h-5 text-blue-600" />
-                <span className="font-medium">Address:</span>
-                <a
-                  href={material.resource.resourceAddress}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-2 text-blue-600 hover:underline truncate"
-                >
-                  {material.resource.resourceAddress}
-                </a>
-              </div>
-            )}
+            <div className="flex items-center gap-2 text-gray-600">
+              <Download className="w-4 h-4" />
+              <span>{material.downloads} Downloads</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600">
+              <ThumbsUp className="w-4 h-4" />
+              <span>{material.likes} Likes</span>
+            </div>
           </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-gray-600" />
+              <span className="text-gray-600 text-sm">
+                {material.visibility === VisibilityEnum.PUBLIC
+                  ? "Public"
+                  : "Private"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-gray-600" />
+              <span className="text-gray-600 text-sm">
+                {material.restriction === RestrictionEnum.DOWNLOADABLE
+                  ? "Downloadable"
+                  : "Read Only"}
+              </span>
+            </div>
+          </div>
+
+          {material.restriction === RestrictionEnum.DOWNLOADABLE && (
+            <Button
+              onClick={handleDownload}
+              className="bg-blue-600 hover:bg-blue-700 mt-4 w-full"
+            >
+              <Download className="mr-2 w-4 h-4" />
+              Download Material
+            </Button>
+          )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

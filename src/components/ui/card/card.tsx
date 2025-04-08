@@ -1,19 +1,19 @@
-import React from "react";
-import "./card.css"
+import React, { ReactNode } from "react";
+import "./card.css";
+
 interface CardProps {
-  title: string;
-  description: string;
-  imageUrl: string;
+  children?: ReactNode;
+  className?: string;
+  onClick?: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ title, description, imageUrl }) => {
+const Card: React.FC<CardProps> = ({ children, className = "", onClick }) => {
   return (
-    <div className="carousel-card">
-      <img src={imageUrl} alt={title} className="carousel-card-img" />
-      <div className="carousel-card-content">
-        <h3>{title}</h3>
-        <p>{description}</p>
-      </div>
+    <div
+      className={`rounded-lg shadow-sm hover:shadow-md transition-shadow ${className}`}
+      onClick={onClick}
+    >
+      {children}
     </div>
   );
 };

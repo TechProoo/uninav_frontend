@@ -86,6 +86,26 @@ export type Pagination<T> = {
   };
   data: T;
 };
+export type Course = {
+  id: string;
+  courseName: string;
+  courseCode: string;
+  description: string;
+  reviewStatus: string;
+  reviewedBy: string | null;
+  departmentId: string;
+  level: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export enum CourseLevel {
+  L100 = 100,
+  L200 = 200,
+  L300 = 300,
+  L400 = 400,
+  L500 = 500,
+}
 
 export type Material = {
   id: string;
@@ -100,7 +120,12 @@ export type Material = {
   description: string;
   visibility: VisibilityEnum;
   restriction: RestrictionEnum;
-  targetCourse?: string;
+  targetCourseId: string | null;
+  targetCourse?: {
+    id: string;
+    courseName: string;
+    courseCode: string;
+  };
   reviewStatus: string;
   reviewedBy: string | null;
   searchVector?: string;
@@ -161,6 +186,7 @@ export interface Faculty {
   id: string;
   name: string;
   description: string;
+  departments?: Department[];
 }
 
 export interface Department {
@@ -168,5 +194,5 @@ export interface Department {
   name: string;
   description: string;
   facultyId: string;
-  faculty: Faculty;
+  faculty?: Faculty;
 }
