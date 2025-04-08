@@ -1,10 +1,10 @@
 import { loginData } from "@/lib/types/data.type";
-import { baseUrl } from "@/lib/server";
+import { BASE_URL } from "@/api/base.api";
 import axios from "axios";
 
 export const login = async (data: loginData) => {
   try {
-    const response = await axios.post(`${baseUrl}/auth/login`, data, {
+    const response = await axios.post(`${BASE_URL}/auth/login`, data, {
       headers: {
         "Content-Type": "application/json",
       },

@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Department } from "@/lib/types/data.type";
+import { Department } from "@/lib/types/response.type";
 
 interface dataProp {
   dept: { message: string; status: string; data: Department[] }; // Updated to reflect the shape of your data

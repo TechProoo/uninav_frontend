@@ -14,6 +14,8 @@ import {
   BookOpen,
   PencilLine,
   BellIcon,
+  Group,
+  Bell,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -41,7 +43,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
 
-  const { logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -123,20 +125,20 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
               </div>
             </div>
 
-          <nav className="flex-1 px-4 pb-4">
-            <div className="flex flex-col gap-1">
-              {sidebarItems.map((item) => (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-[#f0f8ff] hover:bg-[#003462] ${"text-muted-[#003462]"}`}
-                >
-                  <item.icon size={18} />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-            </div>
-          </nav>
+            <nav className="flex-1 px-4 pb-4">
+              <div className="flex flex-col gap-1">
+                {sidebarItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-[#f0f8ff] hover:bg-[#003462] ${"text-muted-[#003462]"}`}
+                  >
+                    <item.icon size={18} />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </nav>
 
             <div className="p-4 mt-auto border-t">
               <div className="flex items-center justify-between">
@@ -162,45 +164,50 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
           </div>
         </aside>
 
-      {/* Main Content */}
-      <div className="flex flex-col flex-1">
-        <header className="p-4 border-b dashboard_head">
-          <div className="flex gap-10">
-            <button
-              className="hidden md:block p-2 rounded-md"
-              onClick={toggleSidebar}
-            >
-              {isSidebarOpen ? <ChevronRight size={18} /> : <Menu size={18} />}
-            </button>
-            <div className="w-[100%]">
-              <div className="flex justify-between w-[100%]">
-                <div className="hidden md:flex items-center border rounded-md overflow-hidden">
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    className="px-2 py-1 focus:outline-none w-54 focus:w-84 transition-all duration-300 ease-in-out dashboard_head_input"
-                  />
-                  <button className="flex justify-center items-center px-3 py-1 text-white transition-all duration-300 bg">
-                    <span className="focus-within:hidden block">
-                      <Search />
-                    </span>
-                  </button>
-                </div>
-                <div className="flex items-center gap-2">
-                  <TooltipDemo
-                    text={<BellIcon size={15} color="#f0f8ff" />}
-                    notify="Notification"
-                  />
-                  <BadgeDemo text={"Welcome" + " " + "TechPro"} />
+        {/* Main Content */}
+        <div className="flex flex-col flex-1">
+          <header className="p-4 border-b dashboard_head">
+            <div className="flex gap-10">
+              <button
+                className="hidden md:block p-2 rounded-md"
+                onClick={toggleSidebar}
+              >
+                {isSidebarOpen ? (
+                  <ChevronRight size={18} />
+                ) : (
+                  <Menu size={18} />
+                )}
+              </button>
+              <div className="w-[100%]">
+                <div className="flex justify-between w-[100%]">
+                  <div className="hidden md:flex items-center border rounded-md overflow-hidden">
+                    <input
+                      type="text"
+                      placeholder="Search"
+                      className="px-2 py-1 focus:outline-none w-54 focus:w-84 transition-all duration-300 ease-in-out dashboard_head_input"
+                    />
+                    <button className="flex justify-center items-center px-3 py-1 text-white transition-all duration-300 bg">
+                      <span className="focus-within:hidden block">
+                        <Search />
+                      </span>
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <TooltipDemo
+                      text={<BellIcon size={15} color="#f0f8ff" />}
+                      notify="Notification"
+                    />
+                    <BadgeDemo text={"Welcome" + " " + "TechPro"} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
 
-        <ProtectedRoute>
-          <main className="flex-1 p-4">{children}</main>
-        </ProtectedRoute>
+          <ProtectedRoute>
+            <main className="flex-1 p-4">{children}</main>
+          </ProtectedRoute>
+        </div>
       </div>
     </div>
   );

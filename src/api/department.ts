@@ -1,10 +1,10 @@
-import { baseUrl } from "@/lib/server";
+import { BASE_URL } from "@/api/base.api";
 import axios from "axios";
 
-export const getAllFaculty = async () => {
+export const getAllDepartment = async () => {
   try {
     const response = await axios.get(
-      `${baseUrl}/department
+      `${BASE_URL}/department
 `,
       {
         headers: {

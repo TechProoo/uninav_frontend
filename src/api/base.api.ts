@@ -2,7 +2,7 @@ import axios from "axios";
 import { getSession } from "@/lib/utils";
 
 // * Production
-const BASE_URL = "https://uninav-backend.up.railway.app";
+export const BASE_URL = "https://uninav-backend.up.railway.app";
 // * Local
 
 export const api = axios.create({

@@ -1,11 +1,11 @@
 import { FormData } from "@/lib/types/data.type";
-import { baseUrl } from "@/lib/server";
+import { BASE_URL } from "@/api/base.api";
 import axios from "axios";
 
 export const signup = async (data: FormData) => {
   try {
     const response = await axios.post(
-      `${baseUrl}/auth/student`, // Corrected URL
+      `${BASE_URL}/auth/student`, // Corrected URL
       data,
       {
         headers: {
