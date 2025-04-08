@@ -6,7 +6,7 @@ export type Response<T> = {
     cause: string;
     statusCode: number;
   };
-};
+}
 export type UserProfile = {
   id: string;
   email: string;

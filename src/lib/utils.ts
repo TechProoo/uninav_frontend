@@ -12,6 +12,7 @@ export function getSession() {
   }
   return { session };
 }
+
 export function storeSession(session: string) {
   Cookies.set("session-token", session);
 }
