@@ -58,7 +58,7 @@ export type Pagination<T> = {
     hasMore: boolean;
     hasPrev: boolean;
   };
-  data: T[];
+  data: T;
 };
 
 export type Material = {
@@ -96,7 +96,26 @@ export type Material = {
     updatedAt: string;
   };
 };
+export type Collection = {
+  id: string;
+  label: string;
+  description: string;
+  visibility: "public" | "private";
+  creatorId: string;
 
+  creator: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    departmentId: string;
+    level: number;
+  };
+
+  materials: Material[];
+  createdAt: string;
+  updatedAt: string;
+};
 export type Bookmark = {
   id: string;
   userid: string;
@@ -108,3 +127,17 @@ export type Bookmark = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+export interface Faculty {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  description: string;
+  facultyId: string;
+  faculty: Faculty;
+}

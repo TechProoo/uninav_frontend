@@ -1,28 +1,45 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Book from "../../../public/Image/bookOne.png";
 import Image from "next/image";
-import { useMaterialData } from "@/hooks/useMaterialData";
 import { useAuth } from "@/contexts/authContext";
 import BookmarkSlider from "@/components/materials/BookmarkSlider";
 import MaterialGrid from "@/components/materials/MaterialGrid";
+import { getAllBookmarks } from "@/api/user.api";
+import { Material, Bookmark, Pagination } from "@/lib/types/response.type";
+import { fetchRecommendedMaterials } from "@/api/material.api";
 
 const Dashboard = () => {
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
 
-  const {
-    recommendations,
-    bookmarks,
-    recommendationsMeta,
-    bookmarksMeta,
-    loading,
-    error,
-    fetchRecommendations,
-    fetchBookmarks,
-  } = useMaterialData();
+  // State for recommendations
+  const [recommendations, setRecommendations] = useState<Material[]>([]);
+  const [recommendationsPagination, setRecommendationsPagination] = useState<
+    Pagination<Material[]>["pagination"]
+  >({
+    page: 1,
+    total: 0,
+    totalPages: 1,
+    limit: 6,
+    hasMore: false,
+    hasPrev: false,
+  });
+
+  // State for bookmarks
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+
+  // Loading and error states
+  const [loading, setLoading] = useState({
+    recommendations: true,
+    bookmarks: true,
+  });
+  const [error, setError] = useState({
+    recommendations: null as string | null,
+    bookmarks: null as string | null,
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -30,8 +47,65 @@ const Dashboard = () => {
       return;
     }
 
-    // Initial data fetch is handled inside useMaterialData hook
+    fetchRecommendations();
+    fetchBookmarks();
   }, [isAuthenticated, router]);
+
+  // Fetch recommendations
+  const fetchRecommendations = async (page = 1) => {
+    setLoading((prev) => ({ ...prev, recommendations: true }));
+    setError((prev) => ({ ...prev, recommendations: null }));
+
+    try {
+      const response = await fetchRecommendedMaterials({ page, limit: 6 });
+
+      if (response?.data) {
+        setRecommendations(response.data.data);
+
+        // Update pagination state using the structure from response.type.ts
+        if (response.data.pagination) {
+          setRecommendationsPagination(response.data.pagination);
+        }
+      } else {
+        setError((prev) => ({
+          ...prev,
+          recommendations: "Failed to fetch recommendations",
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching recommendations:", err);
+      setError((prev) => ({
+        ...prev,
+        recommendations: "Error fetching recommendations",
+      }));
+    } finally {
+      setLoading((prev) => ({ ...prev, recommendations: false }));
+    }
+  };
+
+  // Fetch bookmarks
+  const fetchBookmarks = async () => {
+    setLoading((prev) => ({ ...prev, bookmarks: true }));
+    setError((prev) => ({ ...prev, bookmarks: null }));
+
+    try {
+      const bookmarkData = await getAllBookmarks();
+
+      if (bookmarkData && Array.isArray(bookmarkData)) {
+        setBookmarks(bookmarkData);
+      } else {
+        setError((prev) => ({
+          ...prev,
+          bookmarks: "Failed to fetch bookmarks",
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching bookmarks:", err);
+      setError((prev) => ({ ...prev, bookmarks: "Error fetching bookmarks" }));
+    } finally {
+      setLoading((prev) => ({ ...prev, bookmarks: false }));
+    }
+  };
 
   // Handle page changes
   const handleRecommendationPageChange = (page: number) => {
@@ -85,8 +159,8 @@ const Dashboard = () => {
         materials={recommendations}
         loading={loading.recommendations}
         error={error.recommendations}
-        currentPage={recommendationsMeta?.currentPage || 1}
-        totalPages={recommendationsMeta?.totalPages || 1}
+        currentPage={recommendationsPagination.page}
+        totalPages={recommendationsPagination.totalPages}
         onPageChange={handleRecommendationPageChange}
       />
     </div>

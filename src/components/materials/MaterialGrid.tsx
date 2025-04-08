@@ -2,7 +2,13 @@
 
 import React from "react";
 import { Material } from "@/lib/types/response.type";
-import { Clock, BookOpen, Bookmark, BookmarkPlus } from "lucide-react";
+import {
+  Clock,
+  BookOpen,
+  Bookmark,
+  BookmarkPlus,
+  FileText,
+} from "lucide-react";
 
 interface MaterialGridProps {
   title: string;
@@ -71,42 +77,59 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
             key={material.id}
             className="bg-white shadow-md hover:shadow-lg rounded-lg overflow-hidden transition-all duration-300"
           >
-            <div
-              className="relative bg-cover bg-center h-48"
-              style={{
-                backgroundImage: `url(${
-                  material.coverImage ||
-                  "https://via.placeholder.com/300x200?text=No+Image"
-                })`,
-              }}
-            >
-              <div className="top-0 right-0 absolute p-2">
-                <button
-                  className="bg-white hover:bg-blue-50 shadow-md p-1.5 rounded-full transition-colors"
-                  title="Bookmark this material"
-                >
-                  <BookmarkPlus className="w-5 h-5 text-blue-600" />
-                </button>
-              </div>
-
-              {material.departmentName && (
-                <div className="right-0 bottom-0 left-0 absolute bg-gradient-to-t from-black/70 to-transparent p-3">
-                  <span className="font-medium text-white text-sm">
-                    {material.departmentName}
-                  </span>
+            {material.resource?.resourceAddress ? (
+              <div
+                className="relative bg-cover bg-center h-48"
+                style={{
+                  backgroundImage: `url(${material.resource.resourceAddress})`,
+                }}
+              >
+                <div className="top-0 right-0 absolute p-2">
+                  <button
+                    className="bg-white hover:bg-blue-50 shadow-md p-1.5 rounded-full transition-colors"
+                    title="Bookmark this material"
+                  >
+                    <BookmarkPlus className="w-5 h-5 text-blue-600" />
+                  </button>
                 </div>
-              )}
-            </div>
+
+                {material.creator?.department?.name && (
+                  <div className="right-0 bottom-0 left-0 absolute bg-gradient-to-t from-black/70 to-transparent p-3">
+                    <span className="font-medium text-white text-sm">
+                      {material.creator.department.name}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="relative flex justify-center items-center bg-gradient-to-r from-blue-50 to-indigo-50 h-48">
+                <FileText className="w-16 h-16 text-blue-300" />
+                <div className="top-0 right-0 absolute p-2">
+                  <button
+                    className="bg-white hover:bg-blue-50 shadow-md p-1.5 rounded-full transition-colors"
+                    title="Bookmark this material"
+                  >
+                    <BookmarkPlus className="w-5 h-5 text-blue-600" />
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="p-4">
+              <div className="flex items-center mb-2">
+                <span className="bg-blue-100 px-2 py-0.5 rounded font-medium text-blue-800 text-xs">
+                  {material.type}
+                </span>
+              </div>
+
               <h3 className="mb-2 font-medium text-gray-900 text-lg line-clamp-2">
-                {material.title}
+                {material.label}
               </h3>
               <p className="mb-3 text-gray-600 text-sm line-clamp-2">
                 {material.description || "No description available"}
               </p>
 
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center mt-4">
                 <div className="flex items-center text-gray-500 text-xs">
                   <Clock className="mr-1 w-3.5 h-3.5" />
                   <span>
@@ -116,9 +139,15 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
                   </span>
                 </div>
 
-                <button className="font-medium text-blue-600 hover:text-blue-800 text-sm">
-                  View Material
-                </button>
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center text-gray-500 text-xs">
+                    <BookOpen className="mr-1 w-3.5 h-3.5" />{" "}
+                    {material.viewCount || 0}
+                  </span>
+                  <button className="font-medium text-blue-600 hover:text-blue-800 text-sm">
+                    View
+                  </button>
+                </div>
               </div>
             </div>
           </div>
