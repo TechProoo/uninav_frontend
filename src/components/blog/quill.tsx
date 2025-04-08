@@ -1,78 +1,253 @@
-import React, { useState, useEffect, useRef } from "react";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
+"use client";
 
-// Dynamically import ReactQuill for Next.js SSR safety
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import React, { useState, useRef } from "react";
+import {
+  Editor as DraftEditor,
+  EditorState,
+  RichUtils,
+  AtomicBlockUtils,
+  ContentState,
+  convertToRaw,
+} from "draft-js";
+import "draft-js/dist/Draft.css";
+import {
+  Bold,
+  Italic,
+  Underline,
+  Code,
+  Quote,
+  List,
+  FileImage,
+} from "lucide-react";
 
 interface EditorProps {
   onContentChange: (content: string) => void;
 }
 
 const Editor: React.FC<EditorProps> = ({ onContentChange }) => {
-  const [value, setValue] = useState<string>("");
-  const [modules, setModules] = useState<any>(null);
-  const quillRef = useRef<ReactQuill>(null);
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (content: string) => {
-    setValue(content);
-    onContentChange(content);
+  const handleChange = (state: EditorState) => {
+    setEditorState(state);
+    const content = state.getCurrentContent();
+    onContentChange(JSON.stringify(convertToRaw(content)));
   };
 
-  // Setup the editor modules
-  useEffect(() => {
-    const setupEditorModules = async () => {
-      if (typeof window !== "undefined") {
-        // Set the modules for ReactQuill without markdown shortcuts
-        setModules({
-          toolbar: [
-            [{ header: [1, 2, 3, false] }],
-            ["bold", "italic", "underline", "strike"],
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["blockquote", "code-block"],
-            [{ script: "sub" }, { script: "super" }],
-            [{ indent: "-1" }, { indent: "+1" }],
-            [{ align: [] }],
-            ["link", "image"],
-            ["clean"],
-          ],
-        });
-      }
-    };
+  const toggleInlineStyle = (e: React.MouseEvent, style: string) => {
+    e.preventDefault();
+    setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+  };
 
-    setupEditorModules();
-  }, []);
+  const toggleBlockType = (e: React.MouseEvent, blockType: string) => {
+    e.preventDefault();
+    setEditorState(RichUtils.toggleBlockType(editorState, blockType));
+  };
 
-  // After the editor and modules are initialized, attach the image resizing behavior
-  useEffect(() => {
-    if (quillRef.current) {
-      const quill = quillRef.current.getEditor();
-      
-      // Enable image resizing by CSS
-      quill.root.addEventListener("click", (e: any) => {
-        if (e.target.tagName === "IMG") {
-          const img = e.target as HTMLImageElement;
-          img.style.resize = "both"; // Allow resizing
-          img.style.overflow = "hidden"; // Prevent overflow
-          img.style.cursor = "nwse-resize"; // Change cursor to resize
-        }
-      });
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const contentState = editorState.getCurrentContent();
+        const contentStateWithEntity = contentState.createEntity(
+          "IMAGE",
+          "IMMUTABLE",
+          {
+            src: reader.result,
+          }
+        );
+        const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+        const newEditorState = AtomicBlockUtils.insertAtomicBlock(
+          EditorState.set(editorState, {
+            currentContent: contentStateWithEntity,
+          }),
+          entityKey,
+          " "
+        );
+        setEditorState(newEditorState);
+      };
+      reader.readAsDataURL(file);
     }
-  }, [quillRef]);
+  };
+
+  const blockRendererFn = (block: any) => {
+    if (block.getType() === "atomic") {
+      return {
+        component: Media,
+        editable: false,
+      };
+    }
+    return null;
+  };
+
+  const renderToolbar = () => (
+    <div className="toolbar" style={toolbarStyle}>
+      {[["header-one"], ["header-two"], ["header-three"]].map(([block]) => (
+        <button
+          type="button"
+          key={block}
+          onMouseDown={(e) => toggleBlockType(e, block)}
+          style={buttonStyle(getCurrentBlockType() === block)}
+        >
+          <h1>H1</h1> {/* Replace with an icon */}
+        </button>
+      ))}
+      <button
+        type="button"
+        onMouseDown={(e) => toggleBlockType(e, "blockquote")}
+        style={buttonStyle(getCurrentBlockType() === "blockquote")}
+      >
+        <Quote size={18} />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => toggleBlockType(e, "unordered-list-item")}
+        style={buttonStyle(getCurrentBlockType() === "unordered-list-item")}
+      >
+        <List size={18} />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => toggleBlockType(e, "ordered-list-item")}
+        style={buttonStyle(getCurrentBlockType() === "ordered-list-item")}
+      >
+        <List size={18} />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => toggleBlockType(e, "code-block")}
+        style={buttonStyle(getCurrentBlockType() === "code-block")}
+      >
+        <Code size={18} />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => toggleInlineStyle(e, "BOLD")}
+        style={buttonStyle(getCurrentStyle().has("BOLD"))}
+      >
+        <Bold size={18} />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => toggleInlineStyle(e, "ITALIC")}
+        style={buttonStyle(getCurrentStyle().has("ITALIC"))}
+      >
+        <Italic size={18} />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => toggleInlineStyle(e, "UNDERLINE")}
+        style={buttonStyle(getCurrentStyle().has("UNDERLINE"))}
+      >
+        <Underline size={18} />
+      </button>
+      <button
+        type="button"
+        onMouseDown={(e) => toggleInlineStyle(e, "CODE")}
+        style={buttonStyle(getCurrentStyle().has("CODE"))}
+      >
+        <Code size={18} />
+      </button>
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        style={{ ...buttonStyle(false), color: "#007bff" }}
+      >
+        <FileImage size={18} />
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        style={{ display: "none" }}
+      />
+    </div>
+  );
+
+  const getCurrentStyle = () => editorState.getCurrentInlineStyle();
+
+  const getCurrentBlockType = () =>
+    editorState
+      .getCurrentContent()
+      .getBlockForKey(editorState.getSelection().getStartKey())
+      .getType();
 
   return (
-    <div>
-      <div id="editor">
-        <ReactQuill
-          ref={quillRef}
-          value={value}
-          onChange={handleChange}
-          modules={modules}
-          style={{ height: "300px" }}
-        />
+    <div
+      style={{
+        // backgroundColor: "#7b2e2e",
+        // padding: "20px",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
+      <div
+        style={{
+          // backgroundColor: "#fff",
+          width: "100%",
+          maxWidth: "800px",
+          borderRadius: "4px",
+          overflow: "hidden",
+          // boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+        }} 
+        className="border"
+      >
+        {renderToolbar()}
+        <div
+          style={{
+            padding: "20px",
+            minHeight: "200px",
+            fontSize: "16px",
+            lineHeight: "1.6",
+            fontFamily: "Georgia, serif",
+            borderTop: "1px solid #ddd",
+          }}
+        >
+          <DraftEditor
+            editorState={editorState}
+            onChange={handleChange}
+            placeholder="Start typing..."
+            blockRendererFn={blockRendererFn}
+          />
+        </div>
       </div>
     </div>
   );
+};
+
+const Media = (props: any) => {
+  const entity = props.contentState.getEntity(props.block.getEntityAt(0));
+  const { src } = entity.getData();
+  return (
+    <img
+      src={src}
+      alt="uploaded"
+      style={{ maxWidth: "100%", margin: "10px 0" }}
+    />
+  );
+};
+
+const buttonStyle = (active: boolean): React.CSSProperties => ({
+  background: "none",
+  border: "none",
+  padding: "5px 8px",
+  cursor: "pointer",
+  fontSize: "14px",
+  fontWeight: active ? "bold" : "normal",
+  color: active ? "#000" : "#555",
+  borderBottom: active ? "2px solid #000" : "2px solid transparent",
+});
+
+const toolbarStyle: React.CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "8px",
+  padding: "10px 10px 0",
+  backgroundColor: "#fff",
+  borderBottom: "1px solid #ccc",
+  fontFamily: "sans-serif",
 };
 
 export default Editor;

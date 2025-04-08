@@ -41,18 +41,17 @@ const PostForm = () => {
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
       formDataToSend.append("description", formData.description);
-      formDataToSend.append("category", formData.category);
-      formDataToSend.append("tags", formData.tags.join(", "));
+      formDataToSend.append("type", formData.category); // ✅ renamed
       formDataToSend.append("body", editorContent);
+      formData.tags.forEach((tag) => formDataToSend.append("tags", tag)); // ✅ send as array
 
       if (imageFile) {
-        formDataToSend.append("image", imageFile);
+        formDataToSend.append("headingImage", imageFile); // ✅ correct key
       }
 
       const response = await createBlog(formDataToSend);
 
       if (response) {
-        console.log(response);
         setFormData({
           title: "",
           description: "",
@@ -86,7 +85,6 @@ const PostForm = () => {
     accept: { "image/*": [] },
   });
 
-  // Tag functions
   const addTag = () => {
     const newTag = tagInput.trim();
     if (newTag && !formData.tags.includes(newTag)) {
@@ -195,7 +193,7 @@ const PostForm = () => {
         </div>
 
         <div className="space-y-6 w-full md:w-1/3">
-          {/* Category */}
+          {/* Category (type) */}
           <div>
             <label className="block text-lg font-medium text-gray-700 mb-2">
               Category:
@@ -208,8 +206,10 @@ const PostForm = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003666] focus:outline-none"
             >
               <option value="">Select Category</option>
-              <option value="tech">Tech</option>
-              <option value="lifestyle">Lifestyle</option>
+              <option value="article">Article</option>
+              <option value="scheme_of_work">Scheme of Work</option>
+              <option value="guidline">Guidline</option>
+              <option value="tutorial">Tutorial</option>
             </select>
           </div>
 

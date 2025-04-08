@@ -8,11 +8,11 @@ import {
   ChevronRight,
   Menu,
   Search,
-  UploadCloud,
-  User,
+  BellIcon,
+  Megaphone,
   BookOpen,
   PencilLine,
-  BellIcon,
+  User,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -25,6 +25,7 @@ import Logo from "../../../public/Image/logoo.png";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: BookOpen, label: "Manage Materials", path: "/dashboard/materials" },
+  { icon: Megaphone, label: "Manage Ads", path: "/dashboard/ads" },
   { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
   { icon: User, label: "Profile", path: "/dashboard/profile" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },
@@ -41,19 +42,16 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const router = useRouter();
   const { logout, isAuthenticated, user } = useAuth();
 
-  // Handle auth redirect
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/auth/login");
     }
   }, [isAuthenticated, router]);
 
-  // Toggle sidebar on desktop
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
   };
 
-  // Animate sidebar width with GSAP
   useEffect(() => {
     const sidebar = sidebarRef.current;
     if (!sidebar || !isDesktop) return;
@@ -66,10 +64,9 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
     });
   }, [isSidebarOpen, isDesktop]);
 
-  // Detect screen size to conditionally render sidebar
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsDesktop(window.innerWidth >= 768); // md breakpoint
+      setIsDesktop(window.innerWidth >= 768);
     };
 
     checkScreenSize();
@@ -79,15 +76,16 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar (only on desktop) */}
       {isDesktop && (
         <aside
           ref={sidebarRef}
-          className="sidebar relative z-40 h-full w-64 border-r overflow-y-auto"
+          className={`sidebar h-full border-r overflow-y-auto bg-white ${
+            isSidebarOpen ? "w-64" : "w-0"
+          }`}
         >
           <div className="p-4">
             <div className="flex flex-col items-center mb-6">
-              <Image className="w-50 h-auto" src={Logo} alt="Logo" />
+              <Image className="w-40 h-auto" src={Logo} alt="Logo" />
             </div>
 
             <nav className="px-2">
@@ -108,10 +106,8 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
         </aside>
       )}
 
-      {/* Main Content */}
       <div className="flex flex-col flex-1">
         <header className="p-4 border-b flex justify-between items-center bg-[#003462] shadow-sm">
-          {/* Sidebar Toggle Button (only on desktop) */}
           {isDesktop && (
             <button className="p-2 text-white" onClick={toggleSidebar}>
               {isSidebarOpen ? <ChevronRight size={18} /> : <Menu size={18} />}
@@ -119,13 +115,12 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
           )}
 
           <div className="flex items-center w-full justify-between">
-            {/* Search bar (desktop only) */}
             {isDesktop && (
-              <div className="flex items-center border rounded-md overflow-hidden">
+              <div className="flex items-center border rounded-md overflow-hidden bg-white">
                 <input
                   type="text"
                   placeholder="Search"
-                  className="px-2 py-1 text-white focus:outline-none w-54 focus:w-84 transition-all duration-300 ease-in-out bg-transparent"
+                  className="px-2 py-1 text-black focus:outline-none w-40 focus:w-64 transition-all duration-300 ease-in-out"
                 />
                 <button className="px-3 py-1 bg-[#f0f8ff]">
                   <Search className="text-[#0c385f]" />
@@ -133,7 +128,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
               </div>
             )}
 
-            {/* Right Side Icons */}
             <div className="flex items-center gap-4 ml-auto">
               <TooltipDemo
                 text={<BellIcon size={15} color="#f0f8ff" />}
