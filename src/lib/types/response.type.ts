@@ -49,3 +49,50 @@ export type UserProfile = {
     };
   }[];
 };
+export type Material = {
+  id: string;
+  type: string;
+  tags: string[];
+  clickCount: number;
+  viewCount: number;
+  downloadCount: number;
+  likes: number;
+  creatorId: string;
+  label: string;
+  description: string;
+  visibility: string;
+  restriction: string;
+  reviewStatus: string;
+  reviewedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  creator: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    departmentId: string;
+    level: number;
+  };
+  resource: {
+    materialId: string;
+    resourceAddress: string;
+    resourceType: string;
+    fileKey: string;
+    metaData: any[];
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type Bookmark = {
+  id: string;
+  userid: string;
+  materialId?: string;
+  collectionId?: string;
+
+  material?: Material;
+  collection?: unknown;
+  createdAt?: string;
+  updatedAt?: string;
+};

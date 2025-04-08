@@ -4,7 +4,7 @@ import React from "react";
 import Logo from "../../public/Image/logoo.png";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "../components/ui/Button";
+import Button from "../components/ui/Button-styled";
 import { useRouter } from "next/navigation";
 
 const Navbar = () => {
@@ -14,8 +14,8 @@ const Navbar = () => {
     router.push(path);
   };
   return (
-    <div className=" relative shadow-md">
-      <div className="absolute w-[70px] mx-1">
+    <div className="relative shadow-md">
+      <div className="absolute mx-1 w-[70px]">
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
           <g
@@ -48,12 +48,12 @@ const Navbar = () => {
         </svg>
       </div>
       <nav>
-        <div className=" flex items-center justify-between">
+        <div className="flex justify-between items-center">
           <div className="nav_logo">
             <Image className="w-50" src={Logo} alt="" />
           </div>
-          <ul className="md:flex hidden">
-            <li className="nav_li flex gap-10 items-center">
+          <ul className="hidden md:flex">
+            <li className="flex items-center gap-10 nav_li">
               <Link href={"/dashboard"} className="nav_link">
                 Home
               </Link>
@@ -65,7 +65,7 @@ const Navbar = () => {
               </Link>
             </li>
           </ul>
-          <div className="nav_btn md:flex hidden gap-6">
+          <div className="hidden md:flex gap-6 nav_btn">
             <Button
               onClick={() => handleNavigation("/auth/login")}
               text={"Login"}

@@ -1,19 +1,19 @@
 import Image from "next/image";
 import Bag from "../../public/Image/landing-removebg-preview.png";
-import Button from "./ui/Button";
+import Button from "./ui/Button-styled";
 import Book from "../../public/Image/blank-book-cover-white-vector-illustration.png";
 
 export default function Hero() {
   return (
-    <div className="hero_container relative ">
-      <div className="hero_bg md:block hidden absolute top-0 md:left-150">
+    <div className="relative hero_container">
+      <div className="hidden md:block top-0 md:left-150 absolute hero_bg">
         <Image className="w-40 book" src={Book} alt="Book" />
       </div>
 
-      <div className="grid grid-cols-12 items-center md:my-20 my-5 h-screen md:h-auto m-auto md:w-10/12 w-11/12">
-        <div className="md:col-span-6 col-span-12">
+      <div className="items-center grid grid-cols-12 m-auto my-5 md:my-20 w-11/12 md:w-10/12 h-screen md:h-auto">
+        <div className="col-span-12 md:col-span-6">
           <div className="hero_left">
-            <div className="flex items-center hero_left_top gap-2">
+            <div className="hero_left_top flex items-center gap-2">
               <div className="w-7">
                 <svg
                   viewBox="0 0 512 512"
@@ -36,11 +36,11 @@ export default function Hero() {
               </div>
               <small>Start Learning Today</small>
             </div>
-            <div className="mt-5 hero_left_md relative">
-              <h1 className="text-5xl  fst">
+            <div className="hero_left_md relative mt-5">
+              <h1 className="text-5xl fst">
                 The Ultimate Study Platform for University Students
               </h1>
-              <div className="absolute top-0 md:right-20 right-10  w-10">
+              <div className="top-0 right-10 md:right-20 absolute w-10">
                 <svg
                   viewBox="0 0 512 512"
                   xmlns="http://www.w3.org/2000/svg"
@@ -71,7 +71,7 @@ export default function Hero() {
             <div className="hero_left_bottom flex gap-5 mt-10">
               <Button text={"Get Started"} />
               <Button text={"Learn More"} />
-              <div className="w-20 ">
+              <div className="w-20">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -114,7 +114,7 @@ export default function Hero() {
             </div>
           </div>
         </div>
-        <div className="md:col-span-6 col-span-12">
+        <div className="col-span-12 md:col-span-6">
           <div className="hero_img">
             <Image className="hero_img_main" src={Bag} alt="Person" />
           </div>

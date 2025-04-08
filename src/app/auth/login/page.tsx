@@ -4,35 +4,37 @@ import React, { useEffect, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/Button-styled";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Logo from "../../../../public/Image/logoo.png";
-import { login } from "@/api/login.api";
+import { login } from "@/api/auth.api";
 import toast from "react-hot-toast";
 import Loader from "./loading";
 import { useAuth } from "@/contexts/authContext";
-import { storeSession } from "@/lib/utils";
+import { fetchUserProfile } from "@/api/user.api";
 
 defineElement(lottie.loadAnimation);
 
 const page = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
+
   const [formData, setFormData] = useState({
-    email: "", // This will be used as emailOrMatricNo
+    email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, setUser, setIsAuthenticated } = useAuth();
 
   useEffect(() => {
-    console.log(isAuthenticated);
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.push(redirectTo);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, redirectTo, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,8 +50,14 @@ const page = () => {
 
       if (data.status === "success") {
         toast.success(data.message || "Login successful");
-        storeSession(token);
-        router.push("/dashboard");
+
+        // Fetch user profile after successful login
+        const userProfile = await fetchUserProfile();
+        if (userProfile) {
+          setUser(userProfile);
+          setIsAuthenticated(true);
+          router.push(redirectTo);
+        }
       } else {
         toast.error(data.message || "Invalid credentials");
       }

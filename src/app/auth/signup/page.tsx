@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/Button-styled";
 import { SelectDemo } from "@/components/ui/SelectDrop";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";

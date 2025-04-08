@@ -23,6 +23,7 @@ import ProtectedRoute from "@/auth/ProtectedRoute";
 import { BadgeDemo } from "@/components/ui/BadgeUi";
 import { TooltipDemo } from "@/components/ui/TooltipUi";
 import { useAuth } from "@/contexts/authContext";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -72,13 +73,13 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const user = { username: "JohnDoe", email: "johndoe@example.com" };
 
   return (
-    <div className="flex h-screen overflow-hidden ">
+    <div className="flex h-screen overflow-hidden">
       {/* Desktop Sidebar */}
       <aside
         ref={sidebarRef}
-        className="sidebar  relative hidden md:block h-full border-r overflow-y-auto"
+        className="hidden md:block relative border-r h-full overflow-y-auto sidebar"
       >
-        <div className="absolute w-[70px] mx-1">
+        <div className="absolute mx-1 w-[70px]">
           <svg
             viewBox="0 0 24 24"
             fill="none"
@@ -138,19 +139,13 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
             </div>
           </nav>
 
-          <div className="p-4 mt-auto border-t">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  {user?.username.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{user?.username}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email}</p>
-                </div>
+          <div className="mt-auto p-4 border-t">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center">
+                <UserAvatar showName={true} />
               </div>
               <button
-                className="p-2 rounded-full hover:bg-muted"
+                className="hover:bg-muted p-2 rounded-full"
                 onClick={handleLogout}
               >
                 <LogOut size={18} />
@@ -161,30 +156,30 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <header className="p-4 dashboard_head border-b">
+      <div className="flex flex-col flex-1">
+        <header className="p-4 border-b dashboard_head">
           <div className="flex gap-10">
             <button
-              className="p-2 rounded-md md:block hidden"
+              className="hidden md:block p-2 rounded-md"
               onClick={toggleSidebar}
             >
               {isSidebarOpen ? <ChevronRight size={18} /> : <Menu size={18} />}
             </button>
             <div className="w-[100%]">
               <div className="flex justify-between w-[100%]">
-                <div className="md:flex hidden items-center border rounded-md overflow-hidden">
+                <div className="hidden md:flex items-center border rounded-md overflow-hidden">
                   <input
                     type="text"
                     placeholder="Search"
-                    className="transition-all dashboard_head_input duration-300 ease-in-out w-54 focus:w-84 focus:outline-none px-2 py-1"
+                    className="px-2 py-1 focus:outline-none w-54 focus:w-84 transition-all duration-300 ease-in-out dashboard_head_input"
                   />
-                  <button className=" text-white bg px-3 py-1  transition-all duration-300 flex items-center justify-center">
-                    <span className="block focus-within:hidden">
+                  <button className="flex justify-center items-center px-3 py-1 text-white transition-all duration-300 bg">
+                    <span className="focus-within:hidden block">
                       <Search />
                     </span>
                   </button>
                 </div>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <TooltipDemo
                     text={<BellIcon size={15} color="#f0f8ff" />}
                     notify="Notification"
@@ -197,7 +192,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
         </header>
 
         <ProtectedRoute>
-          <main className="flex-1 p-4 ">{children}</main>
+          <main className="flex-1 p-4">{children}</main>
         </ProtectedRoute>
       </div>
     </div>
