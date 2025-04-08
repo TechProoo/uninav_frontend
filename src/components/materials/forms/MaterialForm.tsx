@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Check, ChevronsUpDown, Upload } from "lucide-react";
+import { Check, ChevronsUpDown, Upload, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,7 @@ import {
   createMaterial,
   updateMaterial,
 } from "@/api/material.api";
+import { CreateFreeAdvertDto, createFreeAdvert } from "@/api/advert.api";
 import { getCourses } from "@/api/course.api";
 import { useDropzone } from "react-dropzone";
 
@@ -46,6 +47,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   const [courses, setCourses] = useState<Course[]>([]);
   const [open, setOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [includeAdvert, setIncludeAdvert] = useState(false);
 
   const [formData, setFormData] = useState<CreateMaterialDto>({
     label: "",
@@ -57,8 +59,17 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     resourceAddress: "",
   });
 
+  const [advertData, setAdvertData] = useState<CreateFreeAdvertDto>({
+    label: "",
+    description: "",
+  });
+
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
+  const [advertImage, setAdvertImage] = useState<File | null>(null);
+  const [advertImagePreview, setAdvertImagePreview] = useState<string | null>(
+    null
+  );
   const [tagInput, setTagInput] = useState("");
 
   // Initialize form with existing data if editing
@@ -126,9 +137,36 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }
   };
 
+  const onAdvertImageDrop = (acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      setAdvertImage(file);
+
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setAdvertImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
+  });
+
+  const {
+    getRootProps: getAdvertRootProps,
+    getInputProps: getAdvertInputProps,
+    isDragActive: isAdvertDragActive,
+  } = useDropzone({
+    onDrop: onAdvertImageDrop,
+    multiple: false,
+    accept: {
+      "image/*": [".png", ".jpg", ".jpeg", ".gif"],
+    },
   });
 
   const handleChange = (
@@ -143,6 +181,16 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }));
   };
 
+  const handleAdvertChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setAdvertData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
@@ -151,6 +199,21 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         ...prev,
         resourceAddress: "",
       }));
+    }
+  };
+
+  const handleAdvertImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setAdvertImage(file);
+
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setAdvertImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -186,15 +249,35 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         materialData.file = file;
       }
 
-      let response;
+      let materialResponse;
       if (initialData) {
-        response = await updateMaterial(initialData.id, materialData);
+        materialResponse = await updateMaterial(initialData.id, materialData);
       } else {
-        response = await createMaterial(materialData);
+        materialResponse = await createMaterial(materialData);
       }
 
-      if (response && response.status === "success") {
-        onSuccess(response.data);
+      if (materialResponse && materialResponse.status === "success") {
+        const material = materialResponse.data;
+
+        // Create advert if checkbox is checked
+        if (includeAdvert) {
+          try {
+            const advertPayload: CreateFreeAdvertDto = {
+              ...advertData,
+              materialId: material.id,
+              image: advertImage || undefined,
+            };
+
+            const advertResponse = await createFreeAdvert(advertPayload);
+            if (!advertResponse || advertResponse.status !== "success") {
+              console.error("Failed to create advert, but material was saved");
+            }
+          } catch (advertError) {
+            console.error("Error creating advert:", advertError);
+          }
+        }
+
+        onSuccess(material);
       } else {
         setError("Failed to save material. Please try again.");
       }
@@ -496,6 +579,141 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 </span>
               ))}
             </div>
+          </div>
+
+          {/* Advert Option */}
+          <div className="mt-8 pt-4 border-t">
+            <div className="flex items-center gap-2 mb-4">
+              <input
+                type="checkbox"
+                id="includeAdvert"
+                checked={includeAdvert}
+                onChange={(e) => setIncludeAdvert(e.target.checked)}
+                className="rounded w-4 h-4 text-blue-600"
+              />
+              <label
+                htmlFor="includeAdvert"
+                className="flex items-center font-medium text-gray-800"
+              >
+                <Megaphone className="mr-1.5 w-4 h-4 text-blue-600" />
+                Add Free Advertisement for this Material
+              </label>
+            </div>
+
+            {includeAdvert && (
+              <div className="space-y-4 bg-blue-50 mt-2 p-4 rounded-lg animate-fadeIn">
+                <h3 className="font-medium text-blue-800 text-lg">
+                  Advertisement Details
+                </h3>
+
+                <div className="gap-4 grid md:grid-cols-1">
+                  <div>
+                    <label
+                      htmlFor="advert-label"
+                      className="block mb-1 font-medium text-gray-700 text-sm"
+                    >
+                      Ad Title *
+                    </label>
+                    <input
+                      id="advert-label"
+                      name="label"
+                      type="text"
+                      required={includeAdvert}
+                      value={advertData.label}
+                      onChange={handleAdvertChange}
+                      className="p-2 border border-gray-300 rounded-md w-full"
+                      placeholder="Enter a catchy title for your advertisement"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="advert-description"
+                      className="block mb-1 font-medium text-gray-700 text-sm"
+                    >
+                      Ad Description
+                    </label>
+                    <textarea
+                      id="advert-description"
+                      name="description"
+                      rows={2}
+                      value={advertData.description}
+                      onChange={handleAdvertChange}
+                      className="p-2 border border-gray-300 rounded-md w-full"
+                      placeholder="Briefly describe your advertisement"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="advert-image"
+                      className="block mb-1 font-medium text-gray-700 text-sm"
+                    >
+                      Ad Image (Recommended)
+                    </label>
+                    <div
+                      {...getAdvertRootProps()}
+                      className={cn(
+                        "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
+                        isAdvertDragActive
+                          ? "border-blue-500 bg-blue-100"
+                          : "border-blue-300 hover:border-blue-400"
+                      )}
+                    >
+                      <input {...getAdvertInputProps()} />
+                      <div className="flex flex-col items-center space-y-2">
+                        <Megaphone className="w-8 h-8 text-blue-500" />
+                        {isAdvertDragActive ? (
+                          <p>Drop the image here...</p>
+                        ) : (
+                          <>
+                            <p className="text-gray-600 text-sm">
+                              Drag & drop an image for your ad, or click to
+                              select
+                            </p>
+                            {advertImage && (
+                              <p className="font-medium text-blue-600 text-sm">
+                                Selected: {advertImage.name}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Ad Image Preview */}
+                    {advertImagePreview && (
+                      <div className="mt-3">
+                        <p className="mb-1 font-medium text-gray-700 text-sm">
+                          Ad Preview:
+                        </p>
+                        <div className="relative w-full max-w-xs">
+                          <img
+                            src={advertImagePreview}
+                            alt="Advertisement preview"
+                            className="border border-blue-200 rounded-lg w-full h-auto object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAdvertImage(null);
+                              setAdvertImagePreview(null);
+                            }}
+                            className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <p className="text-blue-600 text-xs">
+                  Your advertisement will be shown to users browsing materials,
+                  helping to promote your content and increase visibility.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

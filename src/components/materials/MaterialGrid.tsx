@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Material } from "@/lib/types/response.type";
 import Card from "@/components/ui/card/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import {
   BookOpen,
   Tag,
   MoreHorizontal,
+  Megaphone,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -20,18 +21,46 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getAdvertByMaterialId } from "@/api/advert.api";
 
 interface MaterialGridProps {
   materials: Material[];
   onMaterialClick: (material: Material) => void;
-  view?: "grid" | "list";
+  viewMode?: "grid" | "list";
 }
 
 const MaterialGrid: React.FC<MaterialGridProps> = ({
   materials,
   onMaterialClick,
-  view = "grid",
+  viewMode = "grid",
 }) => {
+  const [materialsWithAds, setMaterialsWithAds] = useState<Set<string>>(
+    new Set()
+  );
+
+  useEffect(() => {
+    checkForAds();
+  }, [materials]);
+
+  // Check which materials have ads
+  const checkForAds = async () => {
+    const adsSet = new Set<string>();
+
+    // Process in batches to prevent too many parallel requests
+    for (const material of materials) {
+      try {
+        const response = await getAdvertByMaterialId(material.id);
+        if (response?.status === "success" && response.data.length > 0) {
+          adsSet.add(material.id);
+        }
+      } catch (error) {
+        console.error(`Error checking ads for material ${material.id}:`, error);
+      }
+    }
+
+    setMaterialsWithAds(adsSet);
+  };
+
   const getFileIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case "pdf":
@@ -45,7 +74,7 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
     }
   };
 
-  if (view === "list") {
+  if (viewMode === "list") {
     return (
       <div className="space-y-4">
         {materials.map((material) => (
@@ -71,6 +100,12 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
                       >
                         <BookOpen className="w-3 h-3" />
                         {material.targetCourse.courseCode}
+                      </Badge>
+                    )}
+                    {materialsWithAds.has(material.id) && (
+                      <Badge className="flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-700">
+                        <Megaphone className="w-3 h-3" />
+                        Ad
                       </Badge>
                     )}
                   </div>
@@ -148,34 +183,47 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
             </DropdownMenu>
           </div>
 
-          {material.targetCourse && (
-            <Badge
-              variant="secondary"
-              className="flex items-center gap-1 mb-2 w-fit"
-            >
-              <BookOpen className="w-3 h-3" />
-              {material.targetCourse.courseCode}
-            </Badge>
-          )}
+          <div className="flex flex-wrap gap-2 mb-2">
+            {material.targetCourse && (
+              <Badge
+                variant="secondary"
+                className="flex items-center gap-1 w-fit"
+              >
+                <BookOpen className="w-3 h-3" />
+                {material.targetCourse.courseCode}
+              </Badge>
+            )}
+
+            {materialsWithAds.has(material.id) && (
+              <Badge className="flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-700">
+                <Megaphone className="w-3 h-3" />
+                Ad
+              </Badge>
+            )}
+          </div>
 
           <p className="mb-3 text-gray-600 text-sm line-clamp-2">
             {material.description}
           </p>
 
           <div className="flex flex-wrap gap-2 mb-3">
-            {material.tags.slice(0, 3).map((tag) => (
-              <Badge
-                key={tag}
-                variant="outline"
-                className="flex items-center gap-1"
-              >
-                <Tag className="w-3 h-3" />
-                {tag}
-              </Badge>
-            ))}
-            {material.tags.length > 3 && (
-              <Badge variant="outline">+{material.tags.length - 3}</Badge>
-            )}
+            {material.tags && material.tags.length > 0 ? (
+              <>
+                {material.tags.slice(0, 3).map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="outline"
+                    className="flex items-center gap-1"
+                  >
+                    <Tag className="w-3 h-3" />
+                    {tag}
+                  </Badge>
+                ))}
+                {material.tags.length > 3 && (
+                  <Badge variant="outline">+{material.tags.length - 3}</Badge>
+                )}
+              </>
+            ) : null}
           </div>
 
           <div className="flex justify-between items-center text-gray-500 text-sm">

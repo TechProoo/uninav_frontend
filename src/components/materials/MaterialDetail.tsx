@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Card from "@/components/ui/card/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Material,
   VisibilityEnum,
   RestrictionEnum,
+  Advert,
 } from "@/lib/types/response.type";
 import {
   Eye,
@@ -15,19 +16,52 @@ import {
   Lock,
   Globe,
   FileIcon,
+  Megaphone,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { getMaterialDownloadUrl } from "@/api/material.api";
+import { getAdvertByMaterialId } from "@/api/advert.api";
+import AdvertCard from "./AdvertCard";
 
 interface MaterialDetailProps {
   material: Material;
+  isOwner?: boolean;
+  onEdit?: (material: Material) => void;
+  onDelete?: (materialId: string) => void;
   onClose?: () => void;
 }
 
 const MaterialDetail: React.FC<MaterialDetailProps> = ({
   material,
+  isOwner = false,
+  onEdit,
+  onDelete,
   onClose,
 }) => {
+  const [adverts, setAdverts] = useState<Advert[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (material && material.id) {
+      fetchAdverts();
+    }
+  }, [material]);
+
+  const fetchAdverts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAdvertByMaterialId(material.id);
+
+      if (response && response.status === "success") {
+        setAdverts(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching adverts for material:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleDownload = async () => {
     try {
       const response = await getMaterialDownloadUrl(material.id);
@@ -37,6 +71,14 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
     } catch (error) {
       console.error("Error downloading material:", error);
     }
+  };
+
+  const handleEdit = () => {
+    if (onEdit) onEdit(material);
+  };
+
+  const handleDelete = () => {
+    if (onDelete) onDelete(material.id);
   };
 
   const getFileIcon = (type: string) => {
@@ -66,12 +108,35 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             </p>
           </div>
         </div>
-        {onClose && (
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {isOwner && (
+            <>
+              <Button variant="outline" onClick={handleEdit}>
+                Edit
+              </Button>
+              <Button variant="destructive" onClick={handleDelete}>
+                Delete
+              </Button>
+            </>
+          )}
+          {onClose && (
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* Display associated advert if available */}
+      {adverts.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Megaphone className="w-5 h-5 text-blue-600" />
+            <h3 className="font-semibold text-lg">Advertisement</h3>
+          </div>
+          <AdvertCard advert={adverts[0]} isPreview={true} />
+        </div>
+      )}
 
       <div className="gap-6 grid grid-cols-1 md:grid-cols-2 mb-6">
         <div>

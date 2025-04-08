@@ -15,6 +15,7 @@ import {
   BookOpen,
   PencilLine,
   BellIcon,
+  Megaphone,
 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import Logo from "../../../public/Image/logoo.png";
@@ -29,6 +30,7 @@ import { Toaster } from "react-hot-toast";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: BookOpen, label: "Manage Materials", path: "/dashboard/materials" },
+  { icon: Megaphone, label: "Manage Ads", path: "/dashboard/ads" },
   { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
   { icon: User, label: "Profile", path: "/dashboard/profile" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },

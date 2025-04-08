@@ -196,3 +196,37 @@ export interface Department {
   facultyId: string;
   faculty?: Faculty;
 }
+
+export enum AdvertTypeEnum {
+  FREE = "free",
+  PAID = "pro",
+  BOOST = "boost",
+  TARGETED = "targeted",
+}
+
+export type Advert = {
+  id: string;
+  type: AdvertTypeEnum;
+  amount: string;
+  creatorId: string;
+  materialId: string;
+  collectionId: string | null;
+  imageUrl: string;
+  fileKey: string;
+  label: string;
+  description: string;
+  clicks: number;
+  views: number;
+
+  material?: Material;
+  collection?: Collection;
+  creator: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
+  reviewStatus: string;
+  createdAt: string;
+  updatedAt: string;
+};
