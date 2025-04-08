@@ -10,8 +10,9 @@ import {
   Menu,
   Search,
   UploadCloud,
-  Group,
-  Bell,
+  User,
+  BookOpen,
+  PencilLine,
   BellIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -26,8 +27,8 @@ import Logo from "../../../public/Image/logoo.png";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: UploadCloud, label: "Posts", path: "/dashboard/uploadMaterials" },
-  { icon: Group, label: "Groups", path: "/dashboard/groups" },
-  { icon: Bell, label: "Notifications", path: "/dashboard/notifications" },
+  { icon: Group, label: "Posts", path: "/dashboard/groups" },
+  { icon: Bell, label: "Posts", path: "/dashboard/notifications" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },
 ];
 
@@ -39,6 +40,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+
   const { logout, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -66,8 +68,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const handleLogout = () => {
     logout();
   };
-
-  const user = { username: "JohnDoe", email: "johndoe@example.com" };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -123,21 +123,20 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
               </div>
             </div>
 
-            {/* Navigation */}
-            <nav className="flex-1 px-4 pb-4">
-              <div className="flex flex-col gap-1">
-                {sidebarItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    href={item.path}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-[#f0f8ff] hover:bg-[#003462] text-[#003462]`}
-                  >
-                    <item.icon size={18} />
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
-              </div>
-            </nav>
+          <nav className="flex-1 px-4 pb-4">
+            <div className="flex flex-col gap-1">
+              {sidebarItems.map((item) => (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-[#f0f8ff] hover:bg-[#003462] ${"text-muted-[#003462]"}`}
+                >
+                  <item.icon size={18} />
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </div>
+          </nav>
 
             <div className="p-4 mt-auto border-t">
               <div className="flex items-center justify-between">
@@ -163,52 +162,45 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
           </div>
         </aside>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col">
-          <header className="p-4 dashboard_head border-b">
-            <div className="flex gap-10">
-              <button
-                className="p-2 rounded-md md:block hidden"
-                onClick={toggleSidebar}
-              >
-                {isSidebarOpen ? (
-                  <ChevronRight size={18} />
-                ) : (
-                  <Menu size={18} />
-                )}
-              </button>
-              <div className="w-[100%]">
-                <div className="flex justify-between w-[100%]">
-                  <div className="md:flex hidden items-center border rounded-md overflow-hidden">
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      className="transition-all dashboard_head_input duration-300 ease-in-out w-54 focus:w-84 focus:outline-none px-2 py-1"
-                    />
-                    <button className=" text-white bg px-3 py-1  transition-all duration-300 flex items-center justify-center">
-                      <span className="block focus-within:hidden">
-                        <Search />
-                      </span>
-                    </button>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <TooltipDemo
-                      text={<BellIcon size={15} color="#f0f8ff" />}
-                      notify="Notification"
-                    />
-                    <BadgeDemo text={"Welcome" + " " + "TechPro"} />
-                  </div>
+      {/* Main Content */}
+      <div className="flex flex-col flex-1">
+        <header className="p-4 border-b dashboard_head">
+          <div className="flex gap-10">
+            <button
+              className="hidden md:block p-2 rounded-md"
+              onClick={toggleSidebar}
+            >
+              {isSidebarOpen ? <ChevronRight size={18} /> : <Menu size={18} />}
+            </button>
+            <div className="w-[100%]">
+              <div className="flex justify-between w-[100%]">
+                <div className="hidden md:flex items-center border rounded-md overflow-hidden">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className="px-2 py-1 focus:outline-none w-54 focus:w-84 transition-all duration-300 ease-in-out dashboard_head_input"
+                  />
+                  <button className="flex justify-center items-center px-3 py-1 text-white transition-all duration-300 bg">
+                    <span className="focus-within:hidden block">
+                      <Search />
+                    </span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <TooltipDemo
+                    text={<BellIcon size={15} color="#f0f8ff" />}
+                    notify="Notification"
+                  />
+                  <BadgeDemo text={"Welcome" + " " + "TechPro"} />
                 </div>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
-          {/* Render children (main content) */}
-
-          <ProtectedRoute>
-            <main className="flex-1 p-4 ">{children}</main>
-          </ProtectedRoute>
-        </div>
+        <ProtectedRoute>
+          <main className="flex-1 p-4">{children}</main>
+        </ProtectedRoute>
       </div>
     </div>
   );

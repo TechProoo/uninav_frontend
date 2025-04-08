@@ -49,6 +49,18 @@ export type UserProfile = {
     };
   }[];
 };
+export type Pagination<T> = {
+  pagination: {
+    page: number;
+    total: number;
+    totalPages: number;
+    limit: number; // page size
+    hasMore: boolean;
+    hasPrev: boolean;
+  };
+  data: T;
+};
+
 export type Material = {
   id: string;
   type: string;
@@ -84,7 +96,26 @@ export type Material = {
     updatedAt: string;
   };
 };
+export type Collection = {
+  id: string;
+  label: string;
+  description: string;
+  visibility: "public" | "private";
+  creatorId: string;
 
+  creator: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    departmentId: string;
+    level: number;
+  };
+
+  materials: Material[];
+  createdAt: string;
+  updatedAt: string;
+};
 export type Bookmark = {
   id: string;
   userid: string;
@@ -96,3 +127,17 @@ export type Bookmark = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+export interface Faculty {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  description: string;
+  facultyId: string;
+  faculty: Faculty;
+}

@@ -1,16 +1,20 @@
 import { api } from "./base.api";
-import { Response, Material } from "@/lib/types/response.type";
+import { Response, Material, Pagination } from "@/lib/types/response.type";
 
-export const fetchRecommendedMaterials = async (): Promise<
-  Material[] | null
-> => {
+export const fetchRecommendedMaterials = async ({
+  page = 1,
+  limit = 6,
+}: {
+  page?: number;
+  limit?: number;
+}): Promise<Response<Pagination<Material[]>> | null> => {
   try {
-    const response = await api.get<Response<Material[]>>(
-      "/materials/recommendations"
+    const response = await api.get<Response<Pagination<Material[]>>>(
+      `/materials/recommendations?page=${page}`
     );
 
     if (response.data.status === "success") {
-      return response.data.data;
+      return response.data;
     }
     return null;
   } catch (error) {
@@ -18,3 +22,5 @@ export const fetchRecommendedMaterials = async (): Promise<
     return null;
   }
 };
+
+// Remove fetchBookmarkedMaterials - we'll use getAllBookmarks from user.api.ts instead

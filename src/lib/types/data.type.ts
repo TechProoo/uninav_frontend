@@ -1,17 +1,3 @@
-export interface Faculty {
-  id: string;
-  name: string;
-  description: string;
-}
-
-export interface Department {
-  id: string;
-  name: string;
-  description: string;
-  facultyId: string;
-  faculty: Faculty;
-}
-
 export interface FormData {
   firstName: string;
   lastName: string;
