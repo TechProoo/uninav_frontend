@@ -4,13 +4,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/Button-styled";
 import { SelectDemo } from "@/components/ui/SelectDrop";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
 import { getAllFaculty } from "@/api/department.api";
 import Loader from "./loading";
-import { signup } from "@/api/student-signup.api";
+import { signup } from "@/api/auth.api";
 import { FormData } from "@/lib/types/data.type";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
@@ -91,7 +91,7 @@ const Page = () => {
       setLoading(true);
       const response = await signup(formData);
 
-      if (response.success) {
+      if (response.status == "success") {
         Cookies.set("uninav_", response.token || "Techpro", {
           expires: 7,
           path: "",

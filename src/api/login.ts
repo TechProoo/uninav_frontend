@@ -1,0 +1,23 @@
+import { loginData } from "@/lib/types/data.type";
+import { baseUrl } from "@/lib/server";
+import axios from "axios";
+
+export const login = async (data: loginData) => {
+  try {
+    const response = await axios.post(`${baseUrl}/auth/login`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response || !response.data) {
+      throw new Error("Couldn't get a valid response from signup API");
+    }
+
+    console.log("login successful:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error during signup:", error);
+    throw error;
+  }
+};
