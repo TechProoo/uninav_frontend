@@ -16,7 +16,7 @@ import {
   PencilLine,
   BellIcon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Logo from "../../../public/Image/logoo.png";
 import Image from "next/image";
 import ProtectedRoute from "@/auth/ProtectedRoute";
@@ -41,6 +41,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const { logout, isAuthenticated, user } = useAuth();
 
@@ -68,6 +69,13 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const isActive = (path: string) => {
+    if (path === "/dashboard") {
+      return pathname === "/dashboard" || pathname === "/dashboard/";
+    }
+    return pathname?.startsWith(path);
   };
 
   return (
@@ -128,7 +136,12 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-[#f0f8ff] hover:bg-[#003462] ${"text-muted-[#003462]"}`}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                    ${
+                      isActive(item.path)
+                        ? "bg-[#003462] text-[#f0f8ff]"
+                        : "text-gray-700 hover:text-[#f0f8ff] hover:bg-[#003462]"
+                    }`}
                 >
                   <item.icon size={18} />
                   <span>{item.label}</span>
