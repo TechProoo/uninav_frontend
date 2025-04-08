@@ -10,7 +10,7 @@ import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
 import { getAllFaculty } from "@/api/department.api";
 import Loader from "./loading";
-import { signup } from "@/api/student-signup.api";
+import { signup } from "@/api/auth.api";
 import { FormData } from "@/lib/types/data.type";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";

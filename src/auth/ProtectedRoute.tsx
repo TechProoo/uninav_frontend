@@ -1,10 +1,10 @@
 // components/ProtectedRoute.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/loading";
-import Cookies from "js-cookie";
+import { useAuth } from "@/contexts/authContext";
 
 export default function ProtectedRoute({
   children,
@@ -12,19 +12,17 @@ export default function ProtectedRoute({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [checking, setChecking] = useState(true);
+  const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    const token = Cookies.get("uninav_");
-
-    if (!token) {
+    if (!loading && !isAuthenticated) {
       router.push("/auth/login");
-    } else {
-      setChecking(false);
     }
-  }, [router]);
+  }, [isAuthenticated, loading, router]);
 
-  if (checking) return <Loader />;
+  if (loading) return <Loader />;
+
+  if (!isAuthenticated) return null;
 
   return <>{children}</>;
 }

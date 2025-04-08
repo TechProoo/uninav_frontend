@@ -1,52 +1,66 @@
-import React from "react";
+"use client";
 
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Book from "../../../public/Image/bookOne.png";
 import Image from "next/image";
-import Card from "@/components/ui/card/card";
-import Slider from "@/components/ui/Slider";
+import { useMaterialData } from "@/hooks/useMaterialData";
+import { useAuth } from "@/contexts/authContext";
+import BookmarkSlider from "@/components/materials/BookmarkSlider";
+import MaterialGrid from "@/components/materials/MaterialGrid";
 
-const page = () => {
-  const items = [
-    <Card
-      key={1}
-      title="Card 1"
-      description="This is the first card."
-      imageUrl="https://source.unsplash.com/random/1"
-    />,
-    <Card
-      key={2}
-      title="Card 2"
-      description="This is the second card."
-      imageUrl="https://source.unsplash.com/random/2"
-    />,
-    <Card
-      key={3}
-      title="Card 3"
-      description="This is the third card."
-      imageUrl="https://source.unsplash.com/random/3"
-    />,
-  ];
+const Dashboard = () => {
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
+
+  const {
+    recommendations,
+    bookmarks,
+    recommendationsMeta,
+    bookmarksMeta,
+    loading,
+    error,
+    fetchRecommendations,
+    fetchBookmarks,
+  } = useMaterialData();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/auth/login");
+      return;
+    }
+
+    // Initial data fetch is handled inside useMaterialData hook
+  }, [isAuthenticated, router]);
+
+  // Handle page changes
+  const handleRecommendationPageChange = (page: number) => {
+    fetchRecommendations(page);
+  };
+
   return (
-    <div className="">
-      <div className="shadow-lg dashboard_gr rounded-xl p-3 md:p-5 text-white flex flex-col md:flex-row justify-between items-center shadow-xl ">
-        <div className="flex flex-col items-center space-y-4 md:items-start">
+    <div className="mx-auto container">
+      {/* Welcome Banner */}
+      <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr">
+        <div className="flex flex-col items-center md:items-start space-y-4">
           <Image
             src={Book}
             alt="Books and Glasses"
-            className="md:w-[250px] w-[200px]"
+            className="w-[200px] md:w-[220px]"
           />
         </div>
 
-        <div className="text-center md:text-left max-w-xl">
-          <h1 className="text-2xl md:text-3xl font-semibold fst">
-            Hi, TechPro
+        <div className="max-w-xl md:text-left text-center">
+          <h1 className="font-semibold text-2xl md:text-3xl fst">
+            Hi, {user?.firstName || "Student"}
           </h1>
-          <p className="text-sm md:text-base mt-2">
-            UniNav is your trusted gateway to academic resources, connecting
-            students with study materials, past questions, and peer support.
+          <p className="mt-2 text-sm md:text-base">
+            Welcome to UniNav, your trusted gateway to academic resources,
+            connecting you with study materials, past questions, and peer
+            support.
           </p>
-          <button className="mt-4 bg-white text-slate-600 fst px-6 py-2 rounded-full shadow hover:bg-blue-100 transition">
-            Recommeded Course files
+          <button className="bg-white hover:bg-blue-100 shadow mt-4 px-6 py-2 rounded-full text-slate-600 transition fst">
+            Browse All Materials
           </button>
         </div>
 
@@ -54,11 +68,29 @@ const page = () => {
           <Image src={Book} alt="Books on Shelf" width={250} height={250} />
         </div>
       </div>
-      <div>
-        <h1>Recommeded</h1>
-        <Slider items={items} itemsPerSlide={2} autoPlayInterval={4000} />
-      </div>
+
+      {/* Bookmarks Section - Horizontal Slider */}
+      <section className="mb-8">
+        <h2 className="mb-4 font-semibold text-2xl">Your Bookmarks</h2>
+        <BookmarkSlider
+          bookmarks={bookmarks}
+          loading={loading.bookmarks}
+          error={error.bookmarks}
+        />
+      </section>
+
+      {/* Recommendations Section - Vertical Grid with Pagination */}
+      <MaterialGrid
+        title="Recommended Materials"
+        materials={recommendations}
+        loading={loading.recommendations}
+        error={error.recommendations}
+        currentPage={recommendationsMeta?.currentPage || 1}
+        totalPages={recommendationsMeta?.totalPages || 1}
+        onPageChange={handleRecommendationPageChange}
+      />
     </div>
   );
 };
-export default page;
+
+export default Dashboard;

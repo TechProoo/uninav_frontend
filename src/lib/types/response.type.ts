@@ -49,6 +49,18 @@ export type UserProfile = {
     };
   }[];
 };
+export type Pagination<T> = {
+  pagination: {
+    page: number;
+    total: number;
+    totalPages: number;
+    limit: number; // page size
+    hasMore: boolean;
+    hasPrev: boolean;
+  };
+  data: T[];
+};
+
 export type Material = {
   id: string;
   type: string;

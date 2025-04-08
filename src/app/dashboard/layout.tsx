@@ -11,12 +11,12 @@ import {
   Menu,
   Search,
   UploadCloud,
-  Group,
-  Bell,
+  User,
+  BookOpen,
+  PencilLine,
   BellIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ChartNoAxesColumnDecreasing } from "lucide-react";
 import Logo from "../../../public/Image/logoo.png";
 import Image from "next/image";
 import ProtectedRoute from "@/auth/ProtectedRoute";
@@ -27,9 +27,9 @@ import UserAvatar from "@/components/ui/UserAvatar";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: UploadCloud, label: "Posts", path: "/dashboard/uploadMaterials" },
-  { icon: Group, label: "Posts", path: "/dashboard/groups" },
-  { icon: Bell, label: "Posts", path: "/dashboard/notifications" },
+  { icon: BookOpen, label: "Manage Materials", path: "/dashboard/materials" },
+  { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
+  { icon: User, label: "Profile", path: "/dashboard/profile" },
   { icon: Settings, label: "Settings", path: "/dashboard/settings" },
 ];
 
@@ -42,7 +42,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
 
-  const { logout, isAuthenticated } = useAuth();
+  const { logout, isAuthenticated, user } = useAuth();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -69,8 +69,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const handleLogout = () => {
     logout();
   };
-
-  const user = { username: "JohnDoe", email: "johndoe@example.com" };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -125,7 +123,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
           </div>
 
           <nav className="flex-1 px-4 pb-4">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 mt-8">
               {sidebarItems.map((item) => (
                 <Link
                   key={item.path}
@@ -184,7 +182,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                     text={<BellIcon size={15} color="#f0f8ff" />}
                     notify="Notification"
                   />
-                  <BadgeDemo text={"Welcome" + " " + "TechPro"} />
+                  <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
                 </div>
               </div>
             </div>
@@ -192,7 +190,9 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
         </header>
 
         <ProtectedRoute>
-          <main className="flex-1 p-4">{children}</main>
+          <main className="flex-1 bg-gray-50 p-4 overflow-y-auto">
+            {children}
+          </main>
         </ProtectedRoute>
       </div>
     </div>
