@@ -1,16 +1,34 @@
+"use client";
 import React, { useState, useEffect } from "react";
+import { Check, ChevronsUpDown, Upload } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Material,
   MaterialTypeEnum,
   VisibilityEnum,
   RestrictionEnum,
+  Course,
 } from "@/lib/types/response.type";
 import {
   CreateMaterialDto,
   createMaterial,
   updateMaterial,
 } from "@/api/material.api";
+import { getCourses } from "@/api/course.api";
+import { useDropzone } from "react-dropzone";
 
 interface MaterialFormProps {
   initialData?: Material;
@@ -25,6 +43,10 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [open, setOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+
   const [formData, setFormData] = useState<CreateMaterialDto>({
     label: "",
     description: "",
@@ -34,7 +56,9 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     restriction: RestrictionEnum.DOWNLOADABLE,
     resourceAddress: "",
   });
+
   const [file, setFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState("");
 
   // Initialize form with existing data if editing
@@ -48,9 +72,64 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         visibility: initialData.visibility,
         restriction: initialData.restriction,
         resourceAddress: initialData.resource?.resourceAddress || "",
+        targetCourse: initialData.targetCourseId || undefined,
       });
+      if (initialData.targetCourse) {
+        const { id, courseName, courseCode } = initialData.targetCourse;
+        const course = courses.find((c) => c.id === id) || {
+          id,
+          courseName,
+          courseCode,
+          description: "",
+          reviewStatus: "",
+          reviewedBy: null,
+          departmentId: "",
+          level: 0,
+        };
+        setSelectedCourse(course);
+      }
     }
-  }, [initialData]);
+  }, [initialData, courses]);
+
+  // Fetch courses
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const response = await getCourses({ limit: 100 });
+        if (response?.status === "success") {
+          setCourses(response.data);
+        }
+      } catch (err) {
+        console.error("Error loading courses:", err);
+      }
+    };
+    loadCourses();
+  }, []);
+
+  const onDrop = (acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      setFile(file);
+      // Create preview for images
+      if (file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setFilePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+      // Clear resourceAddress when uploading a file
+      setFormData((prev) => ({
+        ...prev,
+        resourceAddress: "",
+      }));
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    multiple: false,
+  });
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -100,6 +179,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     try {
       const materialData: CreateMaterialDto = {
         ...formData,
+        targetCourse: selectedCourse?.id,
       };
 
       if (file) {
@@ -134,23 +214,76 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         )}
 
         <div className="space-y-4">
-          <div>
-            <label
-              htmlFor="label"
-              className="block mb-1 font-medium text-gray-700 text-sm"
-            >
-              Title *
-            </label>
-            <input
-              id="label"
-              name="label"
-              type="text"
-              required
-              value={formData.label}
-              onChange={handleChange}
-              className="p-2 border border-gray-300 rounded-md w-full"
-              placeholder="Material Title"
-            />
+          {/* Title and Description */}
+          <div className="gap-4 grid md:grid-cols-2">
+            <div>
+              <label
+                htmlFor="label"
+                className="block mb-1 font-medium text-gray-700 text-sm"
+              >
+                Title *
+              </label>
+              <input
+                id="label"
+                name="label"
+                type="text"
+                required
+                value={formData.label}
+                onChange={handleChange}
+                className="p-2 border border-gray-300 rounded-md w-full"
+                placeholder="Material Title"
+              />
+            </div>
+
+            {/* Course Selection Combobox */}
+            <div>
+              <label className="block mb-1 font-medium text-gray-700 text-sm">
+                Target Course
+              </label>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="justify-between w-full"
+                  >
+                    {selectedCourse
+                      ? selectedCourse.courseCode
+                      : "Select course..."}
+                    <ChevronsUpDown className="opacity-50 ml-2 w-4 h-4 shrink-0" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="p-0 w-full">
+                  <Command>
+                    <CommandInput placeholder="Search courses..." />
+                    <CommandEmpty>No course found.</CommandEmpty>
+                    <CommandGroup className="max-h-60 overflow-y-auto">
+                      {courses.map((course) => (
+                        <CommandItem
+                          key={course.id}
+                          value={course.courseCode}
+                          onSelect={() => {
+                            setSelectedCourse(course);
+                            setOpen(false);
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedCourse?.id === course.id
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {course.courseCode} - {course.courseName}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
           <div>
@@ -171,7 +304,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             />
           </div>
 
-          <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+          {/* Type, Visibility, and Restriction Selection */}
+          <div className="gap-4 grid md:grid-cols-3">
             <div>
               <label
                 htmlFor="type"
@@ -240,43 +374,85 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             </div>
           </div>
 
+          {/* File Upload Zone */}
           <div>
-            <label
-              htmlFor="resourceAddress"
-              className="block mb-1 font-medium text-gray-700 text-sm"
-            >
-              Resource URL
+            <label className="block mb-1 font-medium text-gray-700 text-sm">
+              Upload File or Provide URL
             </label>
-            <input
-              id="resourceAddress"
-              name="resourceAddress"
-              type="url"
-              value={formData.resourceAddress}
-              onChange={handleChange}
-              className="p-2 border border-gray-300 rounded-md w-full"
-              placeholder="https://example.com/resource"
-            />
+            <div className="gap-4 grid md:grid-cols-2">
+              <div
+                {...getRootProps()}
+                className={cn(
+                  "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
+                  isDragActive
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-300 hover:border-gray-400"
+                )}
+              >
+                <input {...getInputProps()} />
+                <div className="flex flex-col items-center space-y-2">
+                  <Upload className="w-8 h-8 text-gray-400" />
+                  {isDragActive ? (
+                    <p>Drop the file here...</p>
+                  ) : (
+                    <>
+                      <p className="text-gray-600 text-sm">
+                        Drag & drop a file here, or click to select
+                      </p>
+                      {file && (
+                        <p className="font-medium text-blue-600 text-sm">
+                          Selected: {file.name}
+                        </p>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <input
+                  id="resourceAddress"
+                  name="resourceAddress"
+                  type="url"
+                  value={formData.resourceAddress}
+                  onChange={handleChange}
+                  className="p-2 border border-gray-300 rounded-md w-full"
+                  placeholder="https://example.com/resource"
+                />
+                <p className="mt-1 text-gray-500 text-xs">
+                  You can either upload a file or provide a URL
+                </p>
+              </div>
+            </div>
+
+            {/* File Preview */}
+            {filePreview && (
+              <div className="mt-4">
+                <p className="mb-2 font-medium text-gray-700 text-sm">
+                  Preview:
+                </p>
+                <div className="relative w-32 h-32">
+                  <img
+                    src={filePreview}
+                    alt="File preview"
+                    className="rounded-lg w-full h-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFile(null);
+                      setFilePreview(null);
+                    }}
+                    className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div>
-            <label
-              htmlFor="file"
-              className="block mb-1 font-medium text-gray-700 text-sm"
-            >
-              Upload File
-            </label>
-            <input
-              id="file"
-              name="file"
-              type="file"
-              onChange={handleFileChange}
-              className="p-2 border border-gray-300 rounded-md w-full"
-            />
-            <p className="mt-1 text-gray-500 text-sm">
-              You can either provide a URL or upload a file
-            </p>
-          </div>
-
+          {/* Tags Section */}
           <div>
             <label
               htmlFor="tags"
