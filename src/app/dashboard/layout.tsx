@@ -17,7 +17,7 @@ import {
   Group,
   Bell,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import ProtectedRoute from "@/auth/ProtectedRoute";
 import { BadgeDemo } from "@/components/ui/BadgeUi";
@@ -42,6 +42,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   const { logout, isAuthenticated, user } = useAuth();
 
@@ -69,6 +70,13 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const isActive = (path: string) => {
+    if (path === "/dashboard") {
+      return pathname === "/dashboard" || pathname === "/dashboard/";
+    }
+    return pathname?.startsWith(path);
   };
 
   return (

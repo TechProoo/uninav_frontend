@@ -22,5 +22,3 @@ export const fetchRecommendedMaterials = async ({
     return null;
   }
 };
-
-// Remove fetchBookmarkedMaterials - we'll use getAllBookmarks from user.api.ts instead
