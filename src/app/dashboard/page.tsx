@@ -113,33 +113,34 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="mx-auto container">
+    <div className="">
       {/* Welcome Banner */}
-      <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr">
-        <div className="flex flex-col items-center md:items-start space-y-4">
+      <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr space-y-6 md:space-y-0 w-[auto]">
+        {/* Left Image */}
+        <div className="md:w-1/3 w-full flex justify-center md:justify-start">
           <Image
             src={Book}
             alt="Books and Glasses"
-            className="w-[200px] md:w-[220px]"
+            className="w-[150px] sm:w-[180px] md:w-[220px] object-contain"
           />
         </div>
 
-        <div className="max-w-xl md:text-left text-center">
+        {/* Text Section */}
+        <div className="md:w-1/2 w-full text-center md:text-left">
           <h1 className="font-semibold text-2xl md:text-3xl fst">
             Hi, {user?.firstName || "Student"}
           </h1>
           <p className="mt-2 text-sm md:text-base">
-            Welcome to UniNav, your trusted gateway to academic resources,
-            connecting you with study materials, past questions, and peer
-            support.
+            Welcome to UniNav, your trusted gateway to academic resources...
           </p>
           <button className="bg-white hover:bg-blue-100 shadow mt-4 px-6 py-2 rounded-full text-slate-600 transition fst">
             Browse All Materials
           </button>
         </div>
 
-        <div className="hidden md:block">
-          <Image src={Book} alt="Books on Shelf" width={250} height={250} />
+        {/* Right-side image */}
+        <div className="hidden md:block md:w-1/4">
+          <Image src={Book} alt="Books on Shelf" width={200} height={200} />
         </div>
       </div>
 
@@ -153,7 +154,6 @@ const Dashboard = () => {
         />
       </section>
 
-      {/* Recommendations Section - Vertical Grid with Pagination */}
       <MaterialGrid
         title="Recommended Materials"
         materials={recommendations}
