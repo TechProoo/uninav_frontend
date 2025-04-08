@@ -24,10 +24,7 @@ export const updateUserProfile = async (
   >
 ): Promise<UserProfile | null> => {
   try {
-    const response = await api.patch<Response<UserProfile>>(
-      "/user/profile",
-      data
-    );
+    const response = await api.patch<Response<UserProfile>>("/user", data);
 
     if (response.data.status === "success") {
       return response.data.data;

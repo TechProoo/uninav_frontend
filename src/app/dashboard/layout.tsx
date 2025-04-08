@@ -24,6 +24,7 @@ import { BadgeDemo } from "@/components/ui/BadgeUi";
 import { TooltipDemo } from "@/components/ui/TooltipUi";
 import { useAuth } from "@/contexts/authContext";
 import UserAvatar from "@/components/ui/UserAvatar";
+import { Toaster } from "react-hot-toast";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -80,6 +81,28 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   return (
     <div className="flex h-screen overflow-hidden">
+      {/* Toast notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+          success: {
+            style: {
+              background: "#0070f3",
+            },
+          },
+          error: {
+            style: {
+              background: "#ff4a4a",
+            },
+          },
+        }}
+      />
+
       {/* Desktop Sidebar */}
       <aside
         ref={sidebarRef}
