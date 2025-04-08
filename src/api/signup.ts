@@ -5,7 +5,7 @@ import axios from "axios";
 export const signup = async (data: FormData) => {
   try {
     const response = await axios.post(
-      `${BASE_URL}/auth/student`, // Corrected URL
+      `${BASE_URL}/auth/student`, 
       data,
       {
         headers: {

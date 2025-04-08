@@ -42,7 +42,7 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated !== true) {
       router.push("/auth/login");
       return;
     }
@@ -113,40 +113,49 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="">
+    <div className="px-4 sm:px-6 lg:px-8 py-4">
       {/* Welcome Banner */}
-      <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr space-y-6 md:space-y-0 w-[auto]">
+      <div className="flex flex-col md:flex-row justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr space-y-6 md:space-y-0">
         {/* Left Image */}
-        <div className="md:w-1/3 w-full flex justify-center md:justify-start">
+        <div className="w-full md:w-1/3 flex justify-center md:justify-start">
           <Image
             src={Book}
             alt="Books and Glasses"
-            className="w-[150px] sm:w-[180px] md:w-[220px] object-contain"
+            className="w-[120px] sm:w-[150px] md:w-[180px] lg:w-[220px] object-contain"
+            priority
           />
         </div>
 
         {/* Text Section */}
-        <div className="md:w-1/2 w-full text-center md:text-left">
-          <h1 className="font-semibold text-2xl md:text-3xl fst">
+        <div className="w-full md:w-1/2 text-center md:text-left">
+          <h1 className="font-semibold text-2xl sm:text-3xl md:text-4xl fst">
             Hi, {user?.firstName || "Student"}
           </h1>
-          <p className="mt-2 text-sm md:text-base">
+          <p className="mt-2 text-sm sm:text-base lg:text-lg">
             Welcome to UniNav, your trusted gateway to academic resources...
           </p>
-          <button className="bg-white hover:bg-blue-100 shadow mt-4 px-6 py-2 rounded-full text-slate-600 transition fst">
+          <button className="bg-white hover:bg-blue-100 shadow mt-4 px-6 py-2 rounded-full text-slate-600 transition fst text-sm sm:text-base">
             Browse All Materials
           </button>
         </div>
 
         {/* Right-side image */}
-        <div className="hidden md:block md:w-1/4">
-          <Image src={Book} alt="Books on Shelf" width={200} height={200} />
+        <div className="hidden md:flex md:w-1/4 justify-end">
+          <Image
+            src={Book}
+            alt="Books on Shelf"
+            width={200}
+            height={200}
+            className="object-contain"
+          />
         </div>
       </div>
 
       {/* Bookmarks Section - Horizontal Slider */}
       <section className="mb-8">
-        <h2 className="mb-4 font-semibold text-2xl">Your Bookmarks</h2>
+        <h2 className="mb-4 font-semibold text-xl sm:text-2xl">
+          Your Bookmarks
+        </h2>
         <BookmarkSlider
           bookmarks={bookmarks}
           loading={loading.bookmarks}
@@ -154,6 +163,7 @@ const Dashboard = () => {
         />
       </section>
 
+      {/* Recommended Materials */}
       <MaterialGrid
         title="Recommended Materials"
         materials={recommendations}

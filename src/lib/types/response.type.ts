@@ -6,7 +6,7 @@ export type Response<T> = {
     cause: string;
     statusCode: number;
   };
-}
+};
 export type UserProfile = {
   id: string;
   email: string;
@@ -140,4 +140,18 @@ export interface Department {
   description: string;
   facultyId: string;
   faculty: Faculty;
+}
+
+export interface Content {
+  creatorId: string;
+  title: string;
+  description: string;
+  type: "article" | "scheme_of_work" | "guidline" | "tutorial";
+  headingImageAddress: string;
+  headingImageKey: string;
+  bodyKey: string;
+  likes: number;
+  views: number;
+  clicks: number;
+  tags: string[];
 }
