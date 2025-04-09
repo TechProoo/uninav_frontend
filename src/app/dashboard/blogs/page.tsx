@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/authContext";
 import getUserBlogs from "@/api/userBlogs.api";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "../loading";
-import { Content } from "@/lib/types/response.type";
+import { Blog } from "@/lib/types/response.type";
 
 const BlogsPage = () => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const BlogsPage = () => {
     queryFn: () => getUserBlogs(id),
   });
 
-  const [blogsData, setBlogsData] = useState<Content[]>([]);
+  const [blogsData, setBlogsData] = useState<Blog[]>([]);
 
   useEffect(() => {
     if (blogs) {
@@ -42,7 +42,7 @@ const BlogsPage = () => {
 
   return (
     <div className="mx-auto container">
-      <div className="md:flex mb-5 md:mb-1 justify-between items-center">
+      <div className="md:flex justify-between items-center mb-5 md:mb-1">
         <h1 className="mb-6 font-bold text-3xl fst">Manage Blogs</h1>
         <div className="flex items-center gap-4">
           <Button
@@ -62,16 +62,16 @@ const BlogsPage = () => {
         </p>
       </div>  
 
-      <div className="mt-10 fst font-bold text-2xl">
+      <div className="mt-10 font-bold text-2xl fst">
         <h1>Your Blogs</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-          {blogsData.map((blog: Content) => (
+        <div className="gap-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-6">
+          {blogsData.map((blog: Blog) => (
             <Card key={blog.id} data={blog} onDelete={handleDelete} />
           ))}
         </div>
       </div>
     </div>
-  );  
+  );
 };
 
-export default BlogsPage
+export default BlogsPage;

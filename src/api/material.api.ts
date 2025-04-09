@@ -38,7 +38,7 @@ export const fetchRecommendedMaterials = async ({
 };
 
 // List Materials with filtering
-export const listMaterials = async ({
+export const getFilteredMaterials = async ({
   page = 1,
   limit = 10,
   creatorId,
@@ -73,6 +73,22 @@ export const listMaterials = async ({
   }
 };
 
+// Get my materials i created
+export const getMyMaterials = async (): Promise<Response<
+  Material[]
+> | null> => {
+  try {
+    const response = await api.get<Response<Material[]>>(`/materials/me`);
+
+    if (response.data.status === "success") {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching my materials:", error);
+    return null;
+  }
+};
 // Search Materials
 export const searchMaterials = async ({
   query,
@@ -326,5 +342,27 @@ export const getMaterialResource = async (
       error
     );
     return null;
+  }
+};
+export const incrementDownloadCount = async (materialId: string) => {
+  await api.post(`/materials/downloaded/${materialId}`);
+};
+
+// This will toggle like and unlike material and prevents duplicates
+export const likeOrUnlikeMaterial = async (
+  materialId: string
+): Promise<Response<{ liked: boolean; likesCount: number }> | null> => {
+  try {
+    const response = await api.post<
+      Response<{ liked: boolean; likesCount: number; message: string }>
+    >(`/materials/like/${materialId}`);
+
+    if (response.data.status === "success") {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error liking/unliking material:", error);
+    throw error;
   }
 };

@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { Material } from "@/lib/types/response.type";
 import MaterialGrid from "../materials/MaterialGrid";
 import { useRouter } from "next/navigation";
-import { listMaterials } from "@/api/material.api";
+import { getFilteredMaterials } from "@/api/material.api";
 
 const MaterialSection = () => {
   const router = useRouter();
@@ -15,7 +15,7 @@ const MaterialSection = () => {
   const fetchMaterials = async () => {
     setLoading(true);
     try {
-      const response = await listMaterials({
+      const response = await getFilteredMaterials({
         page: 1,
         limit: 6,
       });

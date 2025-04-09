@@ -46,7 +46,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
-      await toggleBookmark(material.id);
+      await toggleBookmark(material);
     } catch (error) {
       console.error("Error toggling bookmark:", error);
     }
