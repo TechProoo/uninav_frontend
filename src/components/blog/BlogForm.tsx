@@ -1,31 +1,49 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import createBlog from "../../api/blog.api";
 import { useDropzone } from "react-dropzone";
 import Editor from "./quill";
 import { Plus, X } from "lucide-react";
+import { Content } from "@/lib/types/response.type";
+import { editBlog } from "@/api/editBlog.api";
 
-const PostForm = () => {
-  const [formData, setFormData] = useState<{
-    title: string;
-    description: string;
-    category: string;
-    tags: string[];
-  }>({
-    title: "",
-    description: "",
-    category: "",
-    tags: [],
+type dataProp = {
+  data?: Content;
+};
+
+const PostForm = ({ data }: dataProp) => {
+  const [formData, setFormData] = useState({
+    title: data?.title || "",
+    description: data?.description || "",
+    category: data?.type || "",
+    tags: data?.tags || [],
   });
-  const [editorContent, setEditorContent] = useState("");
+  console.log(data?.type);
+
+  const [editorContent, setEditorContent] = useState(data?.body || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    data?.headingImageAddress || null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
 
   const router = useRouter();
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        title: data.title || "",
+        description: data.description || "",
+        category: data.type.toLowerCase() || "",
+        tags: data.tags || [],
+      });
+      setEditorContent(data.body || "");
+      setImagePreview(data.headingImageAddress || null);
+    }
+  }, [data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,32 +59,44 @@ const PostForm = () => {
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
       formDataToSend.append("description", formData.description);
-      formDataToSend.append("type", formData.category); // ✅ renamed
+      formDataToSend.append("type", formData.category);
       formDataToSend.append("body", editorContent);
-      formData.tags.forEach((tag) => formDataToSend.append("tags", tag)); // ✅ send as array
+      formData.tags.forEach((tag) => formDataToSend.append("tags", tag));
 
       if (imageFile) {
-        formDataToSend.append("headingImage", imageFile); // ✅ correct key
+        formDataToSend.append("headingImage", imageFile);
       }
 
-      const response = await createBlog(formDataToSend);
+      let response;
 
-      if (response) {
-        setFormData({
-          title: "",
-          description: "",
-          category: "",
-          tags: [],
-        });
-        setEditorContent("");
-        setImageFile(null);
-        setImagePreview(null);
-        router.push("/dashboard");
-        toast.success("Post created successfully");
+      if (data) {
+        const formDataToSend = new FormData();
+        formDataToSend.append("title", formData.title);
+        formDataToSend.append("description", formData.description);
+        formDataToSend.append("type", formData.category);
+        formData.tags.forEach((tag) => formDataToSend.append("tags", tag));
+        formDataToSend.append("body", editorContent);
+
+        if (imageFile) {
+          formDataToSend.append("headingImage", imageFile);
+        }
+
+        response = await editBlog(formDataToSend, data.id);
+      } else {
+        response = await createBlog(formDataToSend);
+      }
+
+      console.log(response);
+
+      if (response?.status === "success") {
+        router.push("/dashboard/blogs");
+        toast.success("Post submitted successfully");
+      } else {
+        toast.error("Failed to submit post");
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Failed to create post");
+      toast.error("Failed to submit post");
     } finally {
       setIsSubmitting(false);
     }
@@ -161,7 +191,7 @@ const PostForm = () => {
                   : "border-gray-300"
               }`}
             >
-              <input required {...getInputProps()} />
+              <input {...getInputProps()} />
               {isDragActive ? (
                 <p className="text-center text-indigo-500 h-[200px]">
                   Drop the image here...
@@ -188,7 +218,10 @@ const PostForm = () => {
             <label className="block text-lg font-medium text-gray-700 mb-2">
               Body:
             </label>
-            <Editor onContentChange={(content) => setEditorContent(content)} />
+            <Editor
+              onContentChange={(content) => setEditorContent(content)}
+              value={editorContent}
+            />
           </div>
         </div>
 
@@ -207,8 +240,8 @@ const PostForm = () => {
             >
               <option value="">Select Category</option>
               <option value="article">Article</option>
-              <option value="scheme_of_work">Scheme of Work</option>
-              <option value="guidline">Guidline</option>
+              <option value="scheme_of_work">Scheme_of_Work</option>
+              <option value="guideline">Guideline</option>
               <option value="tutorial">Tutorial</option>
             </select>
           </div>
@@ -266,7 +299,11 @@ const PostForm = () => {
             disabled={isSubmitting}
             className="w-full py-3 text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 focus:ring-2 focus:ring-[#003666] focus:outline-none"
           >
-            {isSubmitting ? "Submitting..." : "Create Post"}
+            {isSubmitting
+              ? "Submitting..."
+              : data
+              ? "Update Post"
+              : "Create Post"}
           </button>
         </div>
       </form>
