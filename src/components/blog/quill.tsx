@@ -8,6 +8,7 @@ import {
   AtomicBlockUtils,
   ContentState,
   convertToRaw,
+  convertFromRaw,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import {
@@ -22,10 +23,15 @@ import {
 
 interface EditorProps {
   onContentChange: (content: string) => void;
+  value?: string; // optional input value
 }
 
-const Editor: React.FC<EditorProps> = ({ onContentChange }) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
+  const [editorState, setEditorState] = useState(() =>
+    value
+      ? EditorState.createWithContent(convertFromRaw(JSON.parse(value)))
+      : EditorState.createEmpty()
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (state: EditorState) => {
@@ -177,21 +183,17 @@ const Editor: React.FC<EditorProps> = ({ onContentChange }) => {
   return (
     <div
       style={{
-        // backgroundColor: "#7b2e2e",
-        // padding: "20px",
         display: "flex",
         justifyContent: "center",
       }}
     >
       <div
         style={{
-          // backgroundColor: "#fff",
           width: "100%",
           maxWidth: "800px",
           borderRadius: "4px",
           overflow: "hidden",
-          // boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-        }} 
+        }}
         className="border"
       >
         {renderToolbar()}

@@ -219,6 +219,8 @@ export interface Content {
   tags: string[];
   createdAt: string;
   updatedAt: string;
+  body: string;
+  status: string
 }
 export enum AdvertTypeEnum {
   FREE = "free",
