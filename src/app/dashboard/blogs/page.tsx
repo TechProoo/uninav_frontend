@@ -71,7 +71,7 @@ const BlogsPage = () => {
         </div>
       </div>
     </div>
-  );
+  );  
 };
 
 export default BlogsPage

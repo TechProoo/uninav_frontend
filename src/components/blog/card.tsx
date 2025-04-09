@@ -6,6 +6,7 @@ import { Content } from "@/lib/types/response.type";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import deleteBlog from "@/api/deleteBlog.api";
+import Link from "next/link";
 
 type DataContent = {
   data: Content;
@@ -83,11 +84,14 @@ const Card = ({ data, onDelete }: DataContent) => {
             />
           </div>
         </div>
-        <div className="absolute bottom-10 right-10 w-20 h-20 bg-[#f0f8ff] rounded-tl-full flex items-center justify-center translate-x-1/2 translate-y-1/2 group transition-colors duration-300 cursor-pointer">
+        <Link
+          href={"/dashboard/blogs/viewblog"}
+          className="absolute bottom-10 right-10 w-20 h-20 bg-[#f0f8ff] rounded-tl-full flex items-center justify-center translate-x-1/2 translate-y-1/2 group transition-colors duration-300 cursor-pointer"
+        >
           <span className="text-white text-xl mt-2 group-hover:translate-x-2 transition-transform duration-300">
             <ArrowBigRight size={30} className="text-[#0c385f]" />
           </span>
-        </div>
+        </Link>
       </div>
       <h2 className="mt-4 text-xl font-semibold text-gray-900 line-clamp-2">
         {data.title}

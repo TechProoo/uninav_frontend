@@ -413,3 +413,20 @@ body {
   overflow-x: auto;
   margin: 10px 0;
 }
+
+/* BLOG CONTENT */
+.news_content_cover {
+  background-color: var(--bg-dark);
+
+}
+
+.news_content_img {
+  width: 100%;
+  height: 500px;
+}
+
+.news_content_img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
