@@ -1,11 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-import { Bookmark } from "@/lib/types/response.type";
+import { Bookmark, Material } from "@/lib/types/response.type";
 import { formatDistanceToNow } from "date-fns";
 import { Book } from "lucide-react";
+import { getMaterialById } from "@/api/material.api";
+import MaterialDetail from "./MaterialDetail";
+import { ArrowLeft } from "lucide-react";
 
 // Import Swiper styles
 import "swiper/css";
@@ -23,6 +26,23 @@ const BookmarkSlider: React.FC<BookmarkSliderProps> = ({
   loading,
   error,
 }) => {
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
+    null
+  );
+
+  const handleBookmarkClick = async (bookmark: Bookmark) => {
+    if (!bookmark.material?.id) return;
+
+    try {
+      const response = await getMaterialById(bookmark.material.id);
+      if (response?.status === "success") {
+        setSelectedMaterial(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching material details:", error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="my-6 p-4">
@@ -58,6 +78,23 @@ const BookmarkSlider: React.FC<BookmarkSliderProps> = ({
     );
   }
 
+  if (selectedMaterial) {
+    return (
+      <div className="my-6">
+        <div className="mb-4">
+          <button
+            onClick={() => setSelectedMaterial(null)}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Bookmarks
+          </button>
+        </div>
+        <MaterialDetail material={selectedMaterial} isOwner={false} />
+      </div>
+    );
+  }
+
   return (
     <div className="my-6">
       <Swiper
@@ -75,51 +112,51 @@ const BookmarkSlider: React.FC<BookmarkSliderProps> = ({
       >
         {bookmarks.map((bookmark) => (
           <SwiperSlide key={bookmark.id}>
-            <div className="flex flex-col bg-white shadow-md rounded-lg h-full overflow-hidden">
-              {bookmark.material ? (
-                <div className="relative flex justify-center items-center bg-gradient-to-r from-blue-100 to-blue-50 aspect-square square-container">
-                  {bookmark.material.resource?.resourceAddress ? (
-                    <div
-                      className="bg-cover bg-center w-full h-40"
-                      style={{
-                        backgroundImage: `url(${bookmark.material.resource.resourceAddress})`,
-                      }}
-                    />
-                  ) : (
-                    <div className="flex flex-col justify-center items-center w-full h-40">
-                      <Book size={48} className="mb-2 text-blue-500" />
-                      <div className="text-gray-600 text-sm">
-                        {bookmark.material.type || "Material"}
+            <div
+              className="flex bg-white shadow-md rounded-lg h-24 overflow-hidden cursor-pointer"
+              onClick={() => handleBookmarkClick(bookmark)}
+            >
+              <div className="flex-shrink-0 w-24 h-24">
+                {bookmark.material ? (
+                  <div className="relative flex justify-center items-center bg-gradient-to-r from-blue-100 to-blue-50 h-full">
+                    {bookmark.material.resource?.resourceAddress ? (
+                      <div
+                        className="bg-cover bg-center w-full h-full"
+                        style={{
+                          backgroundImage: `url(${bookmark.material.resource.resourceAddress})`,
+                        }}
+                      />
+                    ) : (
+                      <div className="flex justify-center items-center w-full h-full">
+                        <Book size={32} className="text-blue-500" />
                       </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex justify-center items-center bg-gray-200 w-full h-40">
-                  <Book size={48} className="text-gray-400" />
-                </div>
-              )}
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex justify-center items-center bg-gray-200 w-full h-full">
+                    <Book size={32} className="text-gray-400" />
+                  </div>
+                )}
+              </div>
 
-              <div className="flex flex-col flex-1 p-4">
-                <h3 className="mb-1 font-medium text-gray-900 line-clamp-2">
+              <div className="flex flex-col flex-1 p-3">
+                <h3 className="font-medium text-gray-900 text-sm line-clamp-1">
                   {bookmark.material
                     ? bookmark.material.label
                     : "Untitled Material"}
                 </h3>
-                <p className="flex-1 mb-2 text-gray-500 text-sm line-clamp-3">
+                <p className="mb-1 text-gray-500 text-xs line-clamp-2">
                   {bookmark.material?.description || "No description available"}
                 </p>
                 <div className="mt-auto">
-                  <div className="flex justify-between items-center text-gray-500 text-xs">
-                    <span>
-                      {bookmark.createdAt
-                        ? `Saved ${formatDistanceToNow(
-                            new Date(bookmark.createdAt),
-                            { addSuffix: true }
-                          )}`
-                        : "Recently saved"}
-                    </span>
-                  </div>
+                  <span className="text-gray-400 text-xs">
+                    {bookmark.createdAt
+                      ? `Saved ${formatDistanceToNow(
+                          new Date(bookmark.createdAt),
+                          { addSuffix: true }
+                        )}`
+                      : "Recently saved"}
+                  </span>
                 </div>
               </div>
             </div>

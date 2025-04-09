@@ -131,6 +131,7 @@ export type Material = {
   searchVector?: string;
   createdAt: string;
   updatedAt: string;
+  adverts?: Advert[];
   creator: {
     id: string;
     firstName: string;
@@ -175,10 +176,9 @@ export type Bookmark = {
   userid: string;
   materialId?: string;
   collectionId?: string;
-
   material?: Material;
   collection?: unknown;
-  createdAt?: string;
+  createdAt: string;
   updatedAt?: string;
 };
 

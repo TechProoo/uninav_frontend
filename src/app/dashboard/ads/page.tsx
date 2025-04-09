@@ -334,7 +334,7 @@ const ManageAdsPage = () => {
                       <p className="font-medium">{selectedAdvert.type}</p>
                     </div>
                     <div>
-                      <p className="text-gray-500 text-sm">Created At</p>
+                      k<p className="text-gray-500 text-sm">Created At</p>
                       <p className="font-medium">
                         {new Date(selectedAdvert.createdAt).toLocaleString()}
                       </p>
