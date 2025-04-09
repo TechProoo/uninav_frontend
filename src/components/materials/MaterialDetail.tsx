@@ -48,22 +48,44 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
   const handleBookmarkToggle = async () => {
     try {
-      await toggleBookmark(material.id);
+      await toggleBookmark(material);
     } catch (error) {
       console.error("Error toggling bookmark:", error);
     }
   };
 
-  const downloadFile = async (url: string, filename: string) => {
+  const getFileExtension = (url: string): string => {
+    // Try to get extension from URL
+    const urlMatch = url.match(/\.([a-zA-Z0-9]+)(?:[?#]|$)/);
+    if (urlMatch) return urlMatch[1];
+
+    // If no extension found, infer from material type
+    switch (material.type.toLowerCase()) {
+      case "pdf":
+        return "pdf";
+      case "video":
+        return "mp4";
+      case "image":
+        return "png";
+      default:
+        return "";
+    }
+  };
+
+  const downloadFile = async (url: string) => {
     try {
       setIsDownloading(true);
       const response = await fetch(url);
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
 
+      // Get the file extension
+      const extension = getFileExtension(url);
+      const filename = `${material.label}${extension ? `.${extension}` : ""}`;
+
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = filename || "downloaded-file";
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -86,13 +108,20 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
   const handleDownload = async () => {
     try {
+      if (!material.resource) return;
+
+      // Handle different resource types
+      if (
+        material.resource.resourceType === "url" ||
+        material.resource.resourceType === "GDrive"
+      ) {
+        window.open(material.resource.resourceAddress, "_blank");
+        return;
+      }
+
       const response = await getMaterialDownloadUrl(material.id);
       if (response?.data.url) {
-        const filename = material.resource?.resourceAddress
-          ? material.resource.resourceAddress.split("/").pop() || material.label
-          : material.label;
-
-        await downloadFile(response.data.url, filename);
+        await downloadFile(response.data.url);
       }
     } catch (error) {
       console.error("Error downloading material:", error);
@@ -100,10 +129,17 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   };
 
   const handleFallbackDownload = () => {
-    if (downloadUrl) {
+    if (!material.resource) return;
+
+    if (
+      material.resource.resourceType === "url" ||
+      material.resource.resourceType === "GDrive"
+    ) {
+      window.open(material.resource.resourceAddress, "_blank");
+    } else if (downloadUrl) {
       window.open(downloadUrl, "_blank");
     } else {
-      window.open(material.resource?.resourceAddress, "_blank");
+      window.open(material.resource.resourceAddress, "_blank");
     }
   };
 
@@ -270,19 +306,30 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
                 className="bg-blue-600 hover:bg-blue-700 w-full"
                 disabled={isDownloading}
               >
-                <Download className="mr-2 w-4 h-4" />
-                {isDownloading ? "Downloading..." : "Download Material"}
+                {material.resource?.resourceType === "url" ||
+                material.resource?.resourceType === "GDrive" ? (
+                  <>
+                    <Eye className="mr-2 w-4 h-4" />
+                    Visit Resource
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 w-4 h-4" />
+                    {isDownloading ? "Downloading..." : "Download Material"}
+                  </>
+                )}
               </Button>
 
-              {isDownloading && (
-                <Button
-                  variant="outline"
-                  onClick={handleFallbackDownload}
-                  className="w-full text-sm"
-                >
-                  If download hasn't started, click here
-                </Button>
-              )}
+              {isDownloading &&
+                material.resource?.resourceType === "upload" && (
+                  <Button
+                    variant="outline"
+                    onClick={handleFallbackDownload}
+                    className="w-full text-sm"
+                  >
+                    If download hasn't started, click here
+                  </Button>
+                )}
             </div>
           )}
         </div>

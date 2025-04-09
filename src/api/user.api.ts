@@ -39,7 +39,6 @@ export const updateUserProfile = async (
 type CreateBookmarkData = {
   materialId?: string;
   collectionId?: string;
-  note?: string;
 };
 
 export const createBookmark = async (

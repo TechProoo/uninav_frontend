@@ -328,3 +328,25 @@ export const getMaterialResource = async (
     return null;
   }
 };
+export const incrementDownloadCount = async (materialId: string) => {
+  await api.post(`/materials/downloaded/${materialId}`);
+};
+
+// This will toggle like and unlike material and prevents duplicates
+export const likeOrUnlikeMaterial = async (
+  materialId: string
+): Promise<Response<{ liked: boolean; likesCount: number }> | null> => {
+  try {
+    const response = await api.post<
+      Response<{ liked: boolean; likesCount: number; message: string }>
+    >(`/materials/like/${materialId}`);
+
+    if (response.data.status === "success") {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error liking/unliking material:", error);
+    throw error;
+  }
+};

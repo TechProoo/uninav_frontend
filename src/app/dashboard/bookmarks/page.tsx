@@ -7,6 +7,8 @@ import {
   Search,
   ArrowLeft,
   Trash2,
+  Grid,
+  List,
 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAllBookmarks, deleteBookmark } from "@/api/user.api";
@@ -14,6 +16,7 @@ import { getMaterialById } from "@/api/material.api";
 import { Bookmark, Material } from "@/lib/types/response.type";
 import { Button } from "@/components/ui/button";
 import MaterialDetail from "@/components/materials/MaterialDetail";
+import MaterialGrid from "@/components/materials/MaterialGrid";
 import { formatDistanceToNow } from "date-fns";
 import {
   Dialog,
@@ -23,6 +26,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+type ViewMode = "grid" | "list";
 
 const BookmarksPage = () => {
   const router = useRouter();
@@ -36,6 +41,7 @@ const BookmarksPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [bookmarkToDelete, setBookmarkToDelete] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
 
   const {
     data: bookmarks = [],
@@ -88,10 +94,18 @@ const BookmarksPage = () => {
     const searchTerm = searchQuery.toLowerCase();
     return (
       bookmark.material?.label.toLowerCase().includes(searchTerm) ||
-      bookmark.material?.description?.toLowerCase().includes(searchTerm) ||
-      bookmark.note?.toLowerCase().includes(searchTerm)
+      bookmark.material?.description?.toLowerCase().includes(searchTerm)
     );
   });
+
+  const handleMaterialClick = (material: Material) => {
+    const bookmark = (bookmarks || []).find(
+      (b) => b.material?.id === material.id
+    );
+    if (bookmark) {
+      handleBookmarkClick(bookmark);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -125,7 +139,27 @@ const BookmarksPage = () => {
             Back to Bookmarks
           </Button>
         ) : (
-          <h1 className="font-bold text-3xl">Manage Bookmarks</h1>
+          <>
+            <h1 className="font-bold text-3xl">Manage Bookmarks</h1>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={viewMode === "grid" ? "default" : "outline"}
+                size="icon"
+                onClick={() => setViewMode("grid")}
+                className="w-10 h-10"
+              >
+                <Grid className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === "list" ? "default" : "outline"}
+                size="icon"
+                onClick={() => setViewMode("list")}
+                className="w-10 h-10"
+              >
+                <List className="w-4 h-4" />
+              </Button>
+            </div>
+          </>
         )}
       </div>
 
@@ -144,64 +178,27 @@ const BookmarksPage = () => {
             </div>
           </div>
 
-          <div className="bg-white shadow-md rounded-lg overflow-hidden">
-            {filteredBookmarks.length === 0 ? (
-              <div className="p-8 text-center">
-                <BookmarkIcon className="mx-auto w-12 h-12 text-gray-400" />
-                <h3 className="mt-2 font-medium text-gray-900 text-sm">
-                  No bookmarks found
-                </h3>
-                <p className="mt-1 text-gray-500 text-sm">
-                  {searchQuery
-                    ? "Try adjusting your search terms"
-                    : "Start by bookmarking materials you want to access quickly"}
-                </p>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-200">
-                {filteredBookmarks.map((bookmark) => (
-                  <div
-                    key={bookmark.id}
-                    className="hover:bg-gray-50 p-4 transition-colors"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div
-                        className="flex-1 cursor-pointer"
-                        onClick={() => handleBookmarkClick(bookmark)}
-                      >
-                        <h3 className="font-medium text-gray-900">
-                          {bookmark.material?.label || "Untitled Material"}
-                        </h3>
-                        <p className="mt-1 text-gray-500 text-sm line-clamp-2">
-                          {bookmark.material?.description ||
-                            "No description available"}
-                        </p>
-                        {bookmark.note && (
-                          <p className="mt-2 text-blue-600 text-sm">
-                            Note: {bookmark.note}
-                          </p>
-                        )}
-                        <p className="mt-2 text-gray-400 text-xs">
-                          Saved{" "}
-                          {formatDistanceToNow(new Date(bookmark.createdAt), {
-                            addSuffix: true,
-                          })}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-500 hover:text-red-600"
-                        onClick={() => confirmDelete(bookmark.id)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {filteredBookmarks.length === 0 ? (
+            <div className="bg-white shadow-md p-8 rounded-lg text-center">
+              <BookmarkIcon className="mx-auto w-12 h-12 text-gray-400" />
+              <h3 className="mt-2 font-medium text-gray-900 text-sm">
+                No bookmarks found
+              </h3>
+              <p className="mt-1 text-gray-500 text-sm">
+                {searchQuery
+                  ? "Try adjusting your search terms"
+                  : "Start by bookmarking materials you want to access quickly"}
+              </p>
+            </div>
+          ) : (
+            <MaterialGrid
+              materials={filteredBookmarks.map(
+                (bookmark) => bookmark.material!
+              )}
+              onMaterialClick={handleMaterialClick}
+              viewMode={viewMode}
+            />
+          )}
         </>
       )}
 
