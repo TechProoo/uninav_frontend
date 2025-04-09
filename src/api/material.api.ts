@@ -9,7 +9,7 @@ export interface CreateMaterialDto {
   tags?: string[];
   visibility?: string; // VisibilityEnum
   restriction?: string; // RestrictionEnum
-  targetCourse?: string;
+  targetCourseId?: string;
   resourceAddress?: string;
   metaData?: string[];
   file?: File;

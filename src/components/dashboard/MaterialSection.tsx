@@ -57,7 +57,7 @@ const MaterialSection = () => {
         <MaterialGrid
           materials={materials}
           onMaterialClick={handleMaterialClick}
-          view="grid"
+          viewMode="grid"
         />
       )}
     </div>

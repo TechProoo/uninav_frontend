@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import React, { useState } from "react";
 import Card from "@/components/ui/card/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Material,
   VisibilityEnum,
   RestrictionEnum,
-  Advert,
 } from "@/lib/types/response.type";
 import {
   Eye,
@@ -17,11 +18,13 @@ import {
   Globe,
   FileIcon,
   Megaphone,
+  Bookmark,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { getMaterialDownloadUrl } from "@/api/material.api";
-import { getAdvertByMaterialId } from "@/api/advert.api";
 import AdvertCard from "./AdvertCard";
+import { useBookmarks } from "@/contexts/bookmarksContext";
+import { cn } from "@/lib/utils";
 
 interface MaterialDetailProps {
   material: Material;
@@ -38,27 +41,46 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   onDelete,
   onClose,
 }) => {
-  const [adverts, setAdverts] = useState<Advert[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const isCurrentlyBookmarked = isBookmarked(material.id);
 
-  useEffect(() => {
-    if (material && material.id) {
-      fetchAdverts();
-    }
-  }, [material]);
-
-  const fetchAdverts = async () => {
+  const handleBookmarkToggle = async () => {
     try {
-      setIsLoading(true);
-      const response = await getAdvertByMaterialId(material.id);
-
-      if (response && response.status === "success") {
-        setAdverts(response.data);
-      }
+      await toggleBookmark(material.id);
     } catch (error) {
-      console.error("Error fetching adverts for material:", error);
+      console.error("Error toggling bookmark:", error);
+    }
+  };
+
+  const downloadFile = async (url: string, filename: string) => {
+    try {
+      setIsDownloading(true);
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = filename || "downloaded-file";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Cache the blob URL for fallback
+      setDownloadUrl(downloadUrl);
+
+      // Cleanup after 5 minutes
+      setTimeout(() => {
+        window.URL.revokeObjectURL(downloadUrl);
+        setDownloadUrl(null);
+      }, 300000); // 5 minutes
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      throw error;
     } finally {
-      setIsLoading(false);
+      setIsDownloading(false);
     }
   };
 
@@ -66,10 +88,22 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
     try {
       const response = await getMaterialDownloadUrl(material.id);
       if (response?.data.url) {
-        window.open(response.data.url, "_blank");
+        const filename = material.resource?.resourceAddress
+          ? material.resource.resourceAddress.split("/").pop() || material.label
+          : material.label;
+
+        await downloadFile(response.data.url, filename);
       }
     } catch (error) {
       console.error("Error downloading material:", error);
+    }
+  };
+
+  const handleFallbackDownload = () => {
+    if (downloadUrl) {
+      window.open(downloadUrl, "_blank");
+    } else {
+      window.open(material.resource?.resourceAddress, "_blank");
     }
   };
 
@@ -108,7 +142,20 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "hover:text-blue-600",
+              isCurrentlyBookmarked && "text-blue-600"
+            )}
+            onClick={handleBookmarkToggle}
+          >
+            <Bookmark
+              className={cn("w-4 h-4", isCurrentlyBookmarked && "fill-current")}
+            />
+          </Button>
           {isOwner && (
             <>
               <Button variant="outline" onClick={handleEdit}>
@@ -127,14 +174,20 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
         </div>
       </div>
 
-      {/* Display associated advert if available */}
-      {adverts.length > 0 && (
+      {/* Display associated adverts if available */}
+      {material.adverts && material.adverts.length > 0 && (
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <Megaphone className="w-5 h-5 text-blue-600" />
-            <h3 className="font-semibold text-lg">Advertisement</h3>
+            <h3 className="font-semibold text-lg">
+              {material.adverts.length > 1 ? "Advertisements" : "Advertisement"}
+            </h3>
           </div>
-          <AdvertCard advert={adverts[0]} isPreview={true} />
+          <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+            {material.adverts.map((advert) => (
+              <AdvertCard key={advert.id} advert={advert} isPreview={true} />
+            ))}
+          </div>
         </div>
       )}
 
@@ -211,13 +264,26 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           </div>
 
           {material.restriction === RestrictionEnum.DOWNLOADABLE && (
-            <Button
-              onClick={handleDownload}
-              className="bg-blue-600 hover:bg-blue-700 mt-4 w-full"
-            >
-              <Download className="mr-2 w-4 h-4" />
-              Download Material
-            </Button>
+            <div className="space-y-2">
+              <Button
+                onClick={handleDownload}
+                className="bg-blue-600 hover:bg-blue-700 w-full"
+                disabled={isDownloading}
+              >
+                <Download className="mr-2 w-4 h-4" />
+                {isDownloading ? "Downloading..." : "Download Material"}
+              </Button>
+
+              {isDownloading && (
+                <Button
+                  variant="outline"
+                  onClick={handleFallbackDownload}
+                  className="w-full text-sm"
+                >
+                  If download hasn't started, click here
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </div>

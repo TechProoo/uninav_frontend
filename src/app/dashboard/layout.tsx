@@ -13,6 +13,7 @@ import {
   BookOpen,
   PencilLine,
   User,
+  Bookmark,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -25,6 +26,7 @@ import Logo from "../../../public/Image/logoo.png";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: BookOpen, label: "Manage Materials", path: "/dashboard/materials" },
+  { icon: Bookmark, label: "Manage Bookmarks", path: "/dashboard/bookmarks" },
   { icon: Megaphone, label: "Manage Ads", path: "/dashboard/ads" },
   { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
   { icon: User, label: "Profile", path: "/dashboard/profile" },
@@ -94,7 +96,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                   <Link
                     key={item.path}
                     href={item.path}
-                    className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors hover:text-white hover:bg-[#003462] text-[#003462]"
+                    className="flex items-center gap-3 hover:bg-[#003462] px-3 py-2 rounded-md font-medium text-[#003462] hover:text-white text-sm transition-colors"
                   >
                     <item.icon />
                     {item.label}
@@ -107,22 +109,22 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
       )}
 
       <div className="flex flex-col flex-1">
-        <header className="p-4 border-b flex justify-between items-center bg-[#003462] shadow-sm">
+        <header className="flex justify-between items-center bg-[#003462] shadow-sm p-4 border-b">
           {isDesktop && (
             <button className="p-2 text-white" onClick={toggleSidebar}>
               {isSidebarOpen ? <ChevronRight size={18} /> : <Menu size={18} />}
             </button>
           )}
 
-          <div className="flex items-center w-full justify-between">
+          <div className="flex justify-between items-center w-full">
             {isDesktop && (
-              <div className="flex items-center border rounded-md overflow-hidden bg-white">
+              <div className="flex items-center bg-white border rounded-md overflow-hidden">
                 <input
                   type="text"
                   placeholder="Search"
-                  className="px-2 py-1 text-black focus:outline-none w-40 focus:w-64 transition-all duration-300 ease-in-out"
+                  className="px-2 py-1 focus:outline-none w-40 focus:w-64 text-black transition-all duration-300 ease-in-out"
                 />
-                <button className="px-3 py-1 bg-[#f0f8ff]">
+                <button className="bg-[#f0f8ff] px-3 py-1">
                   <Search className="text-[#0c385f]" />
                 </button>
               </div>
@@ -139,7 +141,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
         </header>
 
         <ProtectedRoute>
-          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 overflow-y-auto w-full">
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 w-full overflow-y-auto">
             {children}
           </main>
         </ProtectedRoute>

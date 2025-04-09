@@ -2,25 +2,26 @@
 
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/contexts/authContext";
-import { PlusCircle, Search, Filter, BookOpen, Grid, List } from "lucide-react";
+import {
+  PlusCircle,
+  Search,
+  Filter,
+  BookOpen,
+  Grid,
+  List,
+  ArrowLeft,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MaterialForm from "@/components/materials/forms/MaterialForm";
 import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialGrid from "@/components/materials/MaterialGrid";
-import {
-  Material,
-  MaterialTypeEnum,
-  ResourceType,
-  VisibilityEnum,
-} from "@/lib/types/response.type";
+import { Material, MaterialTypeEnum } from "@/lib/types/response.type";
 import { listMaterials, searchMaterials } from "@/api/material.api";
 
 type ViewMode = "grid" | "list";
 
 const MaterialsPage = () => {
   const { user } = useContext(AuthContext) ?? { user: null };
-  const [activeTab, setActiveTab] = useState("my-materials");
   const [materials, setMaterials] = useState<Material[]>([]);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
     null
@@ -37,7 +38,7 @@ const MaterialsPage = () => {
 
   useEffect(() => {
     fetchMaterials();
-  }, [activeTab, page, filterType]);
+  }, [page, filterType]);
 
   const fetchMaterials = async () => {
     try {
@@ -50,13 +51,13 @@ const MaterialsPage = () => {
         response = await searchMaterials({
           query: searchQuery,
           page,
-          creatorId: activeTab === "my-materials" ? user?.id : undefined,
+          creatorId: user?.id,
           type: filterType || undefined,
         });
       } else {
         response = await listMaterials({
           page,
-          creatorId: activeTab === "my-materials" ? user?.id : undefined,
+          creatorId: user?.id,
           type: filterType || undefined,
         });
       }
@@ -98,7 +99,6 @@ const MaterialsPage = () => {
   };
 
   const handleDeleteMaterial = (materialId: string) => {
-    // Remove the deleted material from the list
     setMaterials(materials.filter((m) => m.id !== materialId));
     setSelectedMaterial(null);
     setShowEditForm(false);
@@ -112,8 +112,6 @@ const MaterialsPage = () => {
   const handleFormSuccess = (material: Material) => {
     setShowAddForm(false);
     setShowEditForm(false);
-
-    // Refresh the materials list
     fetchMaterials();
   };
 
@@ -121,50 +119,38 @@ const MaterialsPage = () => {
     return user?.id === material.creatorId;
   };
 
+  const handleBackNavigation = () => {
+    if (showEditForm) {
+      setShowEditForm(false);
+      setSelectedMaterial((prev) => prev);
+    } else if (selectedMaterial) {
+      setSelectedMaterial(null);
+    } else if (showAddForm) {
+      setShowAddForm(false);
+    }
+  };
+
   return (
     <div className="mx-auto container">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold text-3xl">Manage Materials</h1>
+        {showAddForm || showEditForm || selectedMaterial ? (
+          <Button
+            variant="ghost"
+            className="gap-2"
+            onClick={handleBackNavigation}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
+        ) : null}
+        <h1 className="font-bold text-3xl">Manage My Materials</h1>
         <Button onClick={handleAddMaterial}>
           <PlusCircle className="mr-2 w-4 h-4" />
           Add Material
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <TabsList>
-            <TabsTrigger value="my-materials">My Materials</TabsTrigger>
-            <TabsTrigger value="all-materials">All Materials</TabsTrigger>
-          </TabsList>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded ${
-                viewMode === "grid"
-                  ? "bg-blue-100 text-blue-600"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-              title="Grid view"
-            >
-              <Grid className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded ${
-                viewMode === "list"
-                  ? "bg-blue-100 text-blue-600"
-                  : "bg-gray-100 text-gray-600"
-              }`}
-              title="List view"
-            >
-              <List className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Search and filters */}
+      {!showAddForm && !showEditForm && !selectedMaterial && (
         <div className="flex md:flex-row flex-col gap-3 mb-6">
           <form onSubmit={handleSearch} className="flex flex-grow md:max-w-md">
             <div className="relative w-full">
@@ -203,163 +189,101 @@ const MaterialsPage = () => {
             </select>
           </div>
         </div>
+      )}
 
-        <div className="bg-white shadow-md p-8 rounded-lg min-h-[500px]">
-          {showAddForm && (
-            <div className="mb-6">
-              <h2 className="mb-4 font-medium text-2xl">Add New Material</h2>
-              <MaterialForm
-                onSuccess={handleFormSuccess}
-                onCancel={handleFormCancel}
-              />
-            </div>
-          )}
-
-          {showEditForm && selectedMaterial && (
-            <div className="mb-6">
-              <h2 className="mb-4 font-medium text-2xl">Edit Material</h2>
-              <MaterialForm
-                initialData={selectedMaterial}
-                onSuccess={handleFormSuccess}
-                onCancel={handleFormCancel}
-              />
-            </div>
-          )}
-
-          {!showAddForm && !showEditForm && selectedMaterial && (
-            <MaterialDetail
-              material={selectedMaterial}
-              isOwner={isOwner(selectedMaterial)}
-              onEdit={handleEditMaterial}
-              onDelete={handleDeleteMaterial}
+      <div className="bg-white shadow-md p-8 rounded-lg min-h-[500px]">
+        {showAddForm && (
+          <div className="mb-6">
+            <h2 className="mb-4 font-medium text-2xl">Add New Material</h2>
+            <MaterialForm
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormCancel}
             />
-          )}
+          </div>
+        )}
 
-          {!showAddForm && !showEditForm && !selectedMaterial && (
-            <TabsContent value="my-materials" className="p-0">
-              {isLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-pulse">Loading materials...</div>
+        {showEditForm && selectedMaterial && (
+          <div className="mb-6">
+            <h2 className="mb-4 font-medium text-2xl">Edit Material</h2>
+            <MaterialForm
+              initialData={selectedMaterial}
+              onSuccess={handleFormSuccess}
+              onCancel={handleFormCancel}
+            />
+          </div>
+        )}
+
+        {!showAddForm && !showEditForm && selectedMaterial && (
+          <MaterialDetail
+            material={selectedMaterial}
+            isOwner={isOwner(selectedMaterial)}
+            onEdit={handleEditMaterial}
+            onDelete={handleDeleteMaterial}
+          />
+        )}
+
+        {!showAddForm && !showEditForm && !selectedMaterial && (
+          <>
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-pulse">Loading materials...</div>
+              </div>
+            ) : error ? (
+              <div className="bg-red-50 p-4 rounded text-red-600">{error}</div>
+            ) : materials.length === 0 ? (
+              <div className="py-8 text-center">
+                <BookOpen className="mx-auto w-12 h-12 text-gray-400" />
+                <h3 className="mt-2 font-medium text-gray-900 text-lg">
+                  No materials yet
+                </h3>
+                <p className="mt-1 text-gray-500">
+                  Get started by adding your first material.
+                </p>
+                <div className="mt-6">
+                  <Button onClick={handleAddMaterial}>
+                    <PlusCircle className="mr-2 w-4 h-4" />
+                    Add Material
+                  </Button>
                 </div>
-              ) : error ? (
-                <div className="bg-red-50 p-4 rounded text-red-600">
-                  {error}
-                </div>
-              ) : materials.length === 0 ? (
-                <div className="py-8 text-center">
-                  <BookOpen className="mx-auto w-12 h-12 text-gray-400" />
-                  <h3 className="mt-2 font-medium text-gray-900 text-lg">
-                    No materials yet
-                  </h3>
-                  <p className="mt-1 text-gray-500">
-                    Get started by adding your first material.
-                  </p>
-                  <div className="mt-6">
-                    <Button onClick={handleAddMaterial}>
-                      <PlusCircle className="mr-2 w-4 h-4" />
-                      Add Material
+              </div>
+            ) : (
+              <>
+                <MaterialGrid
+                  materials={materials}
+                  onMaterialClick={handleMaterialClick}
+                  viewMode={viewMode}
+                />
+
+                {totalPages > 1 && (
+                  <div className="flex justify-center gap-1 mt-6">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                      disabled={page === 1}
+                    >
+                      Previous
+                    </Button>
+                    <span className="px-3 py-1.5 text-sm">
+                      Page {page} of {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() =>
+                        setPage((p) => Math.min(p + 1, totalPages))
+                      }
+                      disabled={page === totalPages}
+                    >
+                      Next
                     </Button>
                   </div>
-                </div>
-              ) : (
-                <>
-                  <MaterialGrid
-                    materials={materials}
-                    onMaterialClick={handleMaterialClick}
-                    viewMode={viewMode}
-                  />
-
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="flex justify-center gap-1 mt-6">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                        disabled={page === 1}
-                      >
-                        Previous
-                      </Button>
-                      <span className="px-3 py-1.5 text-sm">
-                        Page {page} of {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setPage((p) => Math.min(p + 1, totalPages))
-                        }
-                        disabled={page === totalPages}
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
-            </TabsContent>
-          )}
-
-          {!showAddForm && !showEditForm && !selectedMaterial && (
-            <TabsContent value="all-materials" className="p-0">
-              {isLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-pulse">Loading materials...</div>
-                </div>
-              ) : error ? (
-                <div className="bg-red-50 p-4 rounded text-red-600">
-                  {error}
-                </div>
-              ) : materials.length === 0 ? (
-                <div className="py-8 text-center">
-                  <BookOpen className="mx-auto w-12 h-12 text-gray-400" />
-                  <h3 className="mt-2 font-medium text-gray-900 text-lg">
-                    No materials available
-                  </h3>
-                  <p className="mt-1 text-gray-500">
-                    There are no materials matching your criteria.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <MaterialGrid
-                    materials={materials}
-                    onMaterialClick={handleMaterialClick}
-                    viewMode={viewMode}
-                  />
-
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <div className="flex justify-center gap-1 mt-6">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                        disabled={page === 1}
-                      >
-                        Previous
-                      </Button>
-                      <span className="px-3 py-1.5 text-sm">
-                        Page {page} of {totalPages}
-                      </span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setPage((p) => Math.min(p + 1, totalPages))
-                        }
-                        disabled={page === totalPages}
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  )}
-                </>
-              )}
-            </TabsContent>
-          )}
-        </div>
-      </Tabs>
+                )}
+              </>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
