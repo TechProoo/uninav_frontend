@@ -2,21 +2,13 @@
 
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/contexts/authContext";
-import {
-  PlusCircle,
-  Search,
-  Filter,
-  BookOpen,
-  Grid,
-  List,
-  ArrowLeft,
-} from "lucide-react";
+import { PlusCircle, Search, Filter, BookOpen, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MaterialForm from "@/components/materials/forms/MaterialForm";
 import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 import { Material, MaterialTypeEnum } from "@/lib/types/response.type";
-import { listMaterials, searchMaterials } from "@/api/material.api";
+import { getFilteredMaterials, searchMaterials } from "@/api/material.api";
 
 type ViewMode = "grid" | "list";
 
@@ -55,7 +47,7 @@ const MaterialsPage = () => {
           type: filterType || undefined,
         });
       } else {
-        response = await listMaterials({
+        response = await getFilteredMaterials({
           page,
           creatorId: user?.id,
           type: filterType || undefined,

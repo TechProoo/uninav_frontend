@@ -115,6 +115,7 @@ export type Material = {
   views: number;
   downloads: number;
   likes: number;
+  isLiked?: boolean;
   creatorId: string;
   label: string;
   description: string;
