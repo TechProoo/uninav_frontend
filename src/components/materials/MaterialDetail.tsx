@@ -18,10 +18,13 @@ import {
   Globe,
   FileIcon,
   Megaphone,
+  Bookmark,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { getMaterialDownloadUrl } from "@/api/material.api";
 import AdvertCard from "./AdvertCard";
+import { useBookmarks } from "@/contexts/bookmarksContext";
+import { cn } from "@/lib/utils";
 
 interface MaterialDetailProps {
   material: Material;
@@ -40,6 +43,16 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  const isCurrentlyBookmarked = isBookmarked(material.id);
+
+  const handleBookmarkToggle = async () => {
+    try {
+      await toggleBookmark(material.id);
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+    }
+  };
 
   const downloadFile = async (url: string, filename: string) => {
     try {
@@ -129,7 +142,20 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "hover:text-blue-600",
+              isCurrentlyBookmarked && "text-blue-600"
+            )}
+            onClick={handleBookmarkToggle}
+          >
+            <Bookmark
+              className={cn("w-4 h-4", isCurrentlyBookmarked && "fill-current")}
+            />
+          </Button>
           {isOwner && (
             <>
               <Button variant="outline" onClick={handleEdit}>

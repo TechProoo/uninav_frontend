@@ -242,7 +242,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     try {
       const materialData: CreateMaterialDto = {
         ...formData,
-        targetCourse: selectedCourse?.id,
+        targetCourseId: selectedCourse?.id,
       };
 
       if (file) {
