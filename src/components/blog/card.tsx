@@ -29,7 +29,7 @@ const Card = ({ data, onDelete }: DataContent) => {
     setDeleting(true);
     try {
       await deleteBlog(postId);
-      onDelete?.(postId);
+    onDelete?.(postId);
       toast.success("Post deleted successfully");
     } catch (error) {
       console.error("Failed to delete post", error);
@@ -85,7 +85,7 @@ const Card = ({ data, onDelete }: DataContent) => {
           </div>
         </div>
         <Link
-          href={"/dashboard/blogs/viewblog"}
+          href={`/dashboard/blogs/viewblog?id=${data.id}`}
           className="absolute bottom-10 right-10 w-20 h-20 bg-[#f0f8ff] rounded-tl-full flex items-center justify-center translate-x-1/2 translate-y-1/2 group transition-colors duration-300 cursor-pointer"
         >
           <span className="text-white text-xl mt-2 group-hover:translate-x-2 transition-transform duration-300">
