@@ -198,7 +198,7 @@ export interface Department {
   faculty?: Faculty;
 }
 
-export interface Content {
+export interface Blog {
   id: string;
   creatorId: string;
   creator: {
@@ -221,7 +221,7 @@ export interface Content {
   createdAt: string;
   updatedAt: string;
   body: string;
-  status: string
+  status: string;
 }
 export enum AdvertTypeEnum {
   FREE = "free",

@@ -1,10 +1,10 @@
 import { api } from "./base.api";
-import { Content } from "@/lib/types/response.type";
+import { Blog } from "@/lib/types/response.type";
 
 export const editBlog = async (
   fileInput: FormData,
   id: string
-): Promise<Content | null> => {
+): Promise<Blog | null> => {
   try {
     const config = {
       method: "PATCH",
@@ -15,7 +15,7 @@ export const editBlog = async (
       data: fileInput,
     };
 
-    const response = await api<Content>(config);
+    const response = await api<Blog>(config);
     console.log(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
