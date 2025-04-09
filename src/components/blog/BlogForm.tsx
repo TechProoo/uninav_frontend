@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import createBlog from "../../api/blog";
+import createBlog from "../../api/blog.api";
 import { useDropzone } from "react-dropzone";
 import Editor from "./quill";
 import { Plus, X } from "lucide-react";

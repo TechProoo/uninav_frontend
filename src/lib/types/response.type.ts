@@ -198,17 +198,27 @@ export interface Department {
 }
 
 export interface Content {
+  id: string;
   creatorId: string;
+  creator: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
   title: string;
   description: string;
   type: "article" | "scheme_of_work" | "guidline" | "tutorial";
   headingImageAddress: string;
   headingImageKey: string;
+  bodyAddress: string;
   bodyKey: string;
   likes: number;
   views: number;
   clicks: number;
   tags: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 export enum AdvertTypeEnum {
   FREE = "free",

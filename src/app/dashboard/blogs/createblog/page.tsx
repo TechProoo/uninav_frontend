@@ -1,11 +1,15 @@
+"use client"
+
 import PostForm from "@/components/blog/BlogForm";
 import React from "react";
+import { useRouter } from "next/navigation";
 
-export const metadata = {
-  layout: null,
-};
+// export const metadata = {
+//   layout: null,
+// };
 
 const page = () => {
+  const router = useRouter();
   return (
     <div className="">
       <button

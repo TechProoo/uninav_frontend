@@ -1,14 +1,23 @@
 import React from "react";
-import ImagePic from "../../../public/Image/Deco.jpeg";
 import Image from "next/image";
-import { ArrowBigRight, Edit, MoveRight, Trash } from "lucide-react";
-const TrustCard = () => {
+import { ArrowBigRight, Edit, Trash } from "lucide-react";
+import { Content } from "@/lib/types/response.type";
+
+type DataContent = {
+  data: Content;
+};
+
+const Card = ({ data }: DataContent) => {
+  if (!data) return null;
+
   return (
-    <div className="max-w-sm bg-[#f9fJSX] rounded-[24px] p-4 relative">
+    <div className="max-w-sm  rounded-[24px] p-4 relative">
       <div className="relative overflow-hidden rounded-[24px]">
         <Image
-          src={ImagePic}
-          alt="Trust & Co."
+          src={data.headingImageAddress || "/fallback.jpg"}
+          alt="Blog Image"
+          width={400}
+          height={200}
           className="w-full h-48 object-cover rounded-[24px] rounded-br-[0px]"
         />
         <div className="absolute flex items-center top-0 right-5">
@@ -37,20 +46,18 @@ const TrustCard = () => {
           </span>
         </div>
       </div>
-    <h2 className="mt-4 text-xl font-semibold text-gray-900">
-      How to Build Trust in Your Brand
-    </h2>
-    <p className="text-sm text-gray-500 mt-1">A guide to make your image stand</p>
-    <div className="flex gap-2 mt-4">
-      <span className="text-xs font-medium bg-orange-200 text-orange-800 px-3 py-1 rounded-full">
-        Nov 12, 2024
-      </span>
-      <span className="text-xs font-medium bg-green-200 text-green-800 px-3 py-1 rounded-full">
-        TechPro
-      </span>
-    </div>
+      <h2 className="mt-4 text-xl font-semibold text-gray-900">{data.title}</h2>
+      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{data.description}</p>
+      <div className="flex gap-2 mt-4">
+        <span className="text-xs font-medium bg-orange-200 text-orange-800 px-3 py-1 rounded-full">
+          {new Date(data.createdAt).toLocaleDateString()}
+        </span>
+        <span className="text-xs font-medium bg-green-200 text-green-800 px-3 py-1 rounded-full">
+          {data.creator?.username || "Anonymous"}
+        </span>
+      </div>
     </div>
   );
 };
 
-export default TrustCard;
+export default Card;
