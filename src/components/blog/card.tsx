@@ -30,6 +30,7 @@ const Card = ({ data, onDelete }: DataContent) => {
     try {
       await deleteBlog(postId);
       onDelete?.(postId);
+      router.refresh();
       toast.success("Post deleted successfully");
     } catch (error) {
       console.error("Failed to delete post", error);

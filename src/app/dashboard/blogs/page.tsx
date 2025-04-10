@@ -3,11 +3,12 @@
 import Card from "@/components/blog/card";
 import NoBlog from "@/components/blog/NoBlog";
 import Button from "@/components/blog/Button-styled";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import getUserBlogs from "@/api/userBlogs.api";
-import { useQuery } from "@tanstack/react-query";
+import deleteUserBlog from "@/api/deleteBlog.api"; // Make sure this exists
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "../loading";
 import { Blog } from "@/lib/types/response.type";
 
@@ -16,30 +17,30 @@ const BlogsPage = () => {
   const { user } = useAuth();
   const id = user?.id;
 
+  const queryClient = useQueryClient();
+
   const { data: blogs, isLoading } = useQuery({
     queryKey: ["blogs", id],
     queryFn: () => getUserBlogs(id),
   });
 
-  const [blogsData, setBlogsData] = useState<Blog[]>([]);
-
-  useEffect(() => {
-    if (blogs) {
-      setBlogsData(blogs);
-    }
-  }, [blogs]);
+  const deleteBlogMutation = useMutation({
+    mutationFn: (postId: string) => deleteUserBlog(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blogs", id] });
+    },
+  });
 
   const handleNavigation = (path: string) => {
     router.push(path);
   };
 
   const handleDelete = (postId: string) => {
-    setBlogsData((prev) => prev.filter((blog) => blog.id !== postId));
-    router.refresh();
+    deleteBlogMutation.mutate(postId);
   };
 
   if (isLoading) return <Loader />;
-  if (blogsData.length === 0) return <NoBlog />;
+  if (!blogs || blogs.length === 0) return <NoBlog />;
 
   return (
     <div className="mx-auto container">
@@ -66,7 +67,7 @@ const BlogsPage = () => {
       <div className="mt-10 font-bold text-2xl fst">
         <h1>Your Blogs</h1>
         <div className="gap-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-6">
-          {blogsData.map((blog: Blog) => (
+          {blogs.map((blog: Blog) => (
             <Card key={blog.id} data={blog} onDelete={handleDelete} />
           ))}
         </div>
