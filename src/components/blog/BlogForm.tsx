@@ -79,10 +79,8 @@ const PostForm = ({ data }: dataProp) => {
       console.log(response);
 
       if (response) {
-        router.push("/dashboard/blogs").then(() => {
-          // Refresh the page after navigation
-          router.refresh();
-        });
+        router.push("/dashboard/blogs");
+        router.refresh();
         toast.success("Post submitted successfully");
       } else {
         toast.error("Failed to submit post");
@@ -131,13 +129,47 @@ const PostForm = ({ data }: dataProp) => {
   };
 
   return (
-    <div className="w-full">
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-wrap justify-around gap-8"
-      >
-        <div className="space-y-6 w-full md:w-1/2">
-          {/* Title */}
+    <div className="mx-auto w-full max-w-7xl">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Cover Image Section */}
+        <div className="w-full">
+          <label className="block mb-2 font-medium text-gray-700 text-lg">
+            Blog Cover Image:
+          </label>
+          <div className="gap-8 grid grid-cols-1 md:grid-cols-2">
+            <div
+              {...getRootProps()}
+              className={`w-full p-4 border-2 border-dashed rounded-lg ${
+                isDragActive
+                  ? "border-indigo-500 bg-indigo-50"
+                  : "border-gray-300"
+              }`}
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p className="flex justify-center items-center h-[120px] text-indigo-500 text-center">
+                  Drop the image here...
+                </p>
+              ) : (
+                <p className="flex justify-center items-center h-[120px] text-gray-500 text-center">
+                  Drag & drop an image here, or click to select one
+                </p>
+              )}
+            </div>
+            {imagePreview && (
+              <div className="flex justify-center items-center">
+                <img
+                  src={imagePreview}
+                  alt="Blog Cover Preview"
+                  className="shadow-md rounded-lg max-h-[120px] object-contain"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Title and Description */}
+        <div className="space-y-6">
           <div>
             <label className="block mb-2 font-medium text-gray-700 text-lg">
               Title:
@@ -149,68 +181,33 @@ const PostForm = ({ data }: dataProp) => {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-lg"
               placeholder="Enter your post title"
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className="block mb-2 font-medium text-gray-700 text-lg">
               Description:
             </label>
-            <input
+            <textarea
               required
-              type="text"
               value={formData.description}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full h-24 text-lg resize-none"
               placeholder="Enter a short description"
             />
           </div>
+        </div>
 
-          {/* Image Upload */}
-          <div>
-            <label className="block mb-2 font-medium text-gray-700 text-lg">
-              Image:
-            </label>
-            <div
-              {...getRootProps()}
-              className={`w-full p-4 border-2 border-dashed rounded-lg ${
-                isDragActive
-                  ? "border-indigo-500 bg-indigo-50"
-                  : "border-gray-300"
-              }`}
-            >
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <p className="h-[200px] text-indigo-500 text-center">
-                  Drop the image here...
-                </p>
-              ) : (
-                <p className="h-[200px] text-gray-500 text-center">
-                  Drag & drop an image here, or click to select one
-                </p>
-              )}
-            </div>
-            {imagePreview && (
-              <div className="mt-4">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="shadow-md rounded-lg w-full h-auto"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Body (Content) */}
-          <div>
-            <label className="block mb-2 font-medium text-gray-700 text-lg">
-              Body:
-            </label>
+        {/* Editor Section */}
+        <div className="w-full">
+          <label className="block mb-2 font-medium text-gray-700 text-lg">
+            Content:
+          </label>
+          <div className="border border-gray-300 rounded-lg min-h-[500px]">
             <Editor
               onContentChange={(content) => setEditorContent(content)}
               value={editorContent}
@@ -218,8 +215,8 @@ const PostForm = ({ data }: dataProp) => {
           </div>
         </div>
 
-        <div className="space-y-6 w-full md:w-1/3">
-          {/* Category (type) */}
+        {/* Category and Tags */}
+        <div className="gap-8 grid grid-cols-1 md:grid-cols-2 pt-6 border-gray-200 border-t">
           <div>
             <label className="block mb-2 font-medium text-gray-700 text-lg">
               Category:
@@ -229,22 +226,18 @@ const PostForm = ({ data }: dataProp) => {
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
               }
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full"
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-lg"
             >
               <option value="">Select Category</option>
               <option value="article">Article</option>
-              <option value="scheme_of_work">Scheme_of_Work</option>
+              <option value="scheme_of_work">Scheme of Work</option>
               <option value="guideline">Guideline</option>
               <option value="tutorial">Tutorial</option>
             </select>
           </div>
 
-          {/* Tags */}
           <div>
-            <label
-              htmlFor="tags"
-              className="block mb-2 font-medium text-gray-700 text-lg"
-            >
+            <label className="block mb-2 font-medium text-gray-700 text-lg">
               Tags:
             </label>
             <div className="flex">
@@ -254,14 +247,14 @@ const PostForm = ({ data }: dataProp) => {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagKeyDown}
                 placeholder="Add tag and press Enter"
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full"
+                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-lg"
               />
               <button
                 type="button"
                 onClick={addTag}
-                className="bg-gray-200 hover:bg-gray-300 ml-2 px-3 py-2 rounded-lg transition"
+                className="bg-gray-200 hover:bg-gray-300 ml-2 px-4 py-3 rounded-lg transition"
               >
-                <Plus size={16} />
+                <Plus size={20} />
               </button>
             </div>
 
@@ -270,7 +263,7 @@ const PostForm = ({ data }: dataProp) => {
                 {formData.tags.map((tag) => (
                   <div
                     key={tag}
-                    className="inline-flex items-center gap-1 bg-blue-100 px-3 py-1 rounded-full text-blue-800 text-sm"
+                    className="inline-flex items-center gap-1 bg-blue-100 px-3 py-1.5 rounded-full text-blue-800 text-sm"
                   >
                     {tag}
                     <button
@@ -278,19 +271,21 @@ const PostForm = ({ data }: dataProp) => {
                       onClick={() => removeTag(tag)}
                       className="hover:text-red-500"
                     >
-                      <X size={12} />
+                      <X size={14} />
                     </button>
                   </div>
                 ))}
               </div>
             )}
           </div>
+        </div>
 
-          {/* Submit */}
+        {/* Submit Button */}
+        <div className="pt-6 border-gray-200 border-t">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#003666] hover:bg-blue-500 transition-all duration-300 ease-in-out shadow-md py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-white"
+            className="bg-[#003666] hover:bg-blue-700 shadow-md px-8 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full md:w-auto font-medium text-white text-lg transition-all duration-300 ease-in-out"
           >
             {isSubmitting
               ? "Submitting..."
