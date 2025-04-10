@@ -207,7 +207,7 @@ const PostForm = ({ data }: dataProp) => {
           <label className="block mb-2 font-medium text-gray-700 text-lg">
             Content:
           </label>
-          <div className="border border-gray-300 rounded-lg min-h-[500px]">
+          <div className="w-full">
             <Editor
               onContentChange={(content) => setEditorContent(content)}
               value={editorContent}

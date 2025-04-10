@@ -183,14 +183,12 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "center",
+        width: "100%",
       }}
     >
       <div
         style={{
           width: "100%",
-          maxWidth: "800px",
           borderRadius: "4px",
           overflow: "hidden",
         }}
@@ -200,12 +198,13 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
         <div
           style={{
             padding: "20px",
-            minHeight: "200px",
+            minHeight: "400px", // Increased minimum height
             fontSize: "16px",
             lineHeight: "1.6",
             fontFamily: "Georgia, serif",
             borderTop: "1px solid #ddd",
           }}
+          className="w-full"
         >
           <DraftEditor
             editorState={editorState}
