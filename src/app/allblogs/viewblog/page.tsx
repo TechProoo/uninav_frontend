@@ -133,20 +133,20 @@ const page = () => {
             }}
           />
         </article>
-
-        <div className="flex items-center gap-3 mt-5">
-          <div className="flex items-center gap-3 fnth">
-            <p>Tags:</p>
-            <div className="flex gap-2">
-              {blogs.tags &&
-                blogs.tags?.map((tg) => (
+        {blogs.tags && (
+          <div className="flex items-center gap-3 mt-5">
+            <div className="flex items-center gap-3 fnth">
+              <p>Tags:</p>
+              <div className="flex gap-2">
+                {blogs.tags?.map((tg) => (
                   <span key={tg} className="bg-slate-200 px-3 py-2 rounded-lg">
                     {tg}
                   </span>
                 ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
