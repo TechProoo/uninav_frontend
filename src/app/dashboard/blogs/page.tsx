@@ -60,7 +60,7 @@ const BlogsPage = () => {
         <p className="text-gray-600">
           Create, edit, delete and publish your blogs here
         </p>
-      </div>
+      </div>  
 
       <div className="mt-10 font-bold text-2xl fst">
         <h1>Your Blogs</h1>
