@@ -15,6 +15,7 @@ import {
   User,
   Bookmark,
   GraduationCap,
+  ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -24,16 +25,39 @@ import { TooltipDemo } from "@/components/ui/TooltipUi";
 import { useAuth } from "@/contexts/authContext";
 import Logo from "../../../public/Image/logoo.png";
 
-const sidebarItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: BookOpen, label: "Manage Materials", path: "/dashboard/materials" },
-  { icon: Bookmark, label: "Manage Bookmarks", path: "/dashboard/bookmarks" },
-  { icon: GraduationCap, label: "Manage Courses", path: "/dashboard/courses" },
-  { icon: Megaphone, label: "Manage Ads", path: "/dashboard/ads" },
-  { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
-  { icon: User, label: "Profile", path: "/dashboard/profile" },
-  { icon: Settings, label: "Settings", path: "/dashboard/settings" },
-];
+const getMenuItems = (role?: string) => {
+  const items = [
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+    { icon: BookOpen, label: "Manage Materials", path: "/dashboard/materials" },
+    { icon: Bookmark, label: "Manage Bookmarks", path: "/dashboard/bookmarks" },
+    {
+      icon: GraduationCap,
+      label: "Manage Courses",
+      path: "/dashboard/courses",
+    },
+    { icon: Megaphone, label: "Manage Ads", path: "/dashboard/ads" },
+    { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
+  ];
+
+  // Add Site Management option for admin and moderator roles
+  if (role === "admin" || role === "moderator") {
+    items.push({
+      icon: ShieldCheck,
+      label: "Site Management",
+      path: "/dashboard/management",
+    });
+  }
+
+  // Always include these at the end
+  items.push({ icon: User, label: "Profile", path: "/dashboard/profile" });
+  items.push({
+    icon: Settings,
+    label: "Settings",
+    path: "/dashboard/settings",
+  });
+
+  return items;
+};
 
 interface LayoutProp {
   children: ReactNode;
@@ -46,6 +70,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const router = useRouter();
   const { logout, isAuthenticated, user } = useAuth();
   const [searchValue, setSearchValue] = useState("");
+  const sidebarItems = getMenuItems(user?.role);
 
   useEffect(() => {
     if (!isAuthenticated) {
