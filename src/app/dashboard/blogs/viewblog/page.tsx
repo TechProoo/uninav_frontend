@@ -29,13 +29,13 @@ const page = () => {
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 h-10 animate-spin"></div>
       </div>
     );
 
   if (error || !blogs)
     return (
-      <div className="text-center text-red-600 font-semibold mt-10">
+      <div className="mt-10 font-semibold text-red-600 text-center">
         Failed to load blog.
       </div>
     );
@@ -43,35 +43,35 @@ const page = () => {
   return (
     <div>
       <div className="news_content_cover">
-        <div className="grid grid-cols-12 items-center gap-4">
-          <div className="col-span-12 md:col-span-5 text-left md:text-right px-6">
-            <span className="inline-block bg-red-700 text-white rounded-xl px-3 py-1 text-sm font-bold">
+        <div className="items-center gap-4 grid grid-cols-12">
+          <div className="col-span-12 md:col-span-5 px-6 text-left md:text-right">
+            <span className="inline-block bg-red-700 px-3 py-1 rounded-xl font-bold text-white text-sm">
               {blogs.type}
             </span>
-            <h1 className="text-4xl font-bold fnt text-white mt-4 leading-tight">
+            <h1 className="mt-4 font-bold text-white text-4xl leading-tight fnt">
               {blogs.title}
             </h1>
             <div className="mt-4 text-gray-400 text-sm">
               <b>
                 Author -{" "}
-                <span className="text-white font-semibold">
+                <span className="font-semibold text-white">
                   {blogs.creator.username}
                 </span>
               </b>
             </div>
-            <div className="hero_icons mt-4 flex items-center justify-start gap-1 md:justify-end text-gray-300 text-sm">
+            <div className="flex justify-start md:justify-end items-center gap-1 mt-4 text-gray-300 text-sm hero_icons">
               <Eye size={15} className="text-gray-500" />
               <b className="text-sm">{blogs.views}</b>
             </div>
 
-            <div className="mt-4 flex items-center justify-start md:justify-end text-gray-300 text-sm">
+            <div className="flex justify-start md:justify-end items-center mt-4 text-gray-300 text-sm">
               <Calendar size={14} className="mr-2" />
               <span>{new Date(blogs.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
 
           <div className="col-span-12 md:col-span-7">
-            <div className="news_content_img rounded-lg overflow-hidden shadow-lg">
+            <div className="shadow-lg rounded-lg overflow-hidden news_content_img">
               <Image
                 src={blogs.headingImageAddress}
                 alt="News Title"
@@ -84,14 +84,14 @@ const page = () => {
         </div>
       </div>
 
-      <div className="news_content w-11/12 md:w-11/12 lg:w-10/12 mx-auto my-12 text-gray-800">
-        <div className="text-center mx-auto mb-10">
-          <blockquote className="italic text-lg text-gray-600 border-l-4 border-gray-400 pl-4">
+      <div className="mx-auto my-12 w-11/12 md:w-11/12 lg:w-10/12 text-gray-800 news_content">
+        <div className="mx-auto mb-10 text-center">
+          <blockquote className="pl-4 border-gray-400 border-l-4 text-gray-600 text-lg italic">
             {blogs.description}
           </blockquote>
         </div>
 
-        <article className="leading-relaxed text-lg space-y-6">
+        <article className="space-y-6 text-lg leading-relaxed">
           <div
             className="ql-editor"
             dangerouslySetInnerHTML={{

@@ -18,25 +18,36 @@ const page = () => {
     error,
   } = useQuery<Blog>({
     queryKey: ["blogsId", id],
-    queryFn: () => (id ? getBlogById(id) : Promise.reject("Invalid blog ID")),
-    enabled: !!id,
+    queryFn: async () => {
+      if (!id) throw new Error("Blog ID is required");
+      const data = await getBlogById(id);
+      if (!data) throw new Error("Blog not found");
+      return data;
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    refetchOnWindowFocus: false,
+    retry: 2,
   });
-
-  //   const htmlBody = useMemo(() => {
-  //     return blogs ? draftToHtml(blogs.body) : "";
-  //   }, [blogs]);
 
   if (isLoading)
     return (
-      <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
       </div>
     );
 
   if (error || !blogs)
     return (
-      <div className="text-center text-red-600 font-semibold mt-10">
-        Failed to load blog.
+      <div className="flex flex-col justify-center items-center gap-4 min-h-[60vh]">
+        <div className="font-semibold text-red-600 text-center">
+          {error instanceof Error ? error.message : "Failed to load blog"}
+        </div>
+        <button
+          onClick={() => router.back()}
+          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white transition"
+        >
+          Go Back
+        </button>
       </div>
     );
 
@@ -47,7 +58,7 @@ const page = () => {
       <button
         type="button"
         onClick={() => router.back()}
-        className="mb-6 flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition"
+        className="flex items-center gap-2 mb-6 text-gray-700 hover:text-indigo-600 transition"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -66,35 +77,35 @@ const page = () => {
         Back
       </button>
       <div className="news_content_cover">
-        <div className="grid grid-cols-12 items-center gap-4">
-          <div className="col-span-12 md:col-span-5 text-left md:text-right px-6">
-            <span className="inline-block bg-red-700 text-white rounded-xl px-3 py-1 text-sm font-bold">
+        <div className="items-center gap-4 grid grid-cols-12">
+          <div className="col-span-12 md:col-span-5 px-6 text-left md:text-right">
+            <span className="inline-block bg-red-700 px-3 py-1 rounded-xl font-bold text-white text-sm">
               {blogs.type}
             </span>
-            <h1 className="text-4xl font-bold fnt text-white mt-4 leading-tight">
+            <h1 className="mt-4 font-bold text-white text-4xl leading-tight fnt">
               {blogs.title}
             </h1>
             <div className="mt-4 text-gray-400 text-sm">
               <b>
                 Author -{" "}
-                <span className="text-white font-semibold">
+                <span className="font-semibold text-white">
                   {blogs.creator.username}
                 </span>
               </b>
             </div>
-            <div className="hero_icons mt-4 flex items-center justify-start gap-1 md:justify-end text-gray-300 text-sm">
+            <div className="flex justify-start md:justify-end items-center gap-1 mt-4 text-gray-300 text-sm hero_icons">
               <Eye size={15} className="text-gray-500" />
               <b className="text-sm">{blogs.views}</b>
             </div>
 
-            <div className="mt-4 flex items-center justify-start md:justify-end text-gray-300 text-sm">
+            <div className="flex justify-start md:justify-end items-center mt-4 text-gray-300 text-sm">
               <Calendar size={14} className="mr-2" />
               <span>{new Date(blogs.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
 
           <div className="col-span-12 md:col-span-7">
-            <div className="news_content_img overflow-hidden shadow-lg">
+            <div className="shadow-lg overflow-hidden news_content_img">
               <Image
                 src={blogs.headingImageAddress}
                 alt="News Title"
@@ -107,14 +118,14 @@ const page = () => {
         </div>
       </div>
 
-      <div className="news_content w-11/12 md:w-11/12 lg:w-10/12 mx-auto my-12 text-gray-800">
-        <div className="text-center mx-auto mb-10">
-          <blockquote className="italic text-lg text-gray-600 border-l-4 border-gray-400 pl-4">
+      <div className="mx-auto my-12 w-11/12 md:w-11/12 lg:w-10/12 text-gray-800 news_content">
+        <div className="mx-auto mb-10 text-center">
+          <blockquote className="pl-4 border-gray-400 border-l-4 text-gray-600 text-lg italic">
             {blogs.description}
           </blockquote>
         </div>
 
-        <article className="leading-relaxed w-full text-lg space-y-6">
+        <article className="space-y-6 w-full text-lg leading-relaxed">
           <div
             className="ql-editor"
             dangerouslySetInnerHTML={{
@@ -122,17 +133,20 @@ const page = () => {
             }}
           />
         </article>
-
-        <div className="mt-5 flex gap-3 items-center">
-          <div className="fnth flex gap-3 items-center">
-            <p>Tags:</p>
-            <div className="flex gap-2">
-              {blogs.tags.map((tg) => (
-                <span className="bg-slate-200 rounded-lg px-3 py-2">{tg}</span>
-              ))}
+        {blogs.tags && (
+          <div className="flex items-center gap-3 mt-5">
+            <div className="flex items-center gap-3 fnth">
+              <p>Tags:</p>
+              <div className="flex gap-2">
+                {blogs.tags?.map((tg) => (
+                  <span key={tg} className="bg-slate-200 px-3 py-2 rounded-lg">
+                    {tg}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
