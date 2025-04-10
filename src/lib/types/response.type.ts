@@ -32,6 +32,11 @@ export enum RestrictionEnum {
   DOWNLOADABLE = "downloadable",
   READONLY = "readonly",
 }
+export enum ApprovalStatusEnum {
+  APPROVED = "approved",
+  PENDING = "pending",
+  REJECTED = "rejected",
+}
 
 export type UserProfile = {
   id: string;
@@ -41,7 +46,7 @@ export type UserProfile = {
   username: string;
   departmentId: string;
   level: number;
-  role: string;
+  role: "student" | "moderator" | "admin";
   createdAt: string;
   updatedAt: string;
   department: {
@@ -68,7 +73,7 @@ export type UserProfile = {
       courseName: string;
       courseCode: string;
       description: string;
-      reviewStatus: string;
+      reviewStatus: ApprovalStatusEnum;
       reviewedBy: string | null;
       createdAt: string;
       updatedAt: string;
@@ -91,8 +96,8 @@ export type Course = {
   courseName: string;
   courseCode: string;
   description: string;
-  reviewStatus: string;
-  reviewedBy: string | null;
+  reviewStatus: ApprovalStatusEnum;
+  reviewedById: string | null;
   departmentId: string;
   level: number;
   createdAt?: string;
@@ -105,6 +110,7 @@ export enum CourseLevel {
   L300 = 300,
   L400 = 400,
   L500 = 500,
+  L600 = 600,
 }
 
 export type Material = {
@@ -127,8 +133,8 @@ export type Material = {
     courseName: string;
     courseCode: string;
   };
-  reviewStatus: string;
-  reviewedBy: string | null;
+  reviewStatus: ApprovalStatusEnum;
+  reviewedById: string | null;
   searchVector?: string;
   createdAt: string;
   updatedAt: string;
@@ -149,6 +155,12 @@ export type Material = {
     metaData: string[];
     createdAt: string;
     updatedAt: string;
+  };
+  reviewedBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
   };
 };
 
@@ -220,16 +232,10 @@ export interface Blog {
     lastName: string;
     username: string;
   };
-  status: "success" | "error";
-  message: string;
-  error?: {
-    cause: string;
-    statusCode: number;
-  };
 }
 
 export interface BlogResponse {
-  data: Blog[],
+  data: Blog[];
   pagination: {
     page: string;
     limit: number;
@@ -269,7 +275,19 @@ export type Advert = {
     lastName: string;
     username: string;
   };
-  reviewStatus: string;
+  reviewStatus: ApprovalStatusEnum;
   createdAt: string;
   updatedAt: string;
+};
+// Department level courses
+export type DLC = {
+  departmentId: string;
+  courseId: string;
+  level: number;
+
+  reviewedById: string | null;
+  reviewStatus: ApprovalStatusEnum;
+  createdAt: string;
+  course: Course;
+  department: Department;
 };

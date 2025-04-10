@@ -1,7 +1,8 @@
 import { api } from "./base.api";
-import { Blog } from "@/lib/types/response.type";
-
-export const createBlog = async (fileInput: FormData): Promise<Blog | null> => {
+import { Blog, Response } from "@/lib/types/response.type";
+export const createBlog = async (
+  fileInput: FormData
+): Promise<Response<Blog> | null> => {
   try {
     const config = {
       method: "POST",
@@ -12,7 +13,7 @@ export const createBlog = async (fileInput: FormData): Promise<Blog | null> => {
       data: fileInput,
     };
 
-    const response = await api<Blog>(config);
+    const response = await api<Response<Blog>>(config);
     console.log(JSON.stringify(response.data));
     return response.data;
   } catch (error) {
