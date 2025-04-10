@@ -4,7 +4,7 @@ import { Blog } from "@/lib/types/response.type";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Eye } from "lucide-react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo } from "react";
 import draftToHtml from "draftjs-to-html";
 
@@ -40,8 +40,31 @@ const page = () => {
       </div>
     );
 
+  const router = useRouter();
+
   return (
     <div>
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="mb-6 flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-5 h-5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15.75 19.5L8.25 12l7.5-7.5"
+          />
+        </svg>
+        Back
+      </button>
       <div className="news_content_cover">
         <div className="grid grid-cols-12 items-center gap-4">
           <div className="col-span-12 md:col-span-5 text-left md:text-right px-6">
@@ -71,13 +94,13 @@ const page = () => {
           </div>
 
           <div className="col-span-12 md:col-span-7">
-            <div className="news_content_img rounded-lg overflow-hidden shadow-lg">
+            <div className="news_content_img overflow-hidden shadow-lg">
               <Image
                 src={blogs.headingImageAddress}
                 alt="News Title"
                 className="w-full h-auto object-cover"
                 width={600}
-                height={400}
+                height={500}
               />
             </div>
           </div>
@@ -91,7 +114,7 @@ const page = () => {
           </blockquote>
         </div>
 
-        <article className="leading-relaxed text-lg space-y-6">
+        <article className="leading-relaxed w-full text-lg space-y-6">
           <div
             className="ql-editor"
             dangerouslySetInnerHTML={{

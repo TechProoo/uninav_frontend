@@ -4,40 +4,19 @@ import Image from "next/image";
 import { ArrowBigRight, Edit, Trash } from "lucide-react";
 import { Blog } from "@/lib/types/response.type";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
-import deleteBlog from "@/api/deleteBlog.api";
 import Link from "next/link";
 
 type DataContent = {
   data: Blog;
-  onDelete?: (id: string) => void;
 };
 
-const Card = ({ data, onDelete }: DataContent) => {
+const BlogCard = ({ data }: DataContent) => {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
   if (!data) return null;
 
   console.log(data);
-
-  const handleEdit = () => {
-    router.push(`/dashboard/blogs/editblog?id=${data.id}`);
-  };
-
-  const handleDeletePost = async (postId: string) => {
-    setDeleting(true);
-    try {
-      await deleteBlog(postId);
-      onDelete?.(postId);
-      toast.success("Post deleted successfully");
-    } catch (error) {
-      console.error("Failed to delete post", error);
-      toast.error("Failed to delete post");
-    } finally {
-      setDeleting(false);
-    }
-  };
 
   if (deleting) {
     return (
@@ -57,35 +36,8 @@ const Card = ({ data, onDelete }: DataContent) => {
           height={200}
           className="rounded-[24px] rounded-br-[0px] w-full h-48 object-cover"
         />
-        <div className="top-0 right-5 absolute flex items-center">
-          <div
-            className="bg-[#f0f8ff] p-1 rounded-bl-lg rounded-br-lg active:animate-shake cursor-pointer"
-            onClick={(e) => {
-              e.currentTarget.classList.add("animate-shake");
-              handleEdit();
-            }}
-            onAnimationEnd={(e) =>
-              e.currentTarget.classList.remove("animate-shake")
-            }
-          >
-            <Edit size={15} color="#003666" />
-          </div>
-          <div
-            className="bg-[#f0f8ff] p-2 rounded-bl-lg rounded-br-lg active:animate-shake cursor-pointer"
-            onClick={(e) => e.currentTarget.classList.add("animate-shake")}
-            onAnimationEnd={(e) =>
-              e.currentTarget.classList.remove("animate-shake")
-            }
-          >
-            <Trash
-              size={15}
-              onClick={() => handleDeletePost(data.id)}
-              className="text-red-500"
-            />
-          </div>
-        </div>
         <Link
-          href={`/dashboard/blogs/viewblog?id=${data.id}`}
+          href={`/allblogs/viewblog?id=${data.id}`}
           className="absolute bottom-10 right-10 w-20 h-20 bg-[#f0f8ff] rounded-tl-full flex items-center justify-center translate-x-1/2 translate-y-1/2 group transition-colors duration-300 cursor-pointer"
         >
           <span className="mt-2 text-white text-xl transition-transform group-hover:translate-x-2 duration-300">
@@ -93,6 +45,7 @@ const Card = ({ data, onDelete }: DataContent) => {
           </span>
         </Link>
       </div>
+
       <h2 className="mt-4 font-semibold text-gray-900 text-xl line-clamp-2">
         {data.title}
       </h2>
@@ -111,4 +64,4 @@ const Card = ({ data, onDelete }: DataContent) => {
   );
 };
 
-export default Card;
+export default BlogCard;

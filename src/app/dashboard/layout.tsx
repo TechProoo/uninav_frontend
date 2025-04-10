@@ -14,6 +14,7 @@ import {
   PencilLine,
   User,
   Bookmark,
+  GraduationCap,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -27,6 +28,7 @@ const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: BookOpen, label: "Manage Materials", path: "/dashboard/materials" },
   { icon: Bookmark, label: "Manage Bookmarks", path: "/dashboard/bookmarks" },
+  { icon: GraduationCap, label: "Manage Courses", path: "/dashboard/courses" },
   { icon: Megaphone, label: "Manage Ads", path: "/dashboard/ads" },
   { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
   { icon: User, label: "Profile", path: "/dashboard/profile" },

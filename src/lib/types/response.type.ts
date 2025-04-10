@@ -201,28 +201,45 @@ export interface Department {
 export interface Blog {
   id: string;
   creatorId: string;
+  title: string;
+  description: string;
+  type: "article" | "scheme_of_work" | "guidline" | "tutorial";
+  headingImageAddress: string;
+  headingImageKey: string;
+  bodyKey: string;
+  likes: number;
+  views: number;
+  clicks: number;
+  tags: string[];
+  body: string;
+  createdAt: string;
+  updatedAt: string;
   creator: {
     id: string;
     firstName: string;
     lastName: string;
     username: string;
   };
-  title: string;
-  description: string;
-  type: "article" | "scheme_of_work" | "guidline" | "tutorial";
-  headingImageAddress: string;
-  headingImageKey: string;
-  bodyAddress: string;
-  bodyKey: string;
-  likes: number;
-  views: number;
-  clicks: number;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-  body: string;
-  status: string;
+  status: "success" | "error";
+  message: string;
+  error?: {
+    cause: string;
+    statusCode: number;
+  };
 }
+
+export interface BlogResponse {
+  data: Blog[],
+  pagination: {
+    page: string;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+    hasMore: boolean;
+    hasPrev: boolean;
+  };
+}
+
 export enum AdvertTypeEnum {
   FREE = "free",
   PAID = "pro",

@@ -12,7 +12,7 @@
   --bg-dash: hsl(207, 22%, 30%);
   --text-color: hsl(0, 0%, 0%);
   --text-color-light: hsl(208, 100%, 73%);
-  --text-color-light-two: hsl(208, 100%, 97%);
+  --text-color-light-two: #f0f8ff;
   --text-color-dark: hsl(0, 0%, 20%);
   --text-color-light-dark: hsl(208, 100%, 20%);
   --border-color: hsl(208, 100%, 73%);
@@ -48,6 +48,26 @@
   --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
+}
+
+.bg_main {
+  background-color: var(--bg-main);
+}
+
+.text_main {
+  color: var( --text-color-light-two);
+}
+
+.text_dark {
+  color: var(--text-color-dark);
+}
+
+.border_main {
+  border: 1px solid var(--border-color);
+}
+
+.rounded_main {
+  border-radius: var(--radius);
 }
 
 body {
@@ -428,4 +448,9 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* TEXT EDITOR */
+.ql-editor p {
+  margin-bottom: 1rem; 
 }

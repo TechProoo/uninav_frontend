@@ -3,13 +3,27 @@
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/authContext";
 import { updateUserProfile } from "@/api/user.api";
-import { Check, Edit2, Loader2, User } from "lucide-react";
+import { Check, Edit2, Loader2, User, AlertCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import FacultySelect from "@/components/ui/FacultySelect";
 import toast from "react-hot-toast";
 
 const ProfilePage = () => {
   const { user, refreshUserProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showLevelWarning, setShowLevelWarning] = useState(false);
+  const [showDepartmentWarning, setShowDepartmentWarning] = useState(false);
+  const [tempLevel, setTempLevel] = useState<number | null>(null);
+  const [tempDepartmentId, setTempDepartmentId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
@@ -36,9 +50,65 @@ const ProfilePage = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
+    if (name === "level" && parseInt(value) !== user?.level) {
+      setTempLevel(parseInt(value));
+      setShowLevelWarning(true);
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: name === "level" ? parseInt(value) : value,
+    }));
+  };
+
+  const handleDepartmentSelect = (departmentId: string) => {
+    if (departmentId !== user?.departmentId) {
+      setTempDepartmentId(departmentId);
+      setShowDepartmentWarning(true);
+      return;
+    }
+    setFormData((prev) => ({ ...prev, departmentId }));
+  };
+
+  const handleLevelChangeConfirm = () => {
+    if (tempLevel !== null) {
+      setFormData((prev) => ({
+        ...prev,
+        level: tempLevel,
+      }));
+    }
+    setShowLevelWarning(false);
+    setTempLevel(null);
+  };
+
+  const handleDepartmentChangeConfirm = () => {
+    if (tempDepartmentId !== null) {
+      setFormData((prev) => ({
+        ...prev,
+        departmentId: tempDepartmentId,
+      }));
+    }
+    setShowDepartmentWarning(false);
+    setTempDepartmentId(null);
+  };
+
+  const handleLevelChangeCancel = () => {
+    setShowLevelWarning(false);
+    setTempLevel(null);
+    setFormData((prev) => ({
+      ...prev,
+      level: user?.level || 100,
+    }));
+  };
+
+  const handleDepartmentChangeCancel = () => {
+    setShowDepartmentWarning(false);
+    setTempDepartmentId(null);
+    setFormData((prev) => ({
+      ...prev,
+      departmentId: user?.departmentId || "",
     }));
   };
 
@@ -203,6 +273,23 @@ const ProfilePage = () => {
                 <p className="bg-gray-50 p-2 rounded-md">{user?.level}</p>
               )}
             </div>
+
+            {/* Department Selection */}
+            <div className="space-y-2">
+              <label className="font-medium text-gray-700 text-sm">
+                Department
+              </label>
+              {isEditing ? (
+                <FacultySelect
+                  onDepartmentSelect={handleDepartmentSelect}
+                  defaultDepartmentId={formData.departmentId}
+                />
+              ) : (
+                <p className="bg-gray-50 p-2 rounded-md">
+                  {user?.department?.name || "Not specified"}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Non-editable information */}
@@ -211,14 +298,7 @@ const ProfilePage = () => {
               <label className="font-medium text-gray-700 text-sm">Email</label>
               <p className="bg-gray-50 p-2 rounded-md">{user?.email}</p>
             </div>
-            <div className="space-y-2">
-              <label className="font-medium text-gray-700 text-sm">
-                Department
-              </label>
-              <p className="bg-gray-50 p-2 rounded-md">
-                {user?.department?.name || "Not specified"}
-              </p>
-            </div>
+
             <div className="space-y-2">
               <label className="font-medium text-gray-700 text-sm">Role</label>
               <p className="bg-gray-50 p-2 rounded-md capitalize">
@@ -236,6 +316,75 @@ const ProfilePage = () => {
               </p>
             </div>
           </div>
+
+          {/* Level Change Warning Dialog */}
+          <Dialog open={showLevelWarning} onOpenChange={setShowLevelWarning}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-amber-600">
+                  <AlertCircle className="w-5 h-5" />
+                  Change Level Warning
+                </DialogTitle>
+                <DialogDescription className="pt-4">
+                  All your courses will be reset to courses for level{" "}
+                  {tempLevel} in the department of {user?.department?.name}. Are
+                  you sure you want to continue?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="sm:justify-start">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleLevelChangeConfirm}
+                >
+                  Yes, Change Level
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleLevelChangeCancel}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Department Change Warning Dialog */}
+          <Dialog
+            open={showDepartmentWarning}
+            onOpenChange={setShowDepartmentWarning}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-amber-600">
+                  <AlertCircle className="w-5 h-5" />
+                  Change Department Warning
+                </DialogTitle>
+                <DialogDescription className="pt-4">
+                  Changing your department will reset all your courses to match
+                  your new department&apos;s curriculum for level{" "}
+                  {formData.level}. Are you sure you want to continue?
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter className="sm:justify-start">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={handleDepartmentChangeConfirm}
+                >
+                  Yes, Change Department
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleDepartmentChangeCancel}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           {/* Submit Button */}
           {isEditing && (

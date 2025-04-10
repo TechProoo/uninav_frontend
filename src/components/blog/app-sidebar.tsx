@@ -1,4 +1,13 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  BookOpen,
+  Bookmark,
+  GraduationCap,
+  LayoutDashboard,
+  Megaphone,
+  Pencil,
+  Settings,
+  User,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -10,32 +19,34 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Image from "next/image";
+import Logo from "../../../public/Image/logoo.png";
 
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Materials",
+    url: "/dashboard/materials",
+    icon: BookOpen,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Courses",
+    url: "/dashboard/courses",
+    icon: GraduationCap,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Profile",
+    url: "/dashboard/profile",
+    icon: User,
   },
   {
     title: "Settings",
-    url: "#",
+    url: "/dashboard/settings",
     icon: Settings,
   },
 ];
@@ -43,25 +54,30 @@ const items = [
 export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
-        <SidebarContent>
-            <SidebarGroup>
-                <SidebarGroupLabel>Application</SidebarGroupLabel>
-                <SidebarGroupContent>
-                    <SidebarMenu>
-                        {items.map((item) => (
-                            <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton asChild>
-                                    <a href={item.url}>
-                                        <item.icon />
-                                        <span>{item.title}</span>
-                                    </a>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))}
-                    </SidebarMenu>
-                </SidebarGroupContent>
-            </SidebarGroup>
-        </SidebarContent>
+      <SidebarContent>
+        <div className="flex flex-col items-center mt-10">
+          <Image className="w-40 h-auto" src={Logo} alt="Logo" />
+        </div>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a
+                      href={item.url}
+                      className="flex items-center gap-3 text-sm"
+                    >
+                      <item.icon className="w-5 h-5" />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
     </Sidebar>
   );
 }

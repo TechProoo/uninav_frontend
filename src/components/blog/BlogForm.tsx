@@ -30,6 +30,7 @@ const PostForm = ({ data }: dataProp) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
 
+  // const router = useRouter();
   const router = useRouter();
 
   useEffect(() => {
@@ -70,17 +71,6 @@ const PostForm = ({ data }: dataProp) => {
       let response;
 
       if (data) {
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", formData.title);
-        formDataToSend.append("description", formData.description);
-        formDataToSend.append("type", formData.category);
-        formData.tags.forEach((tag) => formDataToSend.append("tags", tag));
-        formDataToSend.append("body", editorContent);
-
-        if (imageFile) {
-          formDataToSend.append("headingImage", imageFile);
-        }
-
         response = await editBlog(formDataToSend, data.id);
       } else {
         response = await createBlog(formDataToSend);
@@ -88,8 +78,11 @@ const PostForm = ({ data }: dataProp) => {
 
       console.log(response);
 
-      if (response?.status === "success") {
-        router.push("/dashboard/blogs");
+      if (response) {
+        router.push("/dashboard/blogs").then(() => {
+          // Refresh the page after navigation
+          router.refresh();
+        });
         toast.success("Post submitted successfully");
       } else {
         toast.error("Failed to submit post");
@@ -297,7 +290,7 @@ const PostForm = ({ data }: dataProp) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-indigo-600 hover:bg-indigo-700 shadow-md py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-white"
+            className="bg-[#003666] hover:bg-blue-500 transition-all duration-300 ease-in-out shadow-md py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-white"
           >
             {isSubmitting
               ? "Submitting..."

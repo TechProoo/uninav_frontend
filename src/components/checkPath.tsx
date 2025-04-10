@@ -12,6 +12,7 @@ const hiddenRoutes = [
   "/dashboard/blogs/createblog",
   "/dashboard/blogs/viewblog",
   "/allblogs",
+  "/allblogs/viewblog",
   "/dashboard/materials",
   "/dashboard/profile",
   "/dashboard/settings",
