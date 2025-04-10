@@ -291,3 +291,47 @@ export type DLC = {
   course: Course;
   department: Department;
 };
+
+// export type SearchResponse = {
+//   message: string;
+//   status: "success" | "error";
+//   data: {
+//     data: {
+//       id: string;
+//       type: string;
+//       tags: string[];
+//       clickCount: number;
+//       viewCount: number;
+//       downloadCount: number;
+//       likes: number;
+//       creatorId: string;
+//       label: string;
+//       description: string;
+//       visibility: VisibilityEnum;
+//       restriction: RestrictionEnum;
+//       targetCourseId: string | null;
+//       reviewStatus: string;
+//       reviewedBy: string | null;
+//       creator: {
+//         id: string;
+//         firstName: string;
+//         lastName: string;
+//         username: string;
+//       };
+//       targetCourse: {
+//         id: string;
+//         courseName: string;
+//         courseCode: string;
+//       } | null;
+//       rank: number;
+//     }[];
+//     pagination: {
+//       page: string;
+//       limit: number;
+//       totalItems: number;
+//       totalPages: number;
+//       hasMore: boolean;
+//       hasPrev: boolean;
+//     };
+//   };
+// };

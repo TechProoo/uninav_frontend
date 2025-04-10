@@ -79,8 +79,11 @@ const PostForm = ({ data }: dataProp) => {
       console.log(response);
 
       if (response) {
-        router.push("/dashboard/blogs");
-        router.refresh();
+        // @ts-ignore
+        router.push("/dashboard/blogs").then(() => {
+          // Refresh the page after navigation
+          router.refresh();
+        });
         toast.success("Post submitted successfully");
       } else {
         toast.error("Failed to submit post");
