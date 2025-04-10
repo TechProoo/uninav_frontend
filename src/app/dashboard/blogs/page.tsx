@@ -47,7 +47,7 @@ const BlogsPage = () => {
         <div className="flex items-center gap-4">
           <Button
             text="All Blogs"
-            onClick={() => handleNavigation("/dashboard/blogs")}
+            onClick={() => handleNavigation("/allblogs")}
           />
           <Button
             text="Create Blog"

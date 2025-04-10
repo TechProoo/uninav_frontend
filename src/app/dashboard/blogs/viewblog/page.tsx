@@ -1,6 +1,6 @@
 "use client";
 import getBlogById from "@/api/blogById.api";
-import { Content } from "@/lib/types/response.type";
+import { Blog } from "@/lib/types/response.type";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Eye } from "lucide-react";
 import Image from "next/image";
@@ -16,7 +16,7 @@ const page = () => {
     data: blogs,
     isLoading,
     error,
-  } = useQuery<Content>({
+  } = useQuery<Blog>({
     queryKey: ["blogsId", id],
     queryFn: () => (id ? getBlogById(id) : Promise.reject("Invalid blog ID")),
     enabled: !!id,
