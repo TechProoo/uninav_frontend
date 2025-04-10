@@ -102,12 +102,18 @@ const page = () => {
 
         <div className="mt-5 flex gap-3 items-center">
           <div className="fnth flex gap-3 items-center">
-            <p>Tags:</p>
-            <div className="flex gap-2">
-              {blogs.tags.map((tg) => (
-                <span className="bg-slate-200 rounded-lg px-3 py-2">{tg}</span>
-              ))}
-            </div>
+            {blogs.tags && (
+              <>
+                <p>Tags:</p>
+                <div className="flex gap-2">
+                  {blogs.tags.map((tg) => (
+                    <span className="bg-slate-200 rounded-lg px-3 py-2">
+                      {tg}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

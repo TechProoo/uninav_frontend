@@ -45,6 +45,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const { logout, isAuthenticated, user } = useAuth();
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -54,6 +55,11 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
+  };
+
+  const handleSearch = () => {
+    if (!searchValue.trim()) return;
+    router.push(`/search?value=${encodeURIComponent(searchValue)}`);
   };
 
   useEffect(() => {
@@ -124,9 +130,15 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                 <input
                   type="text"
                   placeholder="Search"
+                  name="search"
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch}
+                  onChange={(e) => setSearchValue(e.target.value)}
                   className="px-2 py-1 focus:outline-none w-40 focus:w-64 text-black transition-all duration-300 ease-in-out"
                 />
-                <button className="bg-[#f0f8ff] px-3 py-1">
+                <button
+                  onClick={handleSearch}
+                  className="bg-[#f0f8ff] px-3 py-1"
+                >
                   <Search className="text-[#0c385f]" />
                 </button>
               </div>

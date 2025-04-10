@@ -79,6 +79,7 @@ const PostForm = ({ data }: dataProp) => {
       console.log(response);
 
       if (response) {
+        // @ts-ignore
         router.push("/dashboard/blogs").then(() => {
           // Refresh the page after navigation
           router.refresh();
