@@ -103,3 +103,36 @@ export const deleteBookmark = async (bookmarkId: string): Promise<boolean> => {
     throw error;
   }
 };
+
+// Course management endpoints
+export const getUserCourses = async () => {
+  try {
+    const response = await api.get("/user/courses");
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Error fetching user courses:", error);
+    return [];
+  }
+};
+
+export const addUserCourses = async (courseIds: string[]) => {
+  try {
+    const response = await api.post("/user/courses", { courseIds });
+    return response.data;
+  } catch (error) {
+    console.error("Error adding user courses:", error);
+    throw error;
+  }
+};
+
+export const removeUserCourses = async (courseIds: string[]) => {
+  try {
+    const response = await api.delete("/user/courses", {
+      data: { courseIds },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error removing user courses:", error);
+    throw error;
+  }
+};
