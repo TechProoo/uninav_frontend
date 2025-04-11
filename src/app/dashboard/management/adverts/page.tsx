@@ -13,19 +13,17 @@ import {
   CheckCircle,
   XCircle,
   Eye,
-  Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ApprovalStatusEnum } from "@/lib/types/response.type";
+import { ApprovalStatusEnum, Advert } from "@/lib/types/response.type";
 import {
-  Advertisement,
   ReviewActionDTO,
   getAdvertReviewCounts,
   listAdvertReviews,
   reviewAdvert,
   deleteAdvertAsAdmin,
+  ReviewCounts,
 } from "@/api/review.api";
 import ReviewTabs from "@/components/management/ReviewTabs";
 import ReviewActionDialog from "@/components/management/ReviewActionDialog";
@@ -135,20 +133,17 @@ const AdvertsReviewPage = () => {
     fetchAdverts();
   };
 
-  const handleReviewAction = (
-    advert: Advertisement,
-    action: ApprovalStatusEnum
-  ) => {
+  const handleReviewAction = (advert: Advert, action: ApprovalStatusEnum) => {
     setSelectedAdvert(advert);
     setReviewAction(action);
   };
 
-  const handleDeleteAction = (advert: Advertisement) => {
+  const handleDeleteAction = (advert: Advert) => {
     setSelectedAdvert(advert);
     setIsDeleteDialogOpen(true);
   };
 
-  const handleAdvertClick = (advert: Advertisement) => {
+  const handleAdvertClick = (advert: Advert) => {
     setViewingAdvert(advert);
   };
 
@@ -168,7 +163,7 @@ const AdvertsReviewPage = () => {
 
       if (response?.status === "success") {
         toast.success(
-          `Advertisement has been ${
+          `Advert has been ${
             action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
           }`
         );
@@ -207,7 +202,7 @@ const AdvertsReviewPage = () => {
           ...prev,
           [activeTab.toLowerCase()]: Math.max(
             0,
-            prev[activeTab.toLowerCase()] - 1
+            prev[activeTab.toLowerCase() as keyof ReviewCounts] - 1
           ),
         }));
 
@@ -323,17 +318,17 @@ const AdvertsReviewPage = () => {
                       />
                     ) : (
                       <div className="flex justify-center items-center h-full">
-                        <ImageIcon className="w-12 h-12 text-gray-400" />
+                        <Megaphone className="w-12 h-12 text-gray-400" />
                       </div>
                     )}
                     <div className="top-2 right-2 absolute">
-                      <Badge
-                        className={`${getAdvertTypeClass(
+                      <div
+                        className={`px-2 py-1 rounded-md text-xs font-medium ${getAdvertTypeClass(
                           advert.type
-                        )} capitalize`}
+                        )}`}
                       >
                         {formatAdvertType(advert.type)}
-                      </Badge>
+                      </div>
                     </div>
                   </div>
 
@@ -346,23 +341,6 @@ const AdvertsReviewPage = () => {
                         <p className="text-gray-500 text-sm line-clamp-2">
                           {advert.description || "No description provided."}
                         </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 mb-4">
-                      {advert.material && (
-                        <Badge className="bg-blue-100 text-blue-700">
-                          Linked to Material
-                        </Badge>
-                      )}
-                      {advert.collection && (
-                        <Badge className="bg-purple-100 text-purple-700">
-                          Collection
-                        </Badge>
-                      )}
-                      <div className="flex items-center gap-1 text-gray-500 text-xs">
-                        <Eye className="w-3 h-3" />
-                        {advert.views}
                       </div>
                     </div>
 
@@ -478,7 +456,8 @@ const AdvertsReviewPage = () => {
         <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/50 p-4">
           <div className="bg-white shadow-xl rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
             <AdvertDetail
-              advert={viewingAdvert}
+              advertId={viewingAdvert.id}
+              initialAdvert={viewingAdvert}
               onClose={() => setViewingAdvert(null)}
             />
           </div>

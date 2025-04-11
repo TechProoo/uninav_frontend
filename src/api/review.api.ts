@@ -7,6 +7,7 @@ import {
   Course,
   DLC,
   Material,
+  Advert,
 } from "@/lib/types/response.type";
 
 // Review Action DTO
@@ -338,40 +339,6 @@ export const getModeratorReviewCounts = async (departmentId?: string) => {
   }
 };
 
-// Advertisements Review Types
-export interface Advertisement {
-  id: string;
-  type: string;
-  label: string;
-  description: string;
-  imageUrl: string;
-  clicks: number;
-  views: number;
-  reviewStatus: ApprovalStatusEnum;
-  creator: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-  };
-  material?: {
-    id: string;
-    label: string;
-  };
-  collection?: {
-    id: string;
-    name: string;
-  };
-  reviewedBy?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
 // Advertisements Review Endpoints
 export const listAdvertReviews = async (
   params: PaginationParams & { type?: string } = {}
@@ -383,7 +350,7 @@ export const listAdvertReviews = async (
     if (params.status) url += `&status=${params.status}`;
     if (params.type) url += `&type=${params.type}`;
 
-    const response = await api.get<Response<Pagination<Advertisement[]>>>(url);
+    const response = await api.get<Response<Pagination<Advert[]>>>(url);
     return response.data;
   } catch (error) {
     console.error("Error fetching advert reviews:", error);
@@ -396,7 +363,7 @@ export const reviewAdvert = async (
   reviewData: ReviewActionDTO
 ) => {
   try {
-    const response = await api.post<Response<Advertisement>>(
+    const response = await api.post<Response<Advert>>(
       `/review/adverts/review/${advertId}`,
       reviewData
     );

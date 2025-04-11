@@ -1,175 +1,296 @@
 "use client";
 
-import React from "react";
-import Card from "@/components/ui/card/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "../ui/button";
-import { Advertisement } from "@/api/review.api";
+import React, { useState, useEffect } from "react";
+import { getAdvertById } from "@/api/advert.api";
 import {
-  Eye,
-  Link as LinkIcon,
-  Clock,
-  Tag,
+  Advert,
+  ApprovalStatusEnum,
+  AdvertTypeEnum,
+} from "@/lib/types/response.type";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
   X,
+  Image as ImageIcon,
   ExternalLink,
+  Calendar,
+  User,
+  Clock,
+  Eye,
 } from "lucide-react";
-import Image from "next/image";
+import Link from "next/link";
+import { format } from "date-fns";
+import toast from "react-hot-toast";
 
 interface AdvertDetailProps {
-  advert: Advertisement;
-  onClose?: () => void;
+  advertId: string;
+  initialAdvert?: Advert;
+  onClose: () => void;
 }
 
-const AdvertDetail: React.FC<AdvertDetailProps> = ({ advert, onClose }) => {
+const AdvertDetail: React.FC<AdvertDetailProps> = ({
+  advertId,
+  initialAdvert,
+  onClose,
+}) => {
+  const [advert, setAdvert] = useState<Advert | null>(initialAdvert || null);
+  const [loading, setLoading] = useState<boolean>(!initialAdvert);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fetch the advert by ID to get the latest data (especially if the imageUrl expired)
+    const fetchAdvert = async () => {
+      try {
+        setLoading(true);
+        const response = await getAdvertById(advertId);
+        if (response?.status === "success") {
+          setAdvert(response.data);
+        } else {
+          setError("Failed to load advertisement details");
+        }
+      } catch (err) {
+        console.error("Error fetching advert:", err);
+        setError("An error occurred while loading the advertisement");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAdvert();
+  }, [advertId]);
+
   const formatAdvertType = (type: string) => {
     return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
   };
 
-  const getAdvertColorClass = (type: string) => {
+  const getAdvertTypeClass = (type: string) => {
     switch (type.toLowerCase()) {
-      case "free":
+      case AdvertTypeEnum.FREE.toLowerCase():
         return "bg-green-100 text-green-700";
-      case "pro":
+      case AdvertTypeEnum.PAID.toLowerCase():
         return "bg-blue-100 text-blue-700";
-      case "boost":
+      case AdvertTypeEnum.BOOST.toLowerCase():
         return "bg-purple-100 text-purple-700";
-      case "targeted":
+      case AdvertTypeEnum.TARGETED.toLowerCase():
         return "bg-amber-100 text-amber-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
   };
 
-  return (
-    <div className="relative">
-      {/* Header with close button */}
-      <div className="top-0 z-10 sticky flex justify-between items-center bg-white px-6 py-4 border-b">
-        <h2 className="font-bold text-xl">Advertisement Preview</h2>
-        {onClose && (
+  if (loading) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="font-bold text-2xl">Loading Advertisement...</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="w-5 h-5" />
           </Button>
-        )}
+        </div>
+        <div className="flex flex-1 justify-center items-center p-4">
+          <div className="border-b-2 border-blue-700 rounded-full w-12 h-12 animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !advert) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="font-bold text-red-600 text-2xl">Error</h2>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+        <div className="flex flex-1 justify-center items-center p-4">
+          <div className="text-center">
+            <p className="mb-4 text-red-500">
+              {error || "Advertisement not found"}
+            </p>
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex justify-between items-center p-4 border-b">
+        <h2 className="font-bold text-2xl">{advert.label}</h2>
+        <Button variant="ghost" size="icon" onClick={onClose}>
+          <X className="w-5 h-5" />
+        </Button>
       </div>
 
-      <div className="p-6">
-        <Card className="bg-white/80 backdrop-blur-sm overflow-hidden">
-          {/* Image Section */}
-          {advert.imageUrl && (
-            <div className="relative bg-gray-100 w-full h-64 md:h-80">
-              <img
-                src={advert.imageUrl}
-                alt={advert.label}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.src =
-                    "/Image/blank-book-cover-white-vector-illustration.png";
-                }}
-              />
-              <div className="top-4 right-4 absolute">
-                <Badge
-                  className={`${getAdvertColorClass(advert.type)} capitalize`}
-                >
-                  {formatAdvertType(advert.type)}
-                </Badge>
-              </div>
+      {/* Content */}
+      <div className="flex-1 p-4 overflow-y-auto">
+        <div className="gap-6 grid md:grid-cols-[2fr,1fr]">
+          <div>
+            {/* Main image */}
+            <div className="relative bg-gray-100 mb-6 rounded-md aspect-video overflow-hidden">
+              {advert.imageUrl ? (
+                <img
+                  src={advert.imageUrl}
+                  alt={advert.label}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "/Image/blank-book-cover-white-vector-illustration.png";
+                  }}
+                />
+              ) : (
+                <div className="flex justify-center items-center h-full">
+                  <ImageIcon className="w-16 h-16 text-gray-400" />
+                </div>
+              )}
             </div>
-          )}
 
-          <div className="p-6">
-            {/* Title and Description */}
+            {/* Advertisement description */}
             <div className="mb-6">
-              <h1 className="mb-2 font-bold text-gray-900 text-2xl">
-                {advert.label}
-              </h1>
+              <h3 className="mb-2 font-medium text-lg">Description</h3>
               <p className="text-gray-700">
-                {advert.description || "No description available"}
+                {advert.description || "No description provided."}
               </p>
             </div>
+          </div>
 
-            {/* Stats Section */}
-            <div className="gap-6 grid grid-cols-1 md:grid-cols-2 mb-6">
-              <div>
-                <h3 className="mb-2 font-semibold text-lg">Details</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Clock className="w-4 h-4" />
-                    <span>
-                      Created: {new Date(advert.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <div className="bg-gray-50 p-4 rounded-md">
+              <h3 className="mb-4 font-medium text-lg">
+                Advertisement Details
+              </h3>
 
-                  {advert.material && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <LinkIcon className="w-4 h-4" />
-                      <span>Linked to Material: {advert.material.label}</span>
-                    </div>
-                  )}
-
-                  {advert.collection && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Tag className="w-4 h-4" />
-                      <span>Collection: {advert.collection.name}</span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <span className="font-medium">Created by: </span>
-                    <span>
-                      {advert.creator.firstName} {advert.creator.lastName}
-                    </span>
-                  </div>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Type</span>
+                  <Badge
+                    className={`${getAdvertTypeClass(advert.type)} capitalize`}
+                  >
+                    {formatAdvertType(advert.type)}
+                  </Badge>
                 </div>
-              </div>
 
-              <div>
-                <h3 className="mb-2 font-semibold text-lg">Performance</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Eye className="w-4 h-4" />
-                    <span>{advert.views} Views</span>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Views</span>
+                  <span className="font-medium">{advert.views}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Clicks</span>
+                  <span className="font-medium">{advert.clicks}</span>
+                </div>
+
+                {advert.reviewStatus && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Status</span>
+                    <Badge
+                      className={
+                        advert.reviewStatus === ApprovalStatusEnum.APPROVED
+                          ? "bg-green-100 text-green-700"
+                          : advert.reviewStatus === ApprovalStatusEnum.REJECTED
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }
+                    >
+                      {advert.reviewStatus}
+                    </Badge>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <ExternalLink className="w-4 h-4" />
-                    <span>{advert.clicks} Clicks</span>
-                  </div>
-                  {advert.clicks > 0 && advert.views > 0 && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <span className="font-medium">CTR: </span>
-                      <span>
-                        {((advert.clicks / advert.views) * 100).toFixed(2)}%
+                )}
+
+                {/* Created by */}
+                {advert.creator && (
+                  <div className="flex items-start gap-2">
+                    <User className="mt-0.5 w-4 h-4 text-gray-500" />
+                    <div>
+                      <span className="block text-gray-500 text-sm">
+                        Created by
+                      </span>
+                      <span className="font-medium">
+                        {advert.creator.firstName} {advert.creator.lastName}
+                        {advert.creator.username &&
+                          ` (${advert.creator.username})`}
                       </span>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {/* Created at */}
+                {advert.createdAt && (
+                  <div className="flex items-start gap-2">
+                    <Calendar className="mt-0.5 w-4 h-4 text-gray-500" />
+                    <div>
+                      <span className="block text-gray-500 text-sm">
+                        Created on
+                      </span>
+                      <span className="font-medium">
+                        {format(new Date(advert.createdAt), "MMM d, yyyy")}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reviewed by */}
+                {advert.reviewedBy && (
+                  <div className="flex items-start gap-2">
+                    <User className="mt-0.5 w-4 h-4 text-gray-500" />
+                    <div>
+                      <span className="block text-gray-500 text-sm">
+                        Reviewed by
+                      </span>
+                      <span className="font-medium">
+                        {advert.reviewedBy.firstName}{" "}
+                        {advert.reviewedBy.lastName}
+                        {advert.reviewedBy.username &&
+                          ` (${advert.reviewedBy.username})`}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Review Status Information */}
-            {advert.reviewStatus !== "PENDING" && advert.reviewedBy && (
-              <div className="mt-6 pt-4 border-gray-100 border-t">
-                <h3 className="mb-2 font-semibold text-lg">
-                  Review Information
-                </h3>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    className={
-                      advert.reviewStatus === "APPROVED"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }
-                  >
-                    {advert.reviewStatus}
-                  </Badge>
-                  <span className="text-gray-600">
-                    by {advert.reviewedBy.firstName}{" "}
-                    {advert.reviewedBy.lastName}
-                  </span>
-                </div>
+            {/* Links to related content */}
+            {(advert.material || advert.collection) && (
+              <div className="bg-gray-50 p-4 rounded-md">
+                <h3 className="mb-4 font-medium text-lg">Related Content</h3>
+
+                {advert.material && (
+                  <div className="mb-3">
+                    <span className="block mb-1 text-gray-500 text-sm">
+                      Linked Material
+                    </span>
+                    <Link
+                      href={`/dashboard/materials/${advert.material.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {advert.material.label}
+                    </Link>
+                  </div>
+                )}
+
+                {advert.collection && (
+                  <div>
+                    <span className="block mb-1 text-gray-500 text-sm">
+                      In Collection
+                    </span>
+                    <Link
+                      href={`/dashboard/collections/${advert.collection.id}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {advert.collection.label}
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
