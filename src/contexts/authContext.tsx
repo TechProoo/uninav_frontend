@@ -29,7 +29,7 @@ export { AuthContext };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
@@ -41,9 +41,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(true);
         return;
       }
-      setUser(null);
-      setIsAuthenticated(false);
     } catch (error) {
+      setIsAuthenticated(false);
       console.error("Error refreshing user profile:", error);
     }
   };
