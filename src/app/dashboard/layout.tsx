@@ -1,12 +1,9 @@
 "use client";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { gsap } from "gsap";
+import React, { ReactNode, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Settings,
-  ChevronRight,
-  Menu,
   Search,
   BellIcon,
   Megaphone,
@@ -17,13 +14,13 @@ import {
   GraduationCap,
   ShieldCheck,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+
 import ProtectedRoute from "@/auth/ProtectedRoute";
 import { BadgeDemo } from "@/components/ui/BadgeUi";
 import { TooltipDemo } from "@/components/ui/TooltipUi";
 import { useAuth } from "@/contexts/authContext";
-import Logo from "../../../public/Image/logoo.png";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/blog/app-sidebar";
 
 const getMenuItems = (role?: string) => {
   const items = [
@@ -39,7 +36,6 @@ const getMenuItems = (role?: string) => {
     { icon: PencilLine, label: "Manage Blogs", path: "/dashboard/blogs" },
   ];
 
-  // Add Site Management option for admin and moderator roles
   if (role === "admin" || role === "moderator") {
     items.push({
       icon: ShieldCheck,
@@ -48,7 +44,6 @@ const getMenuItems = (role?: string) => {
     });
   }
 
-  // Always include these at the end
   items.push({ icon: User, label: "Profile", path: "/dashboard/profile" });
   items.push({
     icon: Settings,
@@ -64,13 +59,9 @@ interface LayoutProp {
 }
 
 const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const sidebarRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   const { logout, isAuthenticated, user } = useAuth();
   const [searchValue, setSearchValue] = useState("");
-  const sidebarItems = getMenuItems(user?.role);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -78,85 +69,30 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
     }
   }, [isAuthenticated, router]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
-
   const handleSearch = () => {
     if (!searchValue.trim()) return;
     router.push(`/search?value=${encodeURIComponent(searchValue)}`);
   };
 
-  useEffect(() => {
-    const sidebar = sidebarRef.current;
-    if (!sidebar || !isDesktop) return;
-
-    gsap.to(sidebar, {
-      width: isSidebarOpen ? 260 : 0,
-      opacity: isSidebarOpen ? 1 : 0,
-      duration: 0.3,
-      ease: "power1.inOut",
-    });
-  }, [isSidebarOpen, isDesktop]);
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsDesktop(window.innerWidth >= 768);
-    };
-
-    checkScreenSize();
-    window.addEventListener("resize", checkScreenSize);
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
-
   return (
-    <div className="flex h-screen overflow-hidden">
-      {isDesktop && (
-        <aside
-          ref={sidebarRef}
-          className={`sidebar h-full border-r overflow-y-auto bg-white ${
-            isSidebarOpen ? "w-64" : "w-0"
-          }`}
-        >
-          <div className="p-4">
-            <div className="flex flex-col items-center mb-6">
-              <Image className="w-40 h-auto" src={Logo} alt="Logo" />
-            </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <ProtectedRoute>
+        <main className="flex-1 w-full overflow-y-auto">
+          <header className="flex justify-between items-center bg-[#003462]/90 backdrop-blur-sm w-full sticky top-0 z-50 shadow-sm p-4 border-b">
+            <SidebarTrigger
+              style={{ color: "white" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "black")}
+            />
 
-            <nav className="px-2">
-              <ul className="flex flex-col gap-2">
-                {sidebarItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    href={item.path}
-                    className="flex items-center gap-3 hover:bg-[#003462] px-3 py-2 rounded-md font-medium text-[#003462] hover:text-white text-sm transition-colors"
-                  >
-                    <item.icon />
-                    {item.label}
-                  </Link>
-                ))}
-              </ul>
-            </nav>
-          </div>
-        </aside>
-      )}
-
-      <div className="flex flex-col flex-1">
-        <header className="flex justify-between items-center bg-[#003462] shadow-sm p-4 border-b">
-          {isDesktop && (
-            <button className="p-2 text-white" onClick={toggleSidebar}>
-              {isSidebarOpen ? <ChevronRight size={18} /> : <Menu size={18} />}
-            </button>
-          )}
-
-          <div className="flex justify-between items-center w-full">
-            {isDesktop && (
+            <div className="flex justify-between items-center w-full">
+              {/* Search Bar */}
               <div className="flex items-center bg-white border rounded-md overflow-hidden">
                 <input
                   type="text"
                   placeholder="Search"
                   name="search"
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   onChange={(e) => setSearchValue(e.target.value)}
                   className="px-2 py-1 focus:outline-none w-40 focus:w-64 text-black transition-all duration-300 ease-in-out"
                 />
@@ -167,25 +103,21 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                   <Search className="text-[#0c385f]" />
                 </button>
               </div>
-            )}
 
-            <div className="flex items-center gap-4 ml-auto">
-              <TooltipDemo
-                text={<BellIcon size={15} color="#f0f8ff" />}
-                notify="Notification"
-              />
-              <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
+              {/* Notification & Welcome */}
+              <div className="flex items-center gap-4 ml-auto">
+                <TooltipDemo
+                  text={<BellIcon size={15} color="#f0f8ff" />}
+                  notify="Notification"
+                />
+                <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
+              </div>
             </div>
-          </div>
-        </header>
-
-        <ProtectedRoute>
-          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 w-full overflow-y-auto">
-            {children}
-          </main>
-        </ProtectedRoute>
-      </div>
-    </div>
+          </header>
+          <div className="md:m-10 m-5">{children}</div>
+        </main>
+      </ProtectedRoute>
+    </SidebarProvider>
   );
 };
 

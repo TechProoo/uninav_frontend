@@ -82,7 +82,7 @@ export default function Dashboard() {
             <Image
               src={Book}
               alt="Books and Glasses"
-              className="w-[200px] md:w-[220px]"
+              className="w-[100px] md:w-[120px]"
             />
           </div>
 
@@ -104,7 +104,7 @@ export default function Dashboard() {
           </div>
 
           <div className="hidden md:block">
-            <Image src={Book} alt="Books on Shelf" width={250} height={250} />
+            <Image src={Book} alt="Books on Shelf" width={100} height={100} />
           </div>
         </div>
       </div>

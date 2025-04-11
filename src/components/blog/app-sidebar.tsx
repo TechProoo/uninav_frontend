@@ -1,4 +1,5 @@
 import {
+  AreaChartIcon,
   BookOpen,
   Bookmark,
   GraduationCap,
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Logo from "../../../public/Image/logoo.png";
+import Link from "next/link";
 
 // Menu items.
 const items = [
@@ -38,6 +40,11 @@ const items = [
     title: "Courses",
     url: "/dashboard/courses",
     icon: GraduationCap,
+  },
+  {
+    title: "Blogs",
+    url: "/dashboard/blogs",
+    icon: AreaChartIcon,
   },
   {
     title: "Profile",
@@ -64,13 +71,13 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a
+                    <Link
                       href={item.url}
-                      className="flex items-center gap-3 text-sm"
+                      className="flex items-center gap-3 p-5"
                     >
-                      <item.icon className="w-5 h-5" />
-                      <span>{item.title}</span>
-                    </a>
+                      <item.icon color="#003666" size={30} />
+                      <span style={{color:"#003666"}} className="text-lg ">{item.title}</span>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
