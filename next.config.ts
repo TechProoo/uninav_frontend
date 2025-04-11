@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === "production",
   },
   webpack: (config) => {
+    // Add SVG handling configuration
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+
+    // Add specific rule for SVG files
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack", "url-loader"],
+    });
+
     return config;
   },
   images: {

@@ -100,6 +100,9 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
                   </Badge>
                 )}
               </div>
+              <p className="text-gray-500 text-sm">
+                by @{material.creator.username}
+              </p>
               <p className="mt-1 text-gray-600 text-sm line-clamp-2">
                 {material.description}
               </p>
@@ -172,7 +175,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
               {material.label}
             </h3>
             <p className="text-gray-500 text-sm">
-              by {material.creator.firstName} {material.creator.lastName}
+              by @{material.creator.username}
             </p>
           </div>
         </div>

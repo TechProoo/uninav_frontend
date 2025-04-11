@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Logo from "../../public/Image/logoo.png";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "../components/ui/Button-styled";
@@ -20,9 +19,18 @@ const Navbar = () => {
     <div className="relative bg-white/95 shadow-md">
       <nav className="mx-auto px-4 py-2 max-w-[1400px]">
         <div className="flex justify-between items-center h-14">
-          <div className="nav_logo">
-            <Image className="w-40 h-auto" src={Logo} alt="UniNav Logo" />
-          </div>
+          <Link href={"/"} className="flex items-center nav_logo">
+            <Image
+              className="mr-2 w-10 h-auto"
+              src="/Image/uninav-logo.svg"
+              width={40}
+              height={40}
+              alt="UniNav Logo"
+            />
+            <span className="hidden sm:block font-semibold text-[#003666] text-xl">
+              UniNav
+            </span>
+          </Link>
           <ul className="hidden md:block">
             <li className="flex items-center gap-8 nav_li">
               <Link href={"/about"} className="hover:text-primary nav_link">

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import Logo from "../../../public/Image/logoo.png";
+import UniNavLogo from "../../../public/Image/uninav-logo.svg";
 import Link from "next/link";
 import {
   BookOpen,
@@ -126,7 +126,8 @@ const Page = () => {
       {/* Header */}
       <div className="flex md:flex-row flex-col justify-between items-center gap-6">
         <div className="flex items-center gap-2 bg-white shadow px-4 py-2 rounded-xl">
-          <Image src={Logo} alt="Logo" className="w-36 h-auto" />
+          <Image src={UniNavLogo} alt="Logo" className="w-10 h-auto" />
+          <span className="font-semibold text-[#003666] text-xl">UniNav</span>
         </div>
 
         <ul className="flex flex-wrap gap-4 text-sm md:text-base">

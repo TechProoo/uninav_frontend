@@ -83,7 +83,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         visibility: initialData.visibility,
         restriction: initialData.restriction,
         resourceAddress: initialData.resource?.resourceAddress || "",
-        targetCourse: initialData.targetCourseId || undefined,
+        targetCourseId: initialData.targetCourseId || undefined,
       });
       if (initialData.targetCourse) {
         const { id, courseName, courseCode } = initialData.targetCourse;
@@ -95,7 +95,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           reviewStatus: "",
           reviewedBy: null,
           departmentId: "",
-          level: 0,
+          level: 100,
         };
         setSelectedCourse(course);
       }
@@ -106,7 +106,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   useEffect(() => {
     const loadCourses = async () => {
       try {
-        const response = await getCourses({ limit: 100 });
+        const response = await getCourses({});
         if (response?.status === "success") {
           setCourses(response.data);
         }

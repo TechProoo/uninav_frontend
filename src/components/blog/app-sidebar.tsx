@@ -21,7 +21,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
-import Logo from "../../../public/Image/logoo.png";
+// Remove the direct SVG import
+// import UniNavLogo from "../../../public/Image/uninav-logo.svg";
 import Link from "next/link";
 
 // Menu items.
@@ -47,7 +48,17 @@ const items = [
     icon: AreaChartIcon,
   },
   {
-    title: "Profile",
+    title: "Advertise",
+    url: "/dashboard/advertise",
+    icon: Megaphone,
+  },
+  {
+    title: "Bookmarks",
+    url: "/dashboard/bookmarks",
+    icon: Bookmark,
+  },
+  {
+    title: "Account",
     url: "/dashboard/profile",
     icon: User,
   },
@@ -60,30 +71,33 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon">
-      <SidebarContent>
-        <div className="flex flex-col items-center mt-10">
-          <Image className="w-40 h-auto" src={Logo} alt="Logo" />
+    <Sidebar defaultWidth="16rem" collapsedWidth="3rem">
+      <SidebarContent className="flex flex-col h-full">
+        <div className="relative flex items-center px-3 py-4 h-16">
+          <Link
+            href="/"
+            className="group flex items-center space-x-2 cursor-pointer"
+          >
+            <Image
+              src="/Image/uninav-logo.svg" // Use direct path to the SVG
+              alt="UniNav Logo"
+              width={32}
+              height={32}
+              className="w-8 h-8"
+            />
+            <span className="ml-2 font-bold text-primary dark:text-white text-xl">
+              UniNav
+            </span>
+          </Link>
         </div>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link
-                      href={item.url}
-                      className="flex items-center gap-3 p-5"
-                    >
-                      <item.icon color="#003666" size={30} />
-                      <span style={{color:"#003666"}} className="text-lg ">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarMenu>
+          {items.map((item) => (
+            <SidebarMenuItem key={item.title} href={item.url}>
+              <item.icon className="mr-2 w-4 h-4" />
+              <span>{item.title}</span>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
       </SidebarContent>
     </Sidebar>
   );
