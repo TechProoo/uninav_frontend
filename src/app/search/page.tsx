@@ -2,7 +2,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import UniNavLogo from "../../../public/Image/uninav-logo.svg";
+import UniNavLogo from "../../../public/Image/uninav-logo-image.png";
 import Link from "next/link";
 import {
   BookOpen,
@@ -19,7 +19,6 @@ import { SelectCourse } from "@/components/search/selectCourse";
 import searchData from "@/api/search.api";
 import { Material, Pagination, Response } from "@/lib/types/response.type";
 import MaterialGrid from "@/components/materials/MaterialGrid";
-// import { SearchResponse } from "@/lib/types/response.type";
 
 const items = [
   {

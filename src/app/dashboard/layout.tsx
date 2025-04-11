@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Settings,
   Search,
-  BellIcon,
   Megaphone,
   BookOpen,
   PencilLine,
@@ -17,10 +16,10 @@ import {
 
 import ProtectedRoute from "@/auth/ProtectedRoute";
 import { BadgeDemo } from "@/components/ui/BadgeUi";
-import { TooltipDemo } from "@/components/ui/TooltipUi";
 import { useAuth } from "@/contexts/authContext";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/blog/app-sidebar";
+import { Modal } from "@/components/search/modal";
 
 const getMenuItems = (role?: string) => {
   const items = [
@@ -61,7 +60,8 @@ interface LayoutProp {
 const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const router = useRouter();
   const { logout, isAuthenticated, user } = useAuth();
-  const [searchValue, setSearchValue] = useState("");
+  // const [searchValue, setSearchValue] = useState("");
+  const [modal, setModal] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -69,10 +69,16 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
     }
   }, [isAuthenticated, router]);
 
-  const handleSearch = () => {
-    if (!searchValue.trim()) return;
-    router.push(`/search?value=${encodeURIComponent(searchValue)}`);
+  // const handleSearch = () => {
+  //   if (!searchValue.trim()) return;
+  //   router.push(`/search?value=${encodeURIComponent(searchValue)}`);
+  // };
+
+  const handleModal = () => {
+    setModal((s) => !s);
   };
+
+  console.log(modal);
 
   return (
     <SidebarProvider>
@@ -83,33 +89,38 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
             <SidebarTrigger
               style={{ color: "white" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "black")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
             />
 
             <div className="flex justify-between items-center w-full">
               {/* Search Bar */}
               <div className="flex items-center bg-white border rounded-md overflow-hidden">
-                <input
+                {/* <input
                   type="text"
                   placeholder="Search"
                   name="search"
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   onChange={(e) => setSearchValue(e.target.value)}
                   className="px-2 py-1 focus:outline-none w-40 focus:w-64 text-black transition-all duration-300 ease-in-out"
-                />
-                <button
+                /> */}
+
+                {/* <button
                   onClick={handleSearch}
                   className="bg-[#f0f8ff] px-3 py-1"
                 >
                   <Search className="text-[#0c385f]" />
-                </button>
+                </button> */}
               </div>
 
               {/* Notification & Welcome */}
               <div className="flex items-center gap-4 ml-auto">
-                <TooltipDemo
-                  text={<BellIcon size={15} color="#f0f8ff" />}
-                  notify="Notification"
-                />
+                <div
+                  className="bg-white p-1 rounded-md cursor-pointer active:scale-95 transition-transform"
+                  onClick={handleModal}
+                >
+                  <Search className="text-[#0c385f]" />
+                </div>
+                {modal && <Modal isOpen={modal} onClose={handleModal} />}
                 <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
               </div>
             </div>

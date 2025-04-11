@@ -6,7 +6,7 @@ const Loader = () => {
   return (
     <StyledWrapper>
 
-      <div className="absolute left-0 right-0 bottom-0 top-0 w-screen h-screen flex justify-center items-center bg-[#003666]/80 backdrop-blur-sm z-50">
+      <div className="fixed left-0 right-0 bottom-0 top-0 w-screen h-screen flex justify-center items-center bg-[#003666]/80 backdrop-blur-sm z-50">
         <div className="loader">
           <div className="box">
             <div className="logo">
