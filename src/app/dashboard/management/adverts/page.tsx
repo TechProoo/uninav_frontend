@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ApprovalStatusEnum, Advert } from "@/lib/types/response.type";
+import { ApprovalStatusEnum } from "@/lib/types/response.type";
 import {
   ReviewActionDTO,
   getAdvertReviewCounts,
@@ -30,6 +30,7 @@ import ReviewActionDialog from "@/components/management/ReviewActionDialog";
 import DeleteConfirmationDialog from "@/components/management/DeleteConfirmationDialog";
 import AdvertDetail from "@/components/materials/AdvertDetail";
 import toast from "react-hot-toast";
+import { Advert } from "@/lib/types/response.type";
 import Link from "next/link";
 
 const AdvertsReviewPage = () => {
@@ -38,18 +39,14 @@ const AdvertsReviewPage = () => {
   const [activeTab, setActiveTab] = useState<string>(
     ApprovalStatusEnum.PENDING
   );
-  const [adverts, setAdverts] = useState<Advertisement[]>([]);
+  const [adverts, setAdverts] = useState<Advert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedAdvert, setSelectedAdvert] = useState<Advertisement | null>(
-    null
-  );
-  const [viewingAdvert, setViewingAdvert] = useState<Advertisement | null>(
-    null
-  );
+  const [selectedAdvert, setSelectedAdvert] = useState<Advert | null>(null);
+  const [viewingAdvert, setViewingAdvert] = useState<Advert | null>(null);
 
   // Dialog states
   const [reviewAction, setReviewAction] = useState<ApprovalStatusEnum | null>(

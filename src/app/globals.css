@@ -1,7 +1,7 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poiret+One&display=swap");
-@import "tw-animate-css";
 @import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -55,7 +55,7 @@
 }
 
 .text_main {
-  color: var( --text-color-light-two);
+  color: var(--text-color-light-two);
 }
 
 .text_dark {
@@ -452,5 +452,5 @@ body {
 
 /* TEXT EDITOR */
 .ql-editor p {
-  margin-bottom: 1rem; 
+  margin-bottom: 1rem;
 }
