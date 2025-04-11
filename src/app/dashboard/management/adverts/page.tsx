@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import {
-  Award,
+  Megaphone,
   ChevronLeft,
   ChevronRight,
   Loader2,
@@ -12,41 +12,46 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
-  BookOpen,
-  Building,
-  GraduationCap,
+  Eye,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { ApprovalStatusEnum, DLC } from "@/lib/types/response.type";
+import { ApprovalStatusEnum } from "@/lib/types/response.type";
 import {
-  listDLCReviews,
-  reviewDLC,
-  deleteDLCAsAdmin,
+  Advertisement,
   ReviewActionDTO,
-  getDLCReviewCounts,
-  ReviewCounts,
+  getAdvertReviewCounts,
+  listAdvertReviews,
+  reviewAdvert,
+  deleteAdvertAsAdmin,
 } from "@/api/review.api";
 import ReviewTabs from "@/components/management/ReviewTabs";
 import ReviewActionDialog from "@/components/management/ReviewActionDialog";
 import DeleteConfirmationDialog from "@/components/management/DeleteConfirmationDialog";
+import AdvertDetail from "@/components/materials/AdvertDetail";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
-const DLCReviewPage = () => {
+const AdvertsReviewPage = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<string>(
     ApprovalStatusEnum.PENDING
   );
-  const [dlcs, setDLCs] = useState<DLC[]>([]);
+  const [adverts, setAdverts] = useState<Advertisement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedDLC, setSelectedDLC] = useState<DLC | null>(null);
+  const [selectedAdvert, setSelectedAdvert] = useState<Advertisement | null>(
+    null
+  );
+  const [viewingAdvert, setViewingAdvert] = useState<Advertisement | null>(
+    null
+  );
 
   // Dialog states
   const [reviewAction, setReviewAction] = useState<ApprovalStatusEnum | null>(
@@ -68,16 +73,16 @@ const DLCReviewPage = () => {
     }
   }, [user, router]);
 
-  // Fetch DLCs when tab changes or pagination changes
+  // Fetch adverts when tab changes or pagination changes
   useEffect(() => {
-    fetchDLCs();
+    fetchAdverts();
   }, [activeTab, currentPage]);
 
-  // Fetch counts using new endpoint
+  // Fetch counts using API endpoint
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const response = await getDLCReviewCounts();
+        const response = await getAdvertReviewCounts();
         if (response?.status === "success") {
           setCounts(response.data);
         }
@@ -89,26 +94,26 @@ const DLCReviewPage = () => {
     fetchCounts();
   }, []); // Only fetch once on mount
 
-  const fetchDLCs = async () => {
+  const fetchAdverts = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await listDLCReviews({
+      const response = await listAdvertReviews({
         status: activeTab as ApprovalStatusEnum,
         page: currentPage,
         limit: 10,
       });
 
       if (response?.status === "success") {
-        setDLCs(response.data.data);
+        setAdverts(response.data.data);
         setTotalPages(response.data.pagination.totalPages);
       } else {
-        setError("Failed to load department level courses");
+        setError("Failed to load advertisements");
       }
     } catch (err) {
-      console.error("Error fetching department level courses:", err);
-      setError("An error occurred while loading department level courses");
+      console.error("Error fetching advertisements:", err);
+      setError("An error occurred while loading advertisements");
     } finally {
       setIsLoading(false);
     }
@@ -127,25 +132,31 @@ const DLCReviewPage = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement search functionality - this would need to be added to the API
-    fetchDLCs();
+    fetchAdverts();
   };
 
-  const handleReviewAction = (dlc: DLC, action: ApprovalStatusEnum) => {
-    setSelectedDLC(dlc);
+  const handleReviewAction = (
+    advert: Advertisement,
+    action: ApprovalStatusEnum
+  ) => {
+    setSelectedAdvert(advert);
     setReviewAction(action);
   };
 
-  const handleDeleteAction = (dlc: DLC) => {
-    setSelectedDLC(dlc);
+  const handleDeleteAction = (advert: Advertisement) => {
+    setSelectedAdvert(advert);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleAdvertClick = (advert: Advertisement) => {
+    setViewingAdvert(advert);
   };
 
   const confirmReviewAction = async (
     action: ApprovalStatusEnum,
     comment: string
   ) => {
-    if (!selectedDLC) return;
+    if (!selectedAdvert) return;
 
     try {
       const reviewData: ReviewActionDTO = {
@@ -153,15 +164,11 @@ const DLCReviewPage = () => {
         comment: comment.trim() || undefined,
       };
 
-      const response = await reviewDLC(
-        selectedDLC.departmentId,
-        selectedDLC.courseId,
-        reviewData
-      );
+      const response = await reviewAdvert(selectedAdvert.id, reviewData);
 
       if (response?.status === "success") {
         toast.success(
-          `Department Level Course has been ${
+          `Advertisement has been ${
             action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
           }`
         );
@@ -176,7 +183,7 @@ const DLCReviewPage = () => {
             ] + 1,
         }));
 
-        fetchDLCs();
+        fetchAdverts();
       } else {
         toast.error("Action failed. Please try again.");
       }
@@ -187,33 +194,49 @@ const DLCReviewPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!selectedDLC || user?.role !== "admin") return;
+    if (!selectedAdvert || user?.role !== "admin") return;
 
     try {
-      const response = await deleteDLCAsAdmin(
-        selectedDLC.departmentId,
-        selectedDLC.courseId
-      );
+      const response = await deleteAdvertAsAdmin(selectedAdvert.id);
 
       if (response?.status === "success") {
-        toast.success("Department Level Course has been deleted");
+        toast.success("Advertisement has been deleted");
 
         // Update counts based on current tab
         setCounts((prev) => ({
           ...prev,
           [activeTab.toLowerCase()]: Math.max(
             0,
-            prev[activeTab.toLowerCase() as keyof ReviewCounts] - 1
+            prev[activeTab.toLowerCase()] - 1
           ),
         }));
 
-        fetchDLCs();
+        fetchAdverts();
       } else {
-        toast.error("Failed to delete department level course");
+        toast.error("Failed to delete advertisement");
       }
     } catch (error) {
-      console.error("Error deleting department level course:", error);
-      toast.error("An error occurred while deleting department level course");
+      console.error("Error deleting advertisement:", error);
+      toast.error("An error occurred while deleting advertisement");
+    }
+  };
+
+  const formatAdvertType = (type: string) => {
+    return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+  };
+
+  const getAdvertTypeClass = (type: string) => {
+    switch (type.toLowerCase()) {
+      case "free":
+        return "bg-green-100 text-green-700";
+      case "pro":
+        return "bg-blue-100 text-blue-700";
+      case "boost":
+        return "bg-purple-100 text-purple-700";
+      case "targeted":
+        return "bg-amber-100 text-amber-700";
+      default:
+        return "bg-gray-100 text-gray-700";
     }
   };
 
@@ -231,14 +254,14 @@ const DLCReviewPage = () => {
             <span>Back</span>
           </Link>
         </Button>
-        <h1 className="font-bold text-3xl">Department Level Courses Review</h1>
+        <h1 className="font-bold text-3xl">Advertisements Review</h1>
       </div>
 
       <div className="mb-6">
         <form onSubmit={handleSearch} className="flex gap-2">
           <Input
             type="search"
-            placeholder="Search by course code or department name..."
+            placeholder="Search advertisements..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="max-w-md"
@@ -266,75 +289,93 @@ const DLCReviewPage = () => {
             <div className="bg-red-50 p-4 rounded-md text-red-500">
               <p>{error}</p>
             </div>
-          ) : dlcs.length === 0 ? (
+          ) : adverts.length === 0 ? (
             <div className="bg-gray-50 p-8 rounded-md text-center">
-              <Award className="mx-auto mb-4 w-12 h-12 text-gray-400" />
+              <Megaphone className="mx-auto mb-4 w-12 h-12 text-gray-400" />
               <h3 className="mb-2 font-medium text-xl">
-                No department level courses found
+                No advertisements found
               </h3>
               <p className="text-gray-500">
                 {activeTab === ApprovalStatusEnum.PENDING
-                  ? "There are no department level courses waiting for review."
+                  ? "There are no advertisements waiting for review."
                   : activeTab === ApprovalStatusEnum.APPROVED
-                  ? "There are no approved department level courses."
-                  : "There are no rejected department level courses."}
+                  ? "There are no approved advertisements."
+                  : "There are no rejected advertisements."}
               </p>
             </div>
           ) : (
             <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {dlcs.map((dlc) => (
+              {adverts.map((advert) => (
                 <div
-                  key={`${dlc.departmentId}-${dlc.courseId}`}
+                  key={advert.id}
                   className="bg-white shadow-sm hover:shadow-md border rounded-lg overflow-hidden transition-shadow"
                 >
-                  <div className="p-6">
-                    {/* Header with Icons */}
-                    <div className="flex justify-between mb-4">
-                      <div className="flex items-center">
-                        <Building className="mr-2 w-5 h-5 text-blue-600" />
-                        <span className="font-medium">Department</span>
+                  <div className="relative bg-gray-100 aspect-video">
+                    {advert.imageUrl ? (
+                      <img
+                        src={advert.imageUrl}
+                        alt={advert.label}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "/Image/blank-book-cover-white-vector-illustration.png";
+                        }}
+                      />
+                    ) : (
+                      <div className="flex justify-center items-center h-full">
+                        <ImageIcon className="w-12 h-12 text-gray-400" />
                       </div>
+                    )}
+                    <div className="top-2 right-2 absolute">
                       <Badge
-                        variant="outline"
-                        className="bg-purple-50 text-purple-700"
+                        className={`${getAdvertTypeClass(
+                          advert.type
+                        )} capitalize`}
                       >
-                        Level {dlc.level}
+                        {formatAdvertType(advert.type)}
                       </Badge>
                     </div>
+                  </div>
 
-                    {/* Department Info */}
-                    <div className="mb-4 pb-4 border-gray-100 border-b">
-                      <h3 className="font-semibold text-lg">
-                        {dlc.department.name}
-                      </h3>
-                      <p className="text-gray-500 text-sm">
-                        {dlc.department.description ||
-                          "No department description"}
-                      </p>
-                    </div>
-
-                    {/* Course Info */}
-                    <div className="flex items-center mb-2">
-                      <GraduationCap className="mr-2 w-5 h-5 text-green-600" />
-                      <span className="font-medium">Course</span>
-                    </div>
-
-                    <div className="mb-4">
-                      <div className="flex justify-between items-center mb-1">
-                        <h4 className="font-semibold">
-                          {dlc.course.courseName}
-                        </h4>
-                        <Badge className="bg-blue-100 text-blue-700 uppercase">
-                          {dlc.course.courseCode}
-                        </Badge>
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-semibold text-lg line-clamp-1">
+                          {advert.label}
+                        </h3>
+                        <p className="text-gray-500 text-sm line-clamp-2">
+                          {advert.description || "No description provided."}
+                        </p>
                       </div>
-                      <p className="text-gray-600 text-sm line-clamp-2">
-                        {dlc.course.description || "No course description"}
-                      </p>
                     </div>
 
-                    {/* Action buttons */}
-                    <div className="flex justify-end space-x-2 mt-4">
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      {advert.material && (
+                        <Badge className="bg-blue-100 text-blue-700">
+                          Linked to Material
+                        </Badge>
+                      )}
+                      {advert.collection && (
+                        <Badge className="bg-purple-100 text-purple-700">
+                          Collection
+                        </Badge>
+                      )}
+                      <div className="flex items-center gap-1 text-gray-500 text-xs">
+                        <Eye className="w-3 h-3" />
+                        {advert.views}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleAdvertClick(advert)}
+                      >
+                        <Eye className="mr-2 w-4 h-4" />
+                        View
+                      </Button>
+
                       {activeTab === ApprovalStatusEnum.PENDING && (
                         <>
                           <Button
@@ -343,7 +384,7 @@ const DLCReviewPage = () => {
                             className="bg-green-600 hover:bg-green-700"
                             onClick={() =>
                               handleReviewAction(
-                                dlc,
+                                advert,
                                 ApprovalStatusEnum.APPROVED
                               )
                             }
@@ -356,7 +397,7 @@ const DLCReviewPage = () => {
                             size="sm"
                             onClick={() =>
                               handleReviewAction(
-                                dlc,
+                                advert,
                                 ApprovalStatusEnum.REJECTED
                               )
                             }
@@ -367,12 +408,11 @@ const DLCReviewPage = () => {
                         </>
                       )}
 
-                      {/* Delete button for admin only */}
                       {user.role === "admin" && (
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => handleDeleteAction(dlc)}
+                          onClick={() => handleDeleteAction(advert)}
                         >
                           <Trash2 className="mr-2 w-4 h-4" />
                           Delete
@@ -380,22 +420,21 @@ const DLCReviewPage = () => {
                       )}
                     </div>
 
-                    {/* Review info */}
+                    {/* Review info for non-pending items */}
                     {activeTab !== ApprovalStatusEnum.PENDING &&
-                      dlc.reviewedById && (
+                      advert.reviewedBy && (
                         <div className="mt-4 pt-4 border-gray-100 border-t">
                           <p className="text-sm">
                             {activeTab === ApprovalStatusEnum.APPROVED ? (
-                              <span className="font-medium text-green-600">
-                                Approved
+                              <span className="text-green-600">
+                                Approved by:{" "}
                               </span>
                             ) : (
-                              <span className="font-medium text-red-600">
-                                Rejected
+                              <span className="text-red-600">
+                                Rejected by:{" "}
                               </span>
                             )}
-                            {/* If reviewer info is available */}
-                            {/* <span> by {dlc.reviewedBy?.username || "Admin"}</span> */}
+                            {advert.reviewedBy.username}
                           </p>
                         </div>
                       )}
@@ -406,7 +445,7 @@ const DLCReviewPage = () => {
           )}
 
           {/* Pagination controls */}
-          {dlcs.length > 0 && (
+          {adverts.length > 0 && totalPages > 1 && (
             <div className="flex justify-between items-center pt-8">
               <p className="text-gray-600">
                 Page {currentPage} of {totalPages}
@@ -434,29 +473,41 @@ const DLCReviewPage = () => {
         </div>
       </ReviewTabs>
 
+      {/* Advertisement preview modal */}
+      {viewingAdvert && (
+        <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/50 p-4">
+          <div className="bg-white shadow-xl rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+            <AdvertDetail
+              advert={viewingAdvert}
+              onClose={() => setViewingAdvert(null)}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Review action dialog */}
-      {selectedDLC && reviewAction && (
+      {selectedAdvert && reviewAction && (
         <ReviewActionDialog
           isOpen={!!reviewAction}
           onClose={() => setReviewAction(null)}
           onConfirm={confirmReviewAction}
           action={reviewAction}
-          contentType="Department Level Course"
+          contentType="Advertisement"
         />
       )}
 
       {/* Delete confirmation dialog */}
-      {selectedDLC && (
+      {selectedAdvert && (
         <DeleteConfirmationDialog
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
           onConfirm={confirmDelete}
-          contentType="Department Level Course"
-          itemName={`${selectedDLC.course.courseCode} for ${selectedDLC.department.name} (Level ${selectedDLC.level})`}
+          contentType="Advertisement"
+          itemName={selectedAdvert.label}
         />
       )}
     </div>
   );
 };
 
-export default DLCReviewPage;
+export default AdvertsReviewPage;

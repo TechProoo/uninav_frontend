@@ -276,6 +276,12 @@ export type Advert = {
     username: string;
   };
   reviewStatus: ApprovalStatusEnum;
+  reviewedBy: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
   createdAt: string;
   updatedAt: string;
 };

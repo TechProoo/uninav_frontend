@@ -13,6 +13,7 @@ import {
   CheckCircle,
   XCircle,
   Tag,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,8 @@ import {
   reviewBlog,
   deleteBlogAsAdmin,
   ReviewActionDTO,
+  getBlogReviewCounts,
+  ReviewCounts,
 } from "@/api/review.api";
 import ReviewTabs from "@/components/management/ReviewTabs";
 import ReviewActionDialog from "@/components/management/ReviewActionDialog";
@@ -30,6 +33,7 @@ import DeleteConfirmationDialog from "@/components/management/DeleteConfirmation
 import toast from "react-hot-toast";
 import Link from "next/link";
 import Image from "next/image";
+import BlogDetail from "@/components/blog/BlogDetail";
 
 const BlogsReviewPage = () => {
   const router = useRouter();
@@ -44,6 +48,7 @@ const BlogsReviewPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+  const [viewingBlogId, setViewingBlogId] = useState<string | null>(null);
 
   // Dialog states
   const [reviewAction, setReviewAction] = useState<ApprovalStatusEnum | null>(
@@ -70,40 +75,21 @@ const BlogsReviewPage = () => {
     fetchBlogs();
   }, [activeTab, currentPage]);
 
-  // Fetch counts for each status
+  // Fetch counts using new endpoint
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
-          listBlogReviews({
-            status: ApprovalStatusEnum.PENDING,
-            page: 1,
-            limit: 1,
-          }),
-          listBlogReviews({
-            status: ApprovalStatusEnum.APPROVED,
-            page: 1,
-            limit: 1,
-          }),
-          listBlogReviews({
-            status: ApprovalStatusEnum.REJECTED,
-            page: 1,
-            limit: 1,
-          }),
-        ]);
-
-        setCounts({
-          pending: pendingRes?.data.pagination.total || 0,
-          approved: approvedRes?.data.pagination.total || 0,
-          rejected: rejectedRes?.data.pagination.total || 0,
-        });
+        const response = await getBlogReviewCounts();
+        if (response?.status === "success") {
+          setCounts(response.data);
+        }
       } catch (err) {
         console.error("Error fetching counts:", err);
       }
     };
 
     fetchCounts();
-  }, []);
+  }, []); // Only fetch once on mount
 
   const fetchBlogs = async () => {
     setIsLoading(true);
@@ -178,17 +164,15 @@ const BlogsReviewPage = () => {
           }`
         );
 
-        // Update counts
-        if (activeTab === ApprovalStatusEnum.PENDING) {
-          setCounts((prev) => ({
-            ...prev,
-            pending: Math.max(0, prev.pending - 1),
-            [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
-              prev[
-                action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
-              ] + 1,
-          }));
-        }
+        // Update counts locally
+        setCounts((prev) => ({
+          ...prev,
+          pending: Math.max(0, prev.pending - 1),
+          [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
+            prev[
+              action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
+            ] + 1,
+        }));
 
         fetchBlogs();
       } else {
@@ -210,22 +194,13 @@ const BlogsReviewPage = () => {
         toast.success("Blog has been deleted");
 
         // Update counts based on current tab
-        if (activeTab === ApprovalStatusEnum.PENDING) {
-          setCounts((prev) => ({
-            ...prev,
-            pending: Math.max(0, prev.pending - 1),
-          }));
-        } else if (activeTab === ApprovalStatusEnum.APPROVED) {
-          setCounts((prev) => ({
-            ...prev,
-            approved: Math.max(0, prev.approved - 1),
-          }));
-        } else {
-          setCounts((prev) => ({
-            ...prev,
-            rejected: Math.max(0, prev.rejected - 1),
-          }));
-        }
+        setCounts((prev) => ({
+          ...prev,
+          [activeTab.toLowerCase()]: Math.max(
+            0,
+            prev[activeTab.toLowerCase() as keyof ReviewCounts] - 1
+          ),
+        }));
 
         fetchBlogs();
       } else {
@@ -244,6 +219,10 @@ const BlogsReviewPage = () => {
       .split(" ")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  };
+
+  const handleBlogClick = (blog: Blog) => {
+    setViewingBlogId(blog.id);
   };
 
   // If user not loaded yet or not admin/moderator, show nothing
@@ -379,55 +358,58 @@ const BlogsReviewPage = () => {
                     </div>
 
                     {/* Action buttons */}
-                    <div className="flex justify-between mt-2">
-                      <p className="text-gray-500 text-xs">
-                        {new Date(blog.createdAt).toLocaleDateString()}
-                      </p>
-
-                      <div className="space-x-1">
-                        {activeTab === ApprovalStatusEnum.PENDING && (
-                          <>
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700"
-                              onClick={() =>
-                                handleReviewAction(
-                                  blog,
-                                  ApprovalStatusEnum.APPROVED
-                                )
-                              }
-                            >
-                              <CheckCircle className="mr-1 w-3.5 h-3.5" />
-                              Approve
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() =>
-                                handleReviewAction(
-                                  blog,
-                                  ApprovalStatusEnum.REJECTED
-                                )
-                              }
-                            >
-                              <XCircle className="mr-1 w-3.5 h-3.5" />
-                              Reject
-                            </Button>
-                          </>
-                        )}
-
-                        {/* Delete button for admin only */}
-                        {user.role === "admin" && (
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleBlogClick(blog)}
+                      >
+                        <Eye className="mr-2 w-4 h-4" />
+                        View
+                      </Button>
+                      {activeTab === ApprovalStatusEnum.PENDING && (
+                        <>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() =>
+                              handleReviewAction(
+                                blog,
+                                ApprovalStatusEnum.APPROVED
+                              )
+                            }
+                          >
+                            <CheckCircle className="mr-1 w-3.5 h-3.5" />
+                            Approve
+                          </Button>
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() => handleDeleteAction(blog)}
+                            onClick={() =>
+                              handleReviewAction(
+                                blog,
+                                ApprovalStatusEnum.REJECTED
+                              )
+                            }
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <XCircle className="mr-1 w-3.5 h-3.5" />
+                            Reject
                           </Button>
-                        )}
-                      </div>
+                        </>
+                      )}
+
+                      {/* Delete button for admin only */}
+                      {user.role === "admin" && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleDeleteAction(blog)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Delete
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -463,6 +445,18 @@ const BlogsReviewPage = () => {
           )}
         </div>
       </ReviewTabs>
+
+      {/* Blog detail modal */}
+      {viewingBlogId && (
+        <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/50 p-4">
+          <div className="bg-white shadow-xl rounded-lg w-full max-w-6xl max-h-[90vh] overflow-hidden">
+            <BlogDetail
+              blogId={viewingBlogId}
+              onClose={() => setViewingBlogId(null)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Review action dialog */}
       {selectedBlog && reviewAction && (

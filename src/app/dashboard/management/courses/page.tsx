@@ -23,6 +23,8 @@ import {
   reviewCourse,
   deleteCourseAsAdmin,
   ReviewActionDTO,
+  getCourseReviewCounts,
+  ReviewCounts,
 } from "@/api/review.api";
 import ReviewTabs from "@/components/management/ReviewTabs";
 import ReviewActionDialog from "@/components/management/ReviewActionDialog";
@@ -69,40 +71,21 @@ const CoursesReviewPage = () => {
     fetchCourses();
   }, [activeTab, currentPage]);
 
-  // Fetch counts for each status
+  // Fetch counts using new endpoint
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
-          listCourseReviews({
-            status: ApprovalStatusEnum.PENDING,
-            page: 1,
-            limit: 1,
-          }),
-          listCourseReviews({
-            status: ApprovalStatusEnum.APPROVED,
-            page: 1,
-            limit: 1,
-          }),
-          listCourseReviews({
-            status: ApprovalStatusEnum.REJECTED,
-            page: 1,
-            limit: 1,
-          }),
-        ]);
-
-        setCounts({
-          pending: pendingRes?.data.pagination.total || 0,
-          approved: approvedRes?.data.pagination.total || 0,
-          rejected: rejectedRes?.data.pagination.total || 0,
-        });
+        const response = await getCourseReviewCounts();
+        if (response?.status === "success") {
+          setCounts(response.data);
+        }
       } catch (err) {
         console.error("Error fetching counts:", err);
       }
     };
 
     fetchCounts();
-  }, []);
+  }, []); // Only fetch once on mount
 
   const fetchCourses = async () => {
     setIsLoading(true);
@@ -177,17 +160,15 @@ const CoursesReviewPage = () => {
           }`
         );
 
-        // Update counts
-        if (activeTab === ApprovalStatusEnum.PENDING) {
-          setCounts((prev) => ({
-            ...prev,
-            pending: Math.max(0, prev.pending - 1),
-            [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
-              prev[
-                action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
-              ] + 1,
-          }));
-        }
+        // Update counts locally
+        setCounts((prev) => ({
+          ...prev,
+          pending: Math.max(0, prev.pending - 1),
+          [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
+            prev[
+              action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
+            ] + 1,
+        }));
 
         fetchCourses();
       } else {
@@ -209,22 +190,13 @@ const CoursesReviewPage = () => {
         toast.success("Course has been deleted");
 
         // Update counts based on current tab
-        if (activeTab === ApprovalStatusEnum.PENDING) {
-          setCounts((prev) => ({
-            ...prev,
-            pending: Math.max(0, prev.pending - 1),
-          }));
-        } else if (activeTab === ApprovalStatusEnum.APPROVED) {
-          setCounts((prev) => ({
-            ...prev,
-            approved: Math.max(0, prev.approved - 1),
-          }));
-        } else {
-          setCounts((prev) => ({
-            ...prev,
-            rejected: Math.max(0, prev.rejected - 1),
-          }));
-        }
+        setCounts((prev) => ({
+          ...prev,
+          [activeTab.toLowerCase()]: Math.max(
+            0,
+            prev[activeTab.toLowerCase() as keyof ReviewCounts] - 1
+          ),
+        }));
 
         fetchCourses();
       } else {

@@ -13,6 +13,7 @@ import {
   Trash2,
   CheckCircle,
   XCircle,
+  Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,12 +24,15 @@ import {
   reviewMaterial,
   deleteMaterialAsAdmin,
   ReviewActionDTO,
+  getMaterialReviewCounts,
+  ReviewCounts,
 } from "@/api/review.api";
 import ReviewTabs from "@/components/management/ReviewTabs";
 import ReviewActionDialog from "@/components/management/ReviewActionDialog";
 import DeleteConfirmationDialog from "@/components/management/DeleteConfirmationDialog";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import MaterialDetail from "@/components/materials/MaterialDetail";
 
 const MaterialsReviewPage = () => {
   const router = useRouter();
@@ -45,6 +49,7 @@ const MaterialsReviewPage = () => {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
     null
   );
+  const [viewingMaterial, setViewingMaterial] = useState<Material | null>(null);
 
   // Dialog states
   const [reviewAction, setReviewAction] = useState<ApprovalStatusEnum | null>(
@@ -71,40 +76,21 @@ const MaterialsReviewPage = () => {
     fetchMaterials();
   }, [activeTab, currentPage]);
 
-  // Fetch counts for each status
+  // Fetch counts using new endpoint
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
-          listMaterialReviews({
-            status: ApprovalStatusEnum.PENDING,
-            page: 1,
-            limit: 1,
-          }),
-          listMaterialReviews({
-            status: ApprovalStatusEnum.APPROVED,
-            page: 1,
-            limit: 1,
-          }),
-          listMaterialReviews({
-            status: ApprovalStatusEnum.REJECTED,
-            page: 1,
-            limit: 1,
-          }),
-        ]);
-
-        setCounts({
-          pending: pendingRes?.data.pagination.total || 0,
-          approved: approvedRes?.data.pagination.total || 0,
-          rejected: rejectedRes?.data.pagination.total || 0,
-        });
+        const response = await getMaterialReviewCounts();
+        if (response?.status === "success") {
+          setCounts(response.data);
+        }
       } catch (err) {
         console.error("Error fetching counts:", err);
       }
     };
 
     fetchCounts();
-  }, []);
+  }, []); // Only fetch once on mount
 
   const fetchMaterials = async () => {
     setIsLoading(true);
@@ -161,6 +147,10 @@ const MaterialsReviewPage = () => {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleMaterialClick = (material: Material) => {
+    setViewingMaterial(material);
+  };
+
   const confirmReviewAction = async (
     action: ApprovalStatusEnum,
     comment: string
@@ -182,17 +172,15 @@ const MaterialsReviewPage = () => {
           }`
         );
 
-        // Update counts
-        if (activeTab === ApprovalStatusEnum.PENDING) {
-          setCounts((prev) => ({
-            ...prev,
-            pending: Math.max(0, prev.pending - 1),
-            [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
-              prev[
-                action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
-              ] + 1,
-          }));
-        }
+        // Update counts locally
+        setCounts((prev) => ({
+          ...prev,
+          pending: Math.max(0, prev.pending - 1),
+          [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
+            prev[
+              action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
+            ] + 1,
+        }));
 
         fetchMaterials();
       } else {
@@ -214,22 +202,13 @@ const MaterialsReviewPage = () => {
         toast.success("Material has been deleted");
 
         // Update counts based on current tab
-        if (activeTab === ApprovalStatusEnum.PENDING) {
-          setCounts((prev) => ({
-            ...prev,
-            pending: Math.max(0, prev.pending - 1),
-          }));
-        } else if (activeTab === ApprovalStatusEnum.APPROVED) {
-          setCounts((prev) => ({
-            ...prev,
-            approved: Math.max(0, prev.approved - 1),
-          }));
-        } else {
-          setCounts((prev) => ({
-            ...prev,
-            rejected: Math.max(0, prev.rejected - 1),
-          }));
-        }
+        setCounts((prev) => ({
+          ...prev,
+          [activeTab.toLowerCase()]: Math.max(
+            0,
+            prev[activeTab.toLowerCase() as keyof ReviewCounts] - 1
+          ),
+        }));
 
         fetchMaterials();
       } else {
@@ -310,8 +289,8 @@ const MaterialsReviewPage = () => {
                   className="bg-white border rounded-lg overflow-hidden"
                 >
                   <div className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
+                    <div className="flex md:flex-row flex-col justify-between items-start gap-4">
+                      <div className="flex-1">
                         <h3 className="font-medium text-lg">
                           {material.label}
                         </h3>
@@ -323,7 +302,7 @@ const MaterialsReviewPage = () => {
                         <p className="mb-2 text-gray-700">
                           {material.description || "No description provided."}
                         </p>
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
                           <Badge variant="secondary">{material.type}</Badge>
                           {material.tags.map((tag) => (
                             <Badge key={tag} variant="outline">
@@ -345,8 +324,15 @@ const MaterialsReviewPage = () => {
                         </p>
                       </div>
 
-                      {/* Action buttons for pending materials */}
-                      <div className="space-x-2">
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleMaterialClick(material)}
+                        >
+                          <Eye className="mr-2 w-4 h-4" />
+                          View
+                        </Button>
                         {activeTab === ApprovalStatusEnum.PENDING && (
                           <>
                             <Button
@@ -378,14 +364,11 @@ const MaterialsReviewPage = () => {
                             </Button>
                           </>
                         )}
-
-                        {/* Delete button for admin only */}
                         {user.role === "admin" && (
                           <Button
                             variant="destructive"
                             size="sm"
                             onClick={() => handleDeleteAction(material)}
-                            className="ml-2"
                           >
                             <Trash2 className="mr-2 w-4 h-4" />
                             Delete
@@ -456,6 +439,18 @@ const MaterialsReviewPage = () => {
           )}
         </div>
       </ReviewTabs>
+
+      {viewingMaterial && (
+        <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/50">
+          <div className="bg-white shadow-xl m-4 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <MaterialDetail
+              material={viewingMaterial}
+              isOwner={false}
+              onClose={() => setViewingMaterial(null)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Review action dialog */}
       {selectedMaterial && reviewAction && (

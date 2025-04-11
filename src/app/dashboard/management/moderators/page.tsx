@@ -23,6 +23,7 @@ import {
   listModeratorApplications,
   reviewModeratorApplication,
   ReviewActionDTO,
+  getModeratorReviewCounts,
 } from "@/api/review.api";
 import ReviewTabs from "@/components/management/ReviewTabs";
 import ReviewActionDialog from "@/components/management/ReviewActionDialog";
@@ -91,40 +92,21 @@ const ModeratorReviewPage = () => {
     fetchApplications();
   }, [activeTab, currentPage]);
 
-  // Fetch counts for each status
+  // Replace the old count fetching with new endpoint
   useEffect(() => {
     const fetchCounts = async () => {
       try {
-        const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
-          listModeratorApplications({
-            status: ApprovalStatusEnum.PENDING,
-            page: 1,
-            limit: 1,
-          }),
-          listModeratorApplications({
-            status: ApprovalStatusEnum.APPROVED,
-            page: 1,
-            limit: 1,
-          }),
-          listModeratorApplications({
-            status: ApprovalStatusEnum.REJECTED,
-            page: 1,
-            limit: 1,
-          }),
-        ]);
-
-        setCounts({
-          pending: pendingRes?.data.pagination.total || 0,
-          approved: approvedRes?.data.pagination.total || 0,
-          rejected: rejectedRes?.data.pagination.total || 0,
-        });
+        const response = await getModeratorReviewCounts();
+        if (response?.status === "success") {
+          setCounts(response.data);
+        }
       } catch (err) {
         console.error("Error fetching counts:", err);
       }
     };
 
     fetchCounts();
-  }, []);
+  }, []); // Only fetch once on mount
 
   const fetchApplications = async () => {
     setIsLoading(true);
@@ -200,17 +182,15 @@ const ModeratorReviewPage = () => {
           }`
         );
 
-        // Update counts
-        if (activeTab === ApprovalStatusEnum.PENDING) {
-          setCounts((prev) => ({
-            ...prev,
-            pending: Math.max(0, prev.pending - 1),
-            [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
-              prev[
-                action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
-              ] + 1,
-          }));
-        }
+        // Update counts locally
+        setCounts((prev) => ({
+          ...prev,
+          pending: Math.max(0, prev.pending - 1),
+          [action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"]:
+            prev[
+              action === ApprovalStatusEnum.APPROVED ? "approved" : "rejected"
+            ] + 1,
+        }));
 
         fetchApplications();
       } else {

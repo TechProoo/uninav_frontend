@@ -260,3 +260,174 @@ export const reviewModeratorApplication = async (
     throw error;
   }
 };
+
+// Review Count Types
+export interface ReviewCounts {
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
+// Material Review Count
+export const getMaterialReviewCounts = async (departmentId?: string) => {
+  try {
+    const url = `/review/materials/count${
+      departmentId ? `?departmentId=${departmentId}` : ""
+    }`;
+    const response = await api.get<Response<ReviewCounts>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching material review counts:", error);
+    return null;
+  }
+};
+
+// Blog Review Count
+export const getBlogReviewCounts = async (departmentId?: string) => {
+  try {
+    const url = `/review/blogs/count${
+      departmentId ? `?departmentId=${departmentId}` : ""
+    }`;
+    const response = await api.get<Response<ReviewCounts>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching blog review counts:", error);
+    return null;
+  }
+};
+
+// Course Review Count
+export const getCourseReviewCounts = async (departmentId?: string) => {
+  try {
+    const url = `/review/courses/count${
+      departmentId ? `?departmentId=${departmentId}` : ""
+    }`;
+    const response = await api.get<Response<ReviewCounts>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching course review counts:", error);
+    return null;
+  }
+};
+
+// DLC Review Count
+export const getDLCReviewCounts = async (departmentId?: string) => {
+  try {
+    const url = `/review/dlc/count${
+      departmentId ? `?departmentId=${departmentId}` : ""
+    }`;
+    const response = await api.get<Response<ReviewCounts>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching DLC review counts:", error);
+    return null;
+  }
+};
+
+// Moderator Review Count (Admin Only)
+export const getModeratorReviewCounts = async (departmentId?: string) => {
+  try {
+    const url = `/review/moderators/count${
+      departmentId ? `?departmentId=${departmentId}` : ""
+    }`;
+    const response = await api.get<Response<ReviewCounts>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching moderator review counts:", error);
+    return null;
+  }
+};
+
+// Advertisements Review Types
+export interface Advertisement {
+  id: string;
+  type: string;
+  label: string;
+  description: string;
+  imageUrl: string;
+  clicks: number;
+  views: number;
+  reviewStatus: ApprovalStatusEnum;
+  creator: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
+  material?: {
+    id: string;
+    label: string;
+  };
+  collection?: {
+    id: string;
+    name: string;
+  };
+  reviewedBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Advertisements Review Endpoints
+export const listAdvertReviews = async (
+  params: PaginationParams & { type?: string } = {}
+) => {
+  try {
+    let url = `/review/adverts?page=${params.page || 1}&limit=${
+      params.limit || 10
+    }`;
+    if (params.status) url += `&status=${params.status}`;
+    if (params.type) url += `&type=${params.type}`;
+
+    const response = await api.get<Response<Pagination<Advertisement[]>>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching advert reviews:", error);
+    return null;
+  }
+};
+
+export const reviewAdvert = async (
+  advertId: string,
+  reviewData: ReviewActionDTO
+) => {
+  try {
+    const response = await api.post<Response<Advertisement>>(
+      `/review/adverts/review/${advertId}`,
+      reviewData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error reviewing advertisement:", error);
+    throw error;
+  }
+};
+
+export const deleteAdvertAsAdmin = async (advertId: string) => {
+  try {
+    const response = await api.delete<Response<{ id: string }>>(
+      `/review/adverts/${advertId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting advertisement:", error);
+    throw error;
+  }
+};
+
+export const getAdvertReviewCounts = async (departmentId?: string) => {
+  try {
+    const url = `/review/adverts/count${
+      departmentId ? `?departmentId=${departmentId}` : ""
+    }`;
+    const response = await api.get<Response<ReviewCounts>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching advertisement review counts:", error);
+    return null;
+  }
+};
