@@ -5,7 +5,6 @@ import {
   GraduationCap,
   LayoutDashboard,
   Megaphone,
-  Pencil,
   Settings,
   User,
 } from "lucide-react";
@@ -13,16 +12,10 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
-// Remove the direct SVG import
-// import UniNavLogo from "../../../public/Image/uninav-logo.svg";
 import Link from "next/link";
 
 // Menu items.
@@ -69,9 +62,9 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export function DashboardSidebar() {
   return (
-    <Sidebar defaultWidth="16rem" collapsedWidth="3rem">
+    <Sidebar defaultWidth="16rem" collapsedWidth="4rem">
       <SidebarContent className="flex flex-col h-full">
         <div className="relative flex items-center px-3 py-4 h-16">
           <Link
@@ -79,7 +72,7 @@ export function AppSidebar() {
             className="group flex items-center space-x-2 cursor-pointer"
           >
             <Image
-              src="/Image/uninav-logo.svg" // Use direct path to the SVG
+              src="/Image/uninav-logo.svg"
               alt="UniNav Logo"
               width={32}
               height={32}
@@ -90,11 +83,16 @@ export function AppSidebar() {
             </span>
           </Link>
         </div>
-        <SidebarMenu>
+        <SidebarMenu className="space-y-1 px-3">
           {items.map((item) => (
-            <SidebarMenuItem key={item.title} href={item.url}>
-              <item.icon className="mr-2 w-4 h-4" />
-              <span>{item.title}</span>
+            <SidebarMenuItem key={item.title}>
+              <Link
+                href={item.url}
+                className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+              >
+                <item.icon className="w-5 h-5" />
+                <span>{item.title}</span>
+              </Link>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

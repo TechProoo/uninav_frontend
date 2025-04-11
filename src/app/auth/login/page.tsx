@@ -7,8 +7,6 @@ import { defineElement } from "@lordicon/element";
 import Button from "@/components/ui/Button-styled";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
-import Logo from "../../../../public/Image/logoo.png";
 import { login } from "@/api/auth.api";
 import toast from "react-hot-toast";
 import Loader from "./loading";
@@ -115,9 +113,6 @@ const page = () => {
             </g>{" "}
           </g>
         </svg>
-      </div>
-      <div className="">
-        <Image className="w-50" src={Logo} alt="" />
       </div>
       <div className="items-center grid grid-cols-12">
         <div className="col-span-12 md:col-span-6 my-auto md:pt-1 h-vh md:h-auto">

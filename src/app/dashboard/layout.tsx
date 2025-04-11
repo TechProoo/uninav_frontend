@@ -20,7 +20,7 @@ import { BadgeDemo } from "@/components/ui/BadgeUi";
 import { TooltipDemo } from "@/components/ui/TooltipUi";
 import { useAuth } from "@/contexts/authContext";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/blog/app-sidebar";
+import { DashboardSidebar } from "@/components/blog/dashboard-sidebar";
 
 const getMenuItems = (role?: string) => {
   const items = [
@@ -62,6 +62,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const router = useRouter();
   const { logout, isAuthenticated, user } = useAuth();
   const [searchValue, setSearchValue] = useState("");
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -69,54 +70,81 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
     }
   }, [isAuthenticated, router]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const position = window.scrollY;
+      setScrollPosition(position);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const handleSearch = () => {
     if (!searchValue.trim()) return;
     router.push(`/search?value=${encodeURIComponent(searchValue)}`);
   };
 
+  // Apply a small translation based on scroll position, but limit it
+  const headerTransform = `translateY(${Math.min(
+    scrollPosition * 0.05,
+    10
+  )}px)`;
+
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <ProtectedRoute>
-        <main className="flex-1 w-full overflow-y-auto">
-          <header className="flex justify-between items-center bg-[#003462]/90 backdrop-blur-sm w-full sticky top-0 z-50 shadow-sm p-4 border-b">
-            <SidebarTrigger
-              style={{ color: "white" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "black")}
-            />
+      <div className="flex h-screen overflow-hidden">
+        <DashboardSidebar />
+        <ProtectedRoute>
+          <main className="flex flex-col flex-1 overflow-hidden">
+            <header
+              className="top-0 z-50 sticky flex justify-between items-center bg-[#003462]/90 shadow-md backdrop-blur-sm p-4 border-b w-full"
+              style={{
+                transform: headerTransform,
+                transition: "transform 0.1s ease-out",
+              }}
+            >
+              <SidebarTrigger
+                style={{ color: "white" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+              />
 
-            <div className="flex justify-between items-center w-full">
-              {/* Search Bar */}
-              <div className="flex items-center bg-white border rounded-md overflow-hidden">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  name="search"
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  className="px-2 py-1 focus:outline-none w-40 focus:w-64 text-black transition-all duration-300 ease-in-out"
-                />
-                <button
-                  onClick={handleSearch}
-                  className="bg-[#f0f8ff] px-3 py-1"
-                >
-                  <Search className="text-[#0c385f]" />
-                </button>
-              </div>
+              <div className="flex justify-between items-center w-full">
+                {/* Search Bar */}
+                <div className="flex items-center bg-white border rounded-md overflow-hidden">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    name="search"
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    className="px-2 py-1 focus:outline-none w-40 sm:w-52 md:w-64 text-black transition-all duration-300 ease-in-out"
+                  />
+                  <button
+                    onClick={handleSearch}
+                    className="bg-[#f0f8ff] px-3 py-1"
+                  >
+                    <Search className="text-[#0c385f]" />
+                  </button>
+                </div>
 
-              {/* Notification & Welcome */}
-              <div className="flex items-center gap-4 ml-auto">
-                <TooltipDemo
-                  text={<BellIcon size={15} color="#f0f8ff" />}
-                  notify="Notification"
-                />
-                <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
+                {/* Notification & Welcome */}
+                <div className="flex items-center gap-4 ml-auto">
+                  <TooltipDemo
+                    text={<BellIcon size={18} color="#f0f8ff" />}
+                    notify="Notification"
+                  />
+                  <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
+                </div>
               </div>
+            </header>
+            <div className="flex-1 overflow-y-auto">
+              <div className="m-5 md:m-10">{children}</div>
             </div>
-          </header>
-          <div className="md:m-10 m-5">{children}</div>
-        </main>
-      </ProtectedRoute>
+          </main>
+        </ProtectedRoute>
+      </div>
     </SidebarProvider>
   );
 };

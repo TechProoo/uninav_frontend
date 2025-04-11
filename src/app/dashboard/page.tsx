@@ -130,7 +130,7 @@ export default function Dashboard() {
         <MaterialGrid
           materials={recommendations}
           onMaterialClick={handleMaterialClick}
-          view="grid"
+          viewMode="grid"
         />
       </section>
     </div>

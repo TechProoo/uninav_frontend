@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "../ui/Button-styled";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { Menu, X } from "lucide-react";
@@ -18,8 +18,21 @@ import {
 
 const Navigation = () => {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const pathname = usePathname();
+  const { isAuthenticated, loading, user } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(true);
+  const isHomePage = pathname === "/";
+
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const scrollPosition = window.scrollY;
+  //     setIsScrolled(scrollPosition > 20);
+  //   };
+
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -30,11 +43,15 @@ const Navigation = () => {
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
-    { label: "Explore", path: "/search" },
+    { label: "Explore", path: "/explore" },
   ];
 
   return (
-    <div className="top-0 z-50 sticky bg-white/95 shadow-md w-full">
+    <div
+      className={`top-0 z-50 w-full bg-white/95 shadow-md ${
+        isHomePage ? "sticky" : isScrolled ? "relative" : "fixed"
+      }`}
+    >
       <nav className="mx-auto px-4 py-2 max-w-[1400px]">
         <div className="flex justify-between items-center h-14">
           <Link href={"/"} className="flex items-center nav_logo">
@@ -62,11 +79,14 @@ const Navigation = () => {
               <Link href={"/contact"} className="hover:text-primary nav_link">
                 Contact
               </Link>
-              <Link href={"/search"} className="hover:text-primary nav_link">
+              <Link href={"/explore"} className="hover:text-primary nav_link">
                 Explore
               </Link>
-              {isAuthenticated && (
-                <Link href={"/dashboard"} className="hover:text-primary nav_link">
+              {user && (
+                <Link
+                  href={"/dashboard"}
+                  className="hover:text-primary nav_link"
+                >
                   Dashboard
                 </Link>
               )}

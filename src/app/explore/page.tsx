@@ -2,7 +2,6 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import UniNavLogo from "../../../public/Image/uninav-logo.svg";
 import Link from "next/link";
 import {
   BookOpen,
@@ -20,34 +19,6 @@ import searchData from "@/api/search.api";
 import { Material, Pagination, Response } from "@/lib/types/response.type";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 // import { SearchResponse } from "@/lib/types/response.type";
-
-const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Materials",
-    url: "/dashboard/materials",
-    icon: BookOpen,
-  },
-  {
-    title: "Courses",
-    url: "/dashboard/courses",
-    icon: GraduationCap,
-  },
-  {
-    title: "Profile",
-    url: "/dashboard/profile",
-    icon: User,
-  },
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
-];
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -123,27 +94,6 @@ const Page = () => {
   return (
     <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-6 py-6 min-h-screen text-gray-900">
       <Toaster />
-      {/* Header */}
-      <div className="flex md:flex-row flex-col justify-between items-center gap-6">
-        <div className="flex items-center gap-2 bg-white shadow px-4 py-2 rounded-xl">
-          <Image src={UniNavLogo} alt="Logo" className="w-10 h-auto" />
-          <span className="font-semibold text-[#003666] text-xl">UniNav</span>
-        </div>
-
-        <ul className="flex flex-wrap gap-4 text-sm md:text-base">
-          {items.map((item) => (
-            <li key={item.url}>
-              <Link
-                href={item.url}
-                className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-xl text-gray-800 transition"
-              >
-                <item.icon size={18} />
-                <span>{item.title}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       {/* Search Section */}
       <div className="bg-[#f0f8ff] shadow mt-10 p-6 rounded-xl">
