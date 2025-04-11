@@ -135,6 +135,31 @@ export default function Dashboard() {
           />
         </section>
       </div>
+
+      {/* Course Slider */}
+      <CourseSlider />
+
+      {/* Bookmarks Section */}
+      <section className="mb-8">
+        <h2 className="mb-4 font-semibold text-xl sm:text-2xl">
+          Your Bookmarks
+        </h2>
+        <BookmarkSlider
+          bookmarks={bookmarks}
+          loading={loadingState.bookmarks}
+          error={error.bookmarks}
+        />
+      </section>
+
+      {/* Recommendations Section */}
+      <section className="mb-8">
+        <h2 className="mb-4 font-semibold text-2xl">Recommended Materials</h2>
+        <MaterialGrid
+          materials={recommendations}
+          onMaterialClick={handleMaterialClick}
+          viewMode="grid"
+        />
+      </section>
     </div>
   );
 }

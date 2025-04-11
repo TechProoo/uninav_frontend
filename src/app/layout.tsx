@@ -6,7 +6,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/authContext";
 import QueryProvider from "@/tanstack/QueryProvider";
 import { Toaster } from "react-hot-toast";
-import ConditionalNavbar from "@/components/checkPath";
+import ConditionalNavbar from "@/components/ConditionalNavbar";
 import { BookmarksProvider } from "@/contexts/bookmarksContext";
 
 const inter = Inter({ subsets: ["latin"] });

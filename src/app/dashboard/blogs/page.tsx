@@ -43,8 +43,8 @@ const BlogsPage = () => {
   if (!blogs || blogs.length === 0) return <NoBlog />;
 
   return (
-    <div className="mx-auto container">
-      <div className="md:flex justify-between items-center mb-5 md:mb-1">
+    <div className="w-full">
+      <div className="md:flex justify-between items-center mb-5 md:mb-1 w-full">
         <h1 className="mb-6 font-bold text-3xl fst">Manage Blogs</h1>
         <div className="flex items-center gap-4">
           <Button

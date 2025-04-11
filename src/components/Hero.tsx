@@ -4,9 +4,9 @@ import Button from "./ui/Button-styled";
 
 export default function Hero() {
   return (
-    <div className="relative hero_container">
-      <div className="items-center grid grid-cols-12 m-auto my-5 md:my-20 w-11/12 md:w-10/12 h-screen md:h-auto">
-        <div className="col-span-12 md:col-span-6">
+    <div className="relative overflow-hidden hero_container">
+      <div className="items-center grid grid-cols-12 m-auto py-8 md:py-16 lg:py-20 w-11/12 md:w-10/12 min-h-[80vh] md:min-h-[70vh]">
+        <div className="order-2 md:order-1 col-span-12 md:col-span-6">
           <div className="hero_left">
             <div className="hero_left_top flex items-center gap-2">
               <div className="w-7">
@@ -29,13 +29,15 @@ export default function Hero() {
                   </g>
                 </svg>
               </div>
-              <small>Start Learning Today</small>
+              <small className="text-sm md:text-base">
+                Start Learning Today
+              </small>
             </div>
             <div className="hero_left_md relative mt-5">
-              <h1 className="text-5xl fst">
+              <h1 className="font-bold text-3xl sm:text-4xl md:text-5xl leading-tight">
                 The Ultimate Study Platform for University Students
               </h1>
-              <div className="top-0 right-10 md:right-20 absolute w-10">
+              <div className="top-0 right-10 md:right-20 absolute w-8 md:w-10">
                 <svg
                   viewBox="0 0 512 512"
                   xmlns="http://www.w3.org/2000/svg"
@@ -57,16 +59,15 @@ export default function Hero() {
               </div>
             </div>
             <div className="hero_left_md_two">
-              <p className="mt-5">
-                {" "}
+              <p className="mt-5 max-w-md text-base md:text-lg">
                 Access, Share & Discover Academic Resources – Organized by
                 Faculty, Department, and Course.
               </p>
             </div>
-            <div className="hero_left_bottom flex gap-5 mt-10">
+            <div className="hero_left_bottom flex flex-wrap gap-4 mt-8 md:mt-10">
               <Button text={"Get Started"} />
               <Button text={"Learn More"} />
-              <div className="w-20">
+              <div className="ml-2 w-16 md:w-20">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -109,9 +110,14 @@ export default function Hero() {
             </div>
           </div>
         </div>
-        <div className="col-span-12 md:col-span-6">
-          <div className="hero_img">
-            <Image className="hero_img_main" src={Bag} alt="Person" />
+        <div className="order-1 md:order-2 col-span-12 md:col-span-6 mb-8 md:mb-0">
+          <div className="flex justify-center md:justify-end hero_img">
+            <Image
+              className="w-4/5 md:w-full md:max-w-none max-w-md hero_img_main"
+              src={Bag}
+              alt="Person"
+              priority
+            />
           </div>
         </div>
       </div>

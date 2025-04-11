@@ -5,7 +5,6 @@ import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
-
 // define "lord-icon" custom element with default properties
 defineElement(lottie.loadAnimation);
 
@@ -21,23 +20,22 @@ declare global {
 }
 
 const About = () => {
-
   return (
     <div className="about_bg">
-      <div className="w-10/12 m-auto md:py-10 py-1">
-        <div className="grid grid-cols-12 gap-5 items-center">
-          <div className="md:col-span-6 col-span-12">
+      <div className="m-auto py-1 md:py-10 w-10/12">
+        <div className="items-center gap-5 grid grid-cols-12">
+          <div className="col-span-12 md:col-span-6">
             <DotLottieReact
               src="https://lottie.host/77c6b78c-2671-41a6-9206-2870569a2fcb/xhS9lOc3bC.lottie"
               loop
               autoplay
             />
-            <div className="border_c fst md:w-full md:py-10 py-5 about_left">
-              <div className="w-11/12 m-auto">
-                <h1 className="md:text-4xl text-3xl">
+            <div className="about_left py-5 md:py-10 border_c md:w-full fst">
+              <div className="m-auto w-11/12">
+                <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl">
                   Enhancing Learning, One Resource at a Time
                 </h1>
-                <p className="mt-3">
+                <p className="mt-4 text-gray-700 dark:text-gray-300 text-lg md:text-xl lg:text-2xl">
                   Transforming the way students connect, learn, and grow through
                   seamless access to academic resources and collaborative tools.
                 </p>
@@ -45,96 +43,104 @@ const About = () => {
             </div>
           </div>
 
-          <div className="md:col-span-6 col-span-12">
-            <div className="grid grid-cols-12 gap-5">
-              <div className="md:col-span-6 col-span-12">
-                <div className="border_c about_first fst mdw-full md:py-5 py-3 about_right">
-                  <div className="w-11/12 m-auto">
+          <div className="col-span-12 md:col-span-6">
+            <div className="gap-5 grid grid-cols-12">
+              <div className="col-span-12 md:col-span-6">
+                <div className="about_right py-4 md:py-6 border_c mdw-full about_first fst">
+                  <div className="m-auto w-11/12">
                     <div>
                       {/* @ts-ignore */}
                       <lord-icon
                         src="https://cdn.lordicon.com/xmaezqzk.json"
                         trigger="loop"
-                        style={{ width: "25px", height: "25px" }}
+                        style={{ width: "32px", height: "32px" }}
                         /* @ts-ignore */
                       ></lord-icon>
                     </div>
-                    <h1 className="text-2xl">Study Material Repository</h1>
-                    <p className="mt-3">
+                    <h2 className="mb-3 font-semibold text-2xl md:text-3xl">
+                      Study Material Repository
+                    </h2>
+                    <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
                       Access & share lecture notes, textbooks, and past
                       questions by Faculty, Department, and Course.
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="md:col-span-6 col-span-12">
-                <div className="border_c fst md:w-full md:py-5 py-3 about_right">
-                  <div className="w-11/12 m-auto">
+
+              <div className="col-span-12 md:col-span-6">
+                <div className="about_right py-4 md:py-6 border_c md:w-full fst">
+                  <div className="m-auto w-11/12">
                     <div>
                       {/* @ts-ignore */}
                       <lord-icon
                         src="https://cdn.lordicon.com/jdgfsfzr.json"
                         trigger="hover"
-                        style={{ width: "25px", height: "25px" }}
+                        style={{ width: "32px", height: "32px" }}
                         /* @ts-ignore */
                       ></lord-icon>
                     </div>
-                    <h1 className="text-2xl">Study Group Recommendations</h1>
-                    <p className="mt-3">
+                    <h2 className="mb-3 font-semibold text-2xl md:text-3xl">
+                      Study Group Recommendations
+                    </h2>
+                    <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
                       Get connected with WhatsApp-based study groups tailored to
                       your courses.
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="md:col-span-6 col-span-12">
-                <div className="border_c fst md:w-full md:py-5 py-3 about_right">
-                  <div className="w-11/12 m-auto">
+
+              <div className="col-span-12 md:col-span-6">
+                <div className="about_right py-4 md:py-6 border_c md:w-full fst">
+                  <div className="m-auto w-11/12">
                     <div>
                       {/* @ts-ignore */}
                       <lord-icon
                         src="https://cdn.lordicon.com/eaegfqtv.json"
                         trigger="hover"
-                        style={{ width: "25px", height: "25px" }}
+                        style={{ width: "32px", height: "32px" }}
                         /* @ts-ignore */
                       ></lord-icon>
                     </div>
-                    <h1 className="text-2xl"> Monetize Your Notes</h1>
-                    <p className="mt-3">
+                    <h2 className="mb-3 font-semibold text-2xl md:text-3xl">
+                      Monetize Your Notes
+                    </h2>
+                    <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
                       Earn by sharing premium academic resources with other
                       students.
                     </p>
                   </div>
                 </div>
               </div>
-              <div className="md:col-span-6 col-span-12">
-                <div className="border_c fst md:w-full md:py-5 py-3 about_right">
-                  <div className="w-11/12 m-auto">
+
+              <div className="col-span-12 md:col-span-6">
+                <div className="about_right py-4 md:py-6 border_c md:w-full fst">
+                  <div className="m-auto w-11/12">
                     <div>
                       {/* @ts-ignore */}
                       <lord-icon
                         src="https://cdn.lordicon.com/sclmgjsa.json"
                         trigger="hover"
-                        style={{ width: "25px", height: "25px" }}
+                        style={{ width: "32px", height: "32px" }}
                         /* @ts-ignore */
                       ></lord-icon>
                     </div>
-                    <h1 className="text-2xl">Role-Based Access</h1>
-                    <p className="mt-3">
+                    <h2 className="mb-3 font-semibold text-2xl md:text-3xl">
+                      Role-Based Access
+                    </h2>
+                    <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
                       Enjoy a secure platform with customized access for
                       students, tutors, and admins.
                     </p>
                   </div>
                 </div>
               </div>
-
-              {/* Add more lord-icon features here in other col-span-6 blocks if needed */}
             </div>
           </div>
         </div>
       </div>
-      <div className="about_img h-[100%] md:h-[700px]"></div>
-      {/* <div className="h-[300px] w-full"></div> */}
+      <div className="h-[100%] md:h-[700px] about_img"></div>
     </div>
   );
 };
