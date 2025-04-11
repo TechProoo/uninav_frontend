@@ -74,39 +74,37 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
-      <div className="space-y-8 mx-auto px-4 py-8 container">
-        <div className="mx-auto container">
-          {/* Welcome Banner */}
-          <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr">
-            <div className="flex flex-col items-center md:items-start space-y-4">
-              <Image
-                src={Book}
-                alt="Books and Glasses"
-                className="w-[100px] md:w-[120px]"
-              />
-            </div>
+    <div className="flex-grow w-full min-h-screen">
+      <div className="space-y-8 mx-auto px-4 py-8 max-w-7xl">
+        {/* Welcome Banner */}
+        <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr">
+          <div className="flex flex-col items-center md:items-start space-y-4">
+            <Image
+              src={Book}
+              alt="Books and Glasses"
+              className="w-[100px] md:w-[120px]"
+            />
+          </div>
 
-            <div className="max-w-xl md:text-left text-center">
-              <h1 className="font-semibold text-2xl md:text-3xl fst">
-                Hi, {user?.firstName || "Student"}
-              </h1>
-              <p className="mt-2 text-sm md:text-base">
-                Welcome to UniNav, your trusted gateway to academic resources,
-                connecting you with study materials, past questions, and peer
-                support.
-              </p>
-              <button
-                onClick={() => router.push("/dashboard/materials")}
-                className="bg-white hover:bg-blue-100 shadow mt-4 px-6 py-2 rounded-full text-slate-600 transition fst"
-              >
-                Browse All Materials
-              </button>
-            </div>
+          <div className="max-w-xl md:text-left text-center">
+            <h1 className="font-semibold text-2xl md:text-3xl fst">
+              Hi, {user?.firstName || "Student"}
+            </h1>
+            <p className="mt-2 text-sm md:text-base">
+              Welcome to UniNav, your trusted gateway to academic resources,
+              connecting you with study materials, past questions, and peer
+              support.
+            </p>
+            <button
+              onClick={() => router.push("/dashboard/materials")}
+              className="bg-white hover:bg-blue-100 shadow mt-4 px-6 py-2 rounded-full text-slate-600 transition fst"
+            >
+              Browse All Materials
+            </button>
+          </div>
 
-            <div className="hidden md:block">
-              <Image src={Book} alt="Books on Shelf" width={100} height={100} />
-            </div>
+          <div className="hidden md:block">
+            <Image src={Book} alt="Books on Shelf" width={100} height={100} />
           </div>
         </div>
 
@@ -131,35 +129,10 @@ export default function Dashboard() {
           <MaterialGrid
             materials={recommendations}
             onMaterialClick={handleMaterialClick}
-            view="grid"
+            viewMode="grid"
           />
         </section>
       </div>
-
-      {/* Course Slider */}
-      <CourseSlider />
-
-      {/* Bookmarks Section */}
-      <section className="mb-8">
-        <h2 className="mb-4 font-semibold text-xl sm:text-2xl">
-          Your Bookmarks
-        </h2>
-        <BookmarkSlider
-          bookmarks={bookmarks}
-          loading={loadingState.bookmarks}
-          error={error.bookmarks}
-        />
-      </section>
-
-      {/* Recommendations Section */}
-      <section className="mb-8">
-        <h2 className="mb-4 font-semibold text-2xl">Recommended Materials</h2>
-        <MaterialGrid
-          materials={recommendations}
-          onMaterialClick={handleMaterialClick}
-          viewMode="grid"
-        />
-      </section>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   Megaphone,
   Settings,
   User,
+  Building2,
 } from "lucide-react";
 
 import {
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/contexts/authContext";
 
 // Menu items.
 const items = [
@@ -41,8 +43,8 @@ const items = [
     icon: AreaChartIcon,
   },
   {
-    title: "Advertise",
-    url: "/dashboard/advertise",
+    title: "Adverts",
+    url: "/dashboard/ads",
     icon: Megaphone,
   },
   {
@@ -51,7 +53,7 @@ const items = [
     icon: Bookmark,
   },
   {
-    title: "Account",
+    title: "Profile",
     url: "/dashboard/profile",
     icon: User,
   },
@@ -63,9 +65,21 @@ const items = [
 ];
 
 export function DashboardSidebar() {
+  const { user } = useAuth();
+
+  // Add management item if user is admin
+  const sidebarItems = [...items];
+  if (user?.role === "admin") {
+    sidebarItems.push({
+      title: "Site Management",
+      url: "/dashboard/management",
+      icon: Building2,
+    });
+  }
+
   return (
-    <Sidebar defaultWidth="16rem" collapsedWidth="4rem">
-      <SidebarContent className="flex flex-col h-full">
+    <Sidebar className="w-64 min-w-[4rem]">
+      <SidebarContent className="flex flex-col pt-[5rem] h-full">
         <div className="relative flex items-center px-3 py-4 h-16">
           <Link
             href="/"
@@ -78,13 +92,10 @@ export function DashboardSidebar() {
               height={32}
               className="w-8 h-8"
             />
-            <span className="ml-2 font-bold text-primary dark:text-white text-xl">
-              UniNav
-            </span>
           </Link>
         </div>
         <SidebarMenu className="space-y-1 px-3">
-          {items.map((item) => (
+          {sidebarItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <Link
                 href={item.url}

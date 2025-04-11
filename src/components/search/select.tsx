@@ -18,15 +18,15 @@ export const SelectType = ({ onChange }: Props) => {
   return (
     <Select onValueChange={onChange}>
       <SelectTrigger className="w-[100%]">
-        <SelectValue placeholder="Filter by category" />
+        <SelectValue placeholder="category" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Category</SelectLabel>
+          <SelectItem value="pdf">PDF</SelectItem>
+          <SelectItem value="video">Video</SelectItem>
+          <SelectItem value="image">Image</SelectItem>
           <SelectItem value="article">Article</SelectItem>
-          <SelectItem value="scheme_of_work">Scheme of work</SelectItem>
-          <SelectItem value="guideline">Guideline</SelectItem>
-          <SelectItem value="tutorial">Tutorial</SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
