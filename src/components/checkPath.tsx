@@ -4,22 +4,7 @@
 import { usePathname } from "next/navigation";
 import Navbar from "../ConditionalNavbar/Navbar";
 
-const hiddenRoutes = [
-  "/auth/login",
-  "/auth/signup",
-  "/dashboard",
-  "/dashboard/blogs",
-  "/dashboard/blogs/createblog",
-  "/dashboard/blogs/viewblog",
-  "/dashboard/bookmarks",
-  "/dashboard/courses",
-  "/allblogs",
-  "/search",
-  "/allblogs/viewblog",
-  "/dashboard/materials",
-  "/dashboard/profile",
-  "/dashboard/settings",
-];
+const hiddenRoutes = ["/verify-email"];
 
 export default function ConditionalNavbar() {
   const pathname = usePathname();

@@ -24,9 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ConditionalNavbar />
         <QueryProvider>
           <AuthProvider>
+            <ConditionalNavbar />
             <BookmarksProvider>{children}</BookmarksProvider>
           </AuthProvider>
         </QueryProvider>

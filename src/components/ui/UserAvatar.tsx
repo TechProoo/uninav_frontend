@@ -34,24 +34,31 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ showName = false }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div className="cursor-pointer">
+        <div className="group relative cursor-pointer">
           {showName ? (
-            <div className="flex items-center bg-white/80 hover:bg-white/95 px-2 py-1.5 rounded-full transition-colors">
+            <div className="flex items-center bg-blue-950/80 hover:bg-blue-950/95 px-2 py-1.5 rounded-full transition-colors">
               <Avatar className="w-9 h-9">
                 <AvatarFallback className="bg-primary/90 text-white">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <span className="ml-2 font-semibold text-primary">
+              <span className="ml-2 font-semibold text-white">
                 {user.firstName} {user.lastName}
               </span>
             </div>
           ) : (
-            <Avatar className="hover:ring-2 hover:ring-primary/50 w-9 h-9 transition-all">
-              <AvatarFallback className="bg-primary/90 text-white">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="group-hover:ring-primary ring-2 ring-primary/80 w-10 h-10 transition-all duration-300">
+                <AvatarFallback className="bg-primary/90 text-white">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <div className="-top-8 absolute opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 duration-300 transform">
+                <div className="bg-primary px-3 py-1 rounded-full font-medium text-white text-xs whitespace-nowrap">
+                  Hi {user.firstName}
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </DropdownMenuTrigger>

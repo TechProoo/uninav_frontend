@@ -83,10 +83,11 @@ body {
 /* NAVBAR */
 
 .nav_link {
-  font-family: "Poiret";
-  font-size: 17px;
-  letter-spacing: 10px;
-  transition: 0.5s ease-in-out;
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-weight: 500;
+  transition: 0.4s ease-in-out;
   color: var(--text-color);
   position: relative;
 }
@@ -98,7 +99,7 @@ body {
   height: 2px;
   border-radius: 2px;
   right: 0;
-  top: -5px;
+  top: -3px;
   background-color: var(--bg-submain);
   transition: 0.5s ease-in-out;
 }
@@ -110,13 +111,13 @@ body {
   height: 2px;
   border-radius: 2px;
   left: 0;
-  bottom: -5px;
+  bottom: -3px;
   background-color: var(--bg-submain);
   transition: 0.5s ease-in-out;
 }
 
 .nav_link:hover {
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .nav_link:hover::before,

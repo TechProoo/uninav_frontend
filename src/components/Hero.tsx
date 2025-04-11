@@ -6,10 +6,6 @@ import Book from "../../public/Image/blank-book-cover-white-vector-illustration.
 export default function Hero() {
   return (
     <div className="relative hero_container">
-      {/* <div className="hidden md:block top-0 md:left-150 absolute hero_bg">
-        <Image className="w-40 book" src={Book} alt="Book" />
-      </div> */}
-
       <div className="items-center grid grid-cols-12 m-auto my-5 md:my-20 w-11/12 md:w-10/12 h-screen md:h-auto">
         <div className="col-span-12 md:col-span-6">
           <div className="hero_left">
