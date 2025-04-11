@@ -100,35 +100,15 @@ const Page = () => {
       setLoading(true);
       const response = await signup(formData);
 
-      if (response.status === "success") {
-        Cookies.set("uninav_", response.token || "Techpro", {
-          expires: 7,
-          path: "",
-        });
-
-        // Fetch user profile after successful signup to get the emailVerified status
-        const userProfile = await fetchUserProfile();
-        if (userProfile) {
-          setUser(userProfile);
-          setIsAuthenticated(true);
-
-          // Inform user about the verification and redirect
-          toast.success(
-            "Account created successfully! Please verify your email to continue.",
-            { duration: 5000 }
-          );
-
-          // Redirect to email verification page
-          router.push(
-            `/auth/verify-email?email=${encodeURIComponent(userProfile.email)}`
-          );
-        } else {
-          // Fallback in case profile fetch fails
-          setIsAuthenticated(true);
-        }
-      } else {
-        throw new Error(response.message || "Signup failed");
-      }
+      toast.success(
+        "Account created successfully! Please verify your email to continue.",
+        { duration: 5000 }
+      );
+      // After signup user must verify email
+      toast.success("Please check your email for verification instructions.");
+      router.push(
+        `/auth/verify-email?email=${encodeURIComponent(formData.email)}`
+      );
     } catch (error: any) {
       console.error(error);
       toast.error(error.message || "Something went wrong during signup!");

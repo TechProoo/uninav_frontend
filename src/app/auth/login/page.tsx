@@ -56,32 +56,23 @@ const page = () => {
     try {
       const { token, data } = await login(formData);
 
-      if (data.status === "success") {
-        toast.success(data.message || "Login successful");
+      toast.success(data.message || "Login successful");
 
-        // Fetch user profile after successful login
-        const userProfile = await fetchUserProfile();
-        if (userProfile) {
-          setUser(userProfile);
-          setIsAuthenticated(true);
+      // Fetch user profile after successful login (email needs to be verified before login else it returns error)
+      const userProfile = await fetchUserProfile();
+      if (userProfile) {
+        setUser(userProfile);
+        setIsAuthenticated(true);
 
-          // Check if email needs verification
-          if (userProfile.auth && userProfile.auth.emailVerified === false) {
-            router.push(
-              `/auth/verify-email?email=${encodeURIComponent(
-                userProfile.email
-              )}`
-            );
-          } else {
-            router.push(redirectTo);
-          }
-        }
-      } else {
-        toast.error(data.message || "Invalid credentials");
+        router.push(redirectTo);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong!");
+    } catch (error: any) {
+      toast.error(error?.message || "Invalid credentials");
+      if (error?.message?.toLowerCase().startsWith("email not verified")) {
+        router.push(
+          `/auth/verify-email?email=${encodeURIComponent(formData.email)}`
+        );
+      }
     } finally {
       setLoading(false);
     }

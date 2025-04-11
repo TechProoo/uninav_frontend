@@ -73,13 +73,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   // Effect to redirect to verify-email if authentication is successful but email is not verified
-  useEffect(() => {
-    if (isAuthenticated && needsEmailVerification()) {
-      router.push(
-        `/auth/verify-email?email=${encodeURIComponent(user?.email || "")}`
-      );
-    }
-  }, [isAuthenticated, user, router]);
+  // useEffect(() => {
+  //   if (isAuthenticated && needsEmailVerification()) {
+  //     router.push(
+  //       `/auth/verify-email?email=${encodeURIComponent(user?.email || "")}`
+  //     );
+  //   }
+  // }, [isAuthenticated, user, router]);
 
   const logout = () => {
     setUser(null);

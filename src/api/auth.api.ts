@@ -27,9 +27,9 @@ export const login = async (
 
     updateAuthToken(token);
     return { token, data: response.data };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error during login:", error);
-    throw error;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
@@ -63,9 +63,9 @@ export const signup = async (formData: FormData) => {
       ...response.data,
       token,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error during signup:", error);
-    throw error;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
@@ -85,30 +85,27 @@ export const verifyEmailByCode = async (email: string, code: string) => {
 
     const response = await api<Response<any>>(config);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error verifying email by code:", error);
-    throw error;
+    throw new Error(
+      error?.response?.data?.message || "Email Verification Failed"
+    );
   }
 };
 
 // Email verification by token
 export const verifyEmailByToken = async (token: string) => {
   try {
-    const requestData = JSON.stringify({
-      token,
-    });
-
     const config = {
-      method: "POST",
-      url: "/auth/verify-email/token",
-      data: requestData,
+      method: "GET",
+      url: `/auth/verify-email/token?token=${token}`,
     };
 
     const response = await api<Response<any>>(config);
     return response.data;
-  } catch (error) {
-    console.error("Error verifying email by token:", error);
-    throw error;
+  } catch (error: any) {
+    console.error("Error verifying email by code:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
@@ -127,8 +124,8 @@ export const resendEmailVerification = async (email: string) => {
 
     const response = await api<Response<any>>(config);
     return response.data;
-  } catch (error) {
-    console.error("Error resending verification email:", error);
-    throw error;
+  } catch (error: any) {
+    console.error("Error verifying email by code:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
