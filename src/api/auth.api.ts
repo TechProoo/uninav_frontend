@@ -33,6 +33,18 @@ export const login = async (
   }
 };
 
+export const logout = async () => {
+  try {
+    const config = {
+      method: "POST",
+      url: "/auth/logout",
+    };
+    await api<Response<any>>(config);
+  } catch (error: any) {
+    console.error("Error during logout:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
+};
 export const signup = async (formData: FormData) => {
   try {
     const requestData = JSON.stringify({

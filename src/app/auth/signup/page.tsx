@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/authContext";
 import toast from "react-hot-toast";
-import { fetchUserProfile } from "@/api/user.api";
 import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
 import { getDepartments } from "@/api/department.api";
 

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { UserProfile } from "@/lib/types/response.type";
 import { fetchUserProfile } from "@/api/user.api";
 import { getSession } from "@/lib/utils";
-
+import { logout as logoutApi } from "@/api/auth.api";
 interface AuthContextType {
   user: UserProfile | null;
   setUser: React.Dispatch<React.SetStateAction<UserProfile | null>>;
@@ -72,23 +72,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loadUserProfile();
   }, []);
 
-  // Effect to redirect to verify-email if authentication is successful but email is not verified
-  // useEffect(() => {
-  //   if (isAuthenticated && needsEmailVerification()) {
-  //     router.push(
-  //       `/auth/verify-email?email=${encodeURIComponent(user?.email || "")}`
-  //     );
-  //   }
-  // }, [isAuthenticated, user, router]);
-
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     Cookies.remove("session-token", { path: "/" });
-
-    // Also remove legacy cookie if it exists
-    Cookies.remove("uninav_", { path: "" });
-
+    logoutApi();
     router.push("/auth/login");
   };
 
