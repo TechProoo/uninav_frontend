@@ -11,14 +11,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getAllFaculties } from "@/api/faculty.api";
-import { Department, Faculty } from "@/lib/types/response.type";
+import { Faculty } from "@/lib/types/response.type";
 
 interface FacultySelectProps {
   onDepartmentSelect: (departmentId: string) => void;
   defaultDepartmentId?: string;
 }
 
-const FacultySelect: React.FC<FacultySelectProps> = ({
+const DepartmentByFacultySelect: React.FC<FacultySelectProps> = ({
   onDepartmentSelect,
   defaultDepartmentId,
 }) => {
@@ -77,4 +77,4 @@ const FacultySelect: React.FC<FacultySelectProps> = ({
   );
 };
 
-export default FacultySelect;
+export default DepartmentByFacultySelect;

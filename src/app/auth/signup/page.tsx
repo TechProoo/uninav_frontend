@@ -5,10 +5,8 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import lottie from "lottie-web";
 import { defineElement } from "@lordicon/element";
 import Button from "@/components/ui/Button-styled";
-import { SelectDemo } from "@/components/ui/SelectDrop";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
-import { getAllFaculty } from "@/api/department.api";
 import Loader from "./loading";
 import { signup } from "@/api/auth.api";
 import { FormData } from "@/lib/types/data.type";
@@ -17,6 +15,8 @@ import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/authContext";
 import toast from "react-hot-toast";
 import { fetchUserProfile } from "@/api/user.api";
+import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
+import { getDepartments } from "@/api/department.api";
 
 defineElement(lottie.loadAnimation);
 
@@ -39,12 +39,12 @@ const Page = () => {
   const [errors, setErrors] = useState<any>({});
 
   const {
-    data: faculties,
+    data: departments,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["faculties"],
-    queryFn: getAllFaculty,
+    queryKey: ["departments"],
+    queryFn: getDepartments,
   });
 
   const stepRef = useRef<HTMLDivElement>(null);
@@ -393,11 +393,9 @@ const Page = () => {
                       </div>
 
                       <div>
-                        {faculties?.data ? (
-                          <SelectDemo
-                            dept={faculties}
-                            value={formData.departmentId}
-                            onChange={handleDeptChange}
+                        {departments?.data ? (
+                          <DepartmentByFacultySelect
+                            onDepartmentSelect={handleDeptChange}
                           />
                         ) : (
                           <p>No faculty found</p>

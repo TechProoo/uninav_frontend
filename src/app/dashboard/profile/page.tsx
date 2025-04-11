@@ -13,7 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import FacultySelect from "@/components/ui/FacultySelect";
+import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
 import toast from "react-hot-toast";
 
 const ProfilePage = () => {
@@ -280,7 +280,7 @@ const ProfilePage = () => {
                 Department
               </label>
               {isEditing ? (
-                <FacultySelect
+                <DepartmentByFacultySelect
                   onDepartmentSelect={handleDepartmentSelect}
                   defaultDepartmentId={formData.departmentId}
                 />

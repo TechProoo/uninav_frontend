@@ -20,6 +20,9 @@ import {
   FileIcon,
   Megaphone,
   Bookmark,
+  Share2,
+  Link as LinkIcon,
+  Check,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -57,6 +60,11 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const isCurrentlyBookmarked = isBookmarked(material.id);
   const [selectedAdvert, setSelectedAdvert] = useState<Advert | null>(null);
+
+  // New states for sharing functionality
+  const [shareLoading, setShareLoading] = useState(false);
+  const [downloadLinkLoading, setDownloadLinkLoading] = useState(false);
+  const [copySuccess, setCopySuccess] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCompleteData = async () => {
@@ -272,6 +280,58 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
     setSelectedAdvert(null);
   };
 
+  // Copy to clipboard helper function
+  const copyToClipboard = async (text: string, successMessage: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopySuccess(successMessage);
+      toast.success(successMessage);
+
+      // Clear the success message after 2 seconds
+      setTimeout(() => {
+        setCopySuccess(null);
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+      toast.error("Failed to copy to clipboard");
+    }
+  };
+
+  // Handle share material
+  const handleShareMaterial = async () => {
+    setShareLoading(true);
+    try {
+      const host = typeof window !== "undefined" ? window.location.origin : "";
+      const shareUrl = `${host}/material/${material.id}`;
+      await copyToClipboard(shareUrl, "Material link copied to clipboard!");
+    } finally {
+      setShareLoading(false);
+    }
+  };
+
+  // Handle get download link
+  const handleGetDownloadLink = async () => {
+    if (downloadLinkLoading) return;
+
+    try {
+      setDownloadLinkLoading(true);
+      const response = await getMaterialDownloadUrl(material.id);
+      if (!response?.data?.url) {
+        throw new Error("Failed to get download URL");
+      }
+
+      await copyToClipboard(
+        response.data.url,
+        "Download link copied to clipboard!"
+      );
+    } catch (error) {
+      console.error("Error getting download link:", error);
+      toast.error("Failed to get download link. Please try again.");
+    } finally {
+      setDownloadLinkLoading(false);
+    }
+  };
+
   const getFileIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case "pdf":
@@ -476,6 +536,45 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Share buttons section - NEW CONTENT */}
+        <div className="space-y-2 mt-4 pt-4 border-t">
+          <h3 className="font-semibold text-gray-700">Share Material</h3>
+
+          <Button
+            onClick={handleShareMaterial}
+            variant="outline"
+            className="flex justify-start items-center gap-2 w-full"
+            disabled={shareLoading}
+          >
+            {shareLoading ? (
+              <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
+            ) : copySuccess === "Material link copied to clipboard!" ? (
+              <Check className="w-4 h-4 text-green-600" />
+            ) : (
+              <Share2 className="w-4 h-4" />
+            )}
+            <span>Share this material</span>
+          </Button>
+
+          {material.restriction === RestrictionEnum.DOWNLOADABLE && (
+            <Button
+              onClick={handleGetDownloadLink}
+              variant="outline"
+              disabled={downloadLinkLoading}
+              className="flex justify-start items-center gap-2 w-full"
+            >
+              {downloadLinkLoading ? (
+                <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
+              ) : copySuccess === "Download link copied to clipboard!" ? (
+                <Check className="w-4 h-4 text-green-600" />
+              ) : (
+                <LinkIcon className="w-4 h-4" />
+              )}
+              <span>Copy download link</span>
+            </Button>
+          )}
         </div>
       </Card>
 

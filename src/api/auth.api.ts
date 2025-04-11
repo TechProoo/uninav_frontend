@@ -3,7 +3,6 @@ import { api } from "./base.api";
 import { Response, UserProfile } from "@/lib/types/response.type";
 import { updateAuthToken } from "@/lib/utils";
 import { FormData } from "@/lib/types/data.type";
-import { fetchUserProfile } from "./user.api";
 
 export const login = async (
   data: loginData
@@ -48,7 +47,7 @@ export const signup = async (formData: FormData) => {
 
     const config = {
       method: "post",
-      url: "/auth/signup",
+      url: "/auth/student",
       data: requestData,
     };
 
