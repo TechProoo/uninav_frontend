@@ -21,6 +21,7 @@ interface AuthContextType {
   logout: () => void;
   loading: boolean;
   refreshUserProfile: () => Promise<void>;
+  needsEmailVerification: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,6 +48,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Check if user needs email verification
+  const needsEmailVerification = () => {
+    return !!user && user.auth && user.auth.emailVerified === false;
+  };
+
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
@@ -65,6 +71,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     loadUserProfile();
   }, []);
+
+  // Effect to redirect to verify-email if authentication is successful but email is not verified
+  useEffect(() => {
+    if (isAuthenticated && needsEmailVerification()) {
+      router.push(
+        `/auth/verify-email?email=${encodeURIComponent(user?.email || "")}`
+      );
+    }
+  }, [isAuthenticated, user, router]);
 
   const logout = () => {
     setUser(null);
@@ -87,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         loading,
         refreshUserProfile,
+        needsEmailVerification,
       }}
     >
       {children}

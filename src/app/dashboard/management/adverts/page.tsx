@@ -98,6 +98,7 @@ const AdvertsReviewPage = () => {
         status: activeTab as ApprovalStatusEnum,
         page: currentPage,
         limit: 10,
+        query: searchQuery || undefined,
       });
 
       if (response?.status === "success") {
@@ -127,6 +128,7 @@ const AdvertsReviewPage = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setCurrentPage(1); // Reset to first page when searching
     fetchAdverts();
   };
 

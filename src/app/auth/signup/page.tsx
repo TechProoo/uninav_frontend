@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { useAuth } from "@/contexts/authContext";
 import toast from "react-hot-toast";
+import { fetchUserProfile } from "@/api/user.api";
 
 defineElement(lottie.loadAnimation);
 
@@ -58,13 +59,21 @@ const Page = () => {
     );
   }, [step]);
 
-  const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const {
+    isAuthenticated,
+    setIsAuthenticated,
+    setUser,
+    needsEmailVerification,
+  } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      // If authenticated but email not verified, the context will handle redirection
+      if (!needsEmailVerification()) {
+        router.push("/dashboard");
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, needsEmailVerification, router]);
 
   const totalSteps = 3;
 
@@ -91,19 +100,38 @@ const Page = () => {
       setLoading(true);
       const response = await signup(formData);
 
-      if (response.status == "success") {
+      if (response.status === "success") {
         Cookies.set("uninav_", response.token || "Techpro", {
           expires: 7,
           path: "",
         });
-        setIsAuthenticated(true);
-        router.push("/dashboard");
+
+        // Fetch user profile after successful signup to get the emailVerified status
+        const userProfile = await fetchUserProfile();
+        if (userProfile) {
+          setUser(userProfile);
+          setIsAuthenticated(true);
+
+          // Inform user about the verification and redirect
+          toast.success(
+            "Account created successfully! Please verify your email to continue.",
+            { duration: 5000 }
+          );
+
+          // Redirect to email verification page
+          router.push(
+            `/auth/verify-email?email=${encodeURIComponent(userProfile.email)}`
+          );
+        } else {
+          // Fallback in case profile fetch fails
+          setIsAuthenticated(true);
+        }
       } else {
         throw new Error(response.message || "Signup failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Something went wrong during signup!");
+      toast.error(error.message || "Something went wrong during signup!");
     } finally {
       setLoading(false);
     }

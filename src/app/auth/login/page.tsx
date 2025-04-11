@@ -28,13 +28,21 @@ const page = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const { isAuthenticated, setUser, setIsAuthenticated } = useAuth();
+  const {
+    isAuthenticated,
+    setUser,
+    setIsAuthenticated,
+    needsEmailVerification,
+  } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push(redirectTo);
+      // If authenticated but email not verified, the context will handle redirection
+      if (!needsEmailVerification()) {
+        router.push(redirectTo);
+      }
     }
-  }, [isAuthenticated, redirectTo, router]);
+  }, [isAuthenticated, needsEmailVerification, redirectTo, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,7 +64,17 @@ const page = () => {
         if (userProfile) {
           setUser(userProfile);
           setIsAuthenticated(true);
-          router.push(redirectTo);
+
+          // Check if email needs verification
+          if (userProfile.auth && userProfile.auth.emailVerified === false) {
+            router.push(
+              `/auth/verify-email?email=${encodeURIComponent(
+                userProfile.email
+              )}`
+            );
+          } else {
+            router.push(redirectTo);
+          }
         }
       } else {
         toast.error(data.message || "Invalid credentials");

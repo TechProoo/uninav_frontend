@@ -69,3 +69,67 @@ export const signup = async (formData: FormData) => {
     throw error;
   }
 };
+
+// Email verification by code
+export const verifyEmailByCode = async (email: string, code: string) => {
+  try {
+    const requestData = JSON.stringify({
+      email,
+      code,
+    });
+
+    const config = {
+      method: "POST",
+      url: "/auth/verify-email",
+      data: requestData,
+    };
+
+    const response = await api<Response<any>>(config);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying email by code:", error);
+    throw error;
+  }
+};
+
+// Email verification by token
+export const verifyEmailByToken = async (token: string) => {
+  try {
+    const requestData = JSON.stringify({
+      token,
+    });
+
+    const config = {
+      method: "POST",
+      url: "/auth/verify-email/token",
+      data: requestData,
+    };
+
+    const response = await api<Response<any>>(config);
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying email by token:", error);
+    throw error;
+  }
+};
+
+// Resend email verification
+export const resendEmailVerification = async (email: string) => {
+  try {
+    const requestData = JSON.stringify({
+      email,
+    });
+
+    const config = {
+      method: "POST",
+      url: "/auth/resend-verification",
+      data: requestData,
+    };
+
+    const response = await api<Response<any>>(config);
+    return response.data;
+  } catch (error) {
+    console.error("Error resending verification email:", error);
+    throw error;
+  }
+};

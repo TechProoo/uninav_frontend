@@ -21,6 +21,7 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   status?: string;
+  query?: string; // Adding query parameter for search filtering
 }
 
 // Materials Review Endpoints
@@ -33,6 +34,7 @@ export const listMaterialReviews = async (
     }`;
     if (params.status) url += `&status=${params.status}`;
     if (params.type) url += `&type=${params.type}`;
+    if (params.query) url += `&query=${encodeURIComponent(params.query)}`;
 
     const response = await api.get<Response<Pagination<Material[]>>>(url);
     return response.data;
@@ -80,6 +82,7 @@ export const listBlogReviews = async (
     }`;
     if (params.status) url += `&status=${params.status}`;
     if (params.type) url += `&type=${params.type}`;
+    if (params.query) url += `&query=${encodeURIComponent(params.query)}`;
 
     const response = await api.get<Response<Pagination<Blog[]>>>(url);
     return response.data;
@@ -124,6 +127,7 @@ export const listCourseReviews = async (params: PaginationParams = {}) => {
       params.limit || 10
     }`;
     if (params.status) url += `&status=${params.status}`;
+    if (params.query) url += `&query=${encodeURIComponent(params.query)}`;
 
     const response = await api.get<Response<Pagination<Course[]>>>(url);
     return response.data;
@@ -168,6 +172,7 @@ export const listDLCReviews = async (params: PaginationParams = {}) => {
       params.limit || 10
     }`;
     if (params.status) url += `&status=${params.status}`;
+    if (params.query) url += `&query=${encodeURIComponent(params.query)}`;
 
     const response = await api.get<Response<Pagination<DLC[]>>>(url);
     return response.data;
@@ -235,6 +240,7 @@ export const listModeratorApplications = async (
       params.limit || 10
     }`;
     if (params.status) url += `&status=${params.status}`;
+    if (params.query) url += `&query=${encodeURIComponent(params.query)}`;
 
     const response = await api.get<
       Response<Pagination<ModeratorApplication[]>>
@@ -349,6 +355,7 @@ export const listAdvertReviews = async (
     }`;
     if (params.status) url += `&status=${params.status}`;
     if (params.type) url += `&type=${params.type}`;
+    if (params.query) url += `&query=${encodeURIComponent(params.query)}`;
 
     const response = await api.get<Response<Pagination<Advert[]>>>(url);
     return response.data;

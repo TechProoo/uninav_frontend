@@ -101,6 +101,7 @@ const MaterialsReviewPage = () => {
         status: activeTab as ApprovalStatusEnum,
         page: currentPage,
         limit: 10,
+        query: searchQuery || undefined,
       });
 
       if (response?.status === "success") {
@@ -130,7 +131,7 @@ const MaterialsReviewPage = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement search functionality - this would need to be added to the API
+    setCurrentPage(1); // Reset to first page when searching
     fetchMaterials();
   };
 
