@@ -113,10 +113,10 @@ const BookmarkSlider: React.FC<BookmarkSliderProps> = ({
         {bookmarks.map((bookmark) => (
           <SwiperSlide key={bookmark.id}>
             <div
-              className="flex bg-white shadow-md rounded-lg h-24 overflow-hidden cursor-pointer"
+              className="flex bg-white shadow-md hover:shadow-lg rounded-lg h-32 overflow-hidden transition-shadow cursor-pointer"
               onClick={() => handleBookmarkClick(bookmark)}
             >
-              <div className="flex-shrink-0 w-24 h-24">
+              <div className="flex-shrink-0 w-32 h-32">
                 {bookmark.material ? (
                   <div className="relative flex justify-center items-center bg-gradient-to-r from-blue-100 to-blue-50 h-full">
                     {bookmark.material.resource?.resourceAddress ? (
@@ -139,13 +139,13 @@ const BookmarkSlider: React.FC<BookmarkSliderProps> = ({
                 )}
               </div>
 
-              <div className="flex flex-col flex-1 p-3">
-                <h3 className="font-medium text-gray-900 text-sm line-clamp-1">
+              <div className="flex flex-col flex-1 p-4">
+                <h3 className="mb-1 font-medium text-gray-900 text-sm line-clamp-1">
                   {bookmark.material
                     ? bookmark.material.label
                     : "Untitled Material"}
                 </h3>
-                <p className="mb-1 text-gray-500 text-xs line-clamp-2">
+                <p className="mb-2 text-gray-500 text-xs line-clamp-2">
                   {bookmark.material?.description || "No description available"}
                 </p>
                 <div className="mt-auto">
