@@ -19,6 +19,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/contexts/authContext";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 // Menu items.
 const items = [
@@ -66,6 +68,7 @@ const items = [
 
 export function DashboardSidebar() {
   const { user } = useAuth();
+  const pathname = usePathname();
 
   // Add management item if user is admin
   const sidebarItems = [...items];
@@ -95,17 +98,25 @@ export function DashboardSidebar() {
           </Link>
         </div>
         <SidebarMenu className="space-y-1 px-3">
-          {sidebarItems.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <Link
-                href={item.url}
-                className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.title}</span>
-              </Link>
-            </SidebarMenuItem>
-          ))}
+          {sidebarItems.map((item) => {
+            const isActive = pathname === item.url;
+            return (
+              <SidebarMenuItem key={item.title}>
+                <Link
+                  href={item.url}
+                  className={cn(
+                    "flex items-center space-x-2 p-2 rounded-md",
+                    isActive
+                      ? "bg-blue-100 text-primary hover:bg-blue-200"
+                      : "hover:bg-gray-100"
+                  )}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>
