@@ -2,7 +2,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import Navbar from "../ConditionalNavbar/Navbar";
+import Navigation from "./Navigation/Navigation";
 
 const hiddenRoutes = ["/verify-email"];
 
@@ -11,5 +11,5 @@ export default function ConditionalNavbar() {
   const shouldHide = hiddenRoutes.includes(pathname);
 
   if (shouldHide) return null;
-  return <Navbar />;
+  return <Navigation />;
 }
