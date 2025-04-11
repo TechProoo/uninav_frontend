@@ -14,18 +14,17 @@ type Props = {
   onChange: (value: string) => void;
 };
 
-export const SelectDemo = ({ onChange }: Props) => {
+export const SelectType = ({ onChange }: Props) => {
   return (
     <Select onValueChange={onChange}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+      <SelectTrigger className="w-[100%]">
+        <SelectValue placeholder="Filter by category" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Fruits</SelectLabel>
+          <SelectLabel>Category</SelectLabel>
           <SelectItem value="article">Article</SelectItem>
           <SelectItem value="scheme_of_work">Scheme of work</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
           <SelectItem value="guideline">Guideline</SelectItem>
           <SelectItem value="tutorial">Tutorial</SelectItem>
         </SelectGroup>

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import PostForm from "@/components/blog/BlogForm";
 import React from "react";
@@ -15,7 +15,7 @@ const page = () => {
       <button
         type="button"
         onClick={() => router.back()}
-        className="mb-6 flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition"
+        className="flex items-center gap-2 mb-6 text-gray-700 transition"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -34,8 +34,8 @@ const page = () => {
         Back
       </button>
 
-      <h1 className="text-3xl font-bold mb-2 fst">Post Blog</h1>
-      <p className="text-gray-600 mb-4">Create and post your blog</p>
+      <h1 className="mb-2 font-bold text-3xl fst">Post Blog</h1>
+      <p className="mb-4 text-gray-600">Create and post your blog</p>
       <PostForm />
     </div>
   );

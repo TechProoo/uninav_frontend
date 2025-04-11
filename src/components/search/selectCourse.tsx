@@ -1,5 +1,4 @@
-import * as React from "react";
-
+import React, { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -9,25 +8,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import getAllCourses from "@/api/getAllCourses";
+import { Course } from "@/lib/types/response.type"; // Assuming Course is defined there
 
 type Props = {
   onChange: (value: string) => void;
 };
 
 export const SelectCourse = ({ onChange }: Props) => {
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await getAllCourses();
+        if (res.status === "success" && res.data) {
+          setCourses(res.data);
+        }
+      } catch (err) {
+        console.error("Error fetching courses", err);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
   return (
     <Select onValueChange={onChange}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a fruit" />
+      <SelectTrigger className="w-full">
+        <SelectValue placeholder="Filter by course" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Category</SelectLabel>
-          <SelectItem value="article">Article</SelectItem>
-          <SelectItem value="scheme_of_work">Scheme of work</SelectItem>
-          <SelectItem value="blueberry">Blueberry</SelectItem>
-          <SelectItem value="guideline">Guideline</SelectItem>
-          <SelectItem value="tutorial">Tutorial</SelectItem>
+          <SelectLabel>Courses</SelectLabel>
+          {courses.map((course) => (
+            <SelectItem key={course.id} value={course.id}>
+              {course.courseName}
+            </SelectItem>
+          ))}
         </SelectGroup>
       </SelectContent>
     </Select>

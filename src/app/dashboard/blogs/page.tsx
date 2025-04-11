@@ -58,12 +58,6 @@ const BlogsPage = () => {
         </div>
       </div>
 
-      <div className="shadow-lg p-8 rounded-lg">
-        <p className="text-gray-600">
-          Create, edit, delete and publish your blogs here
-        </p>
-      </div>
-
       <div className="mt-10 font-bold text-2xl fst">
         <h1>Your Blogs</h1>
         <div className="gap-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-6">

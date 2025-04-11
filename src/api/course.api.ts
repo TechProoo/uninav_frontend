@@ -1,5 +1,5 @@
 import { api } from "./base.api";
-import { Course, Response, Pagination } from "@/lib/types/response.type";
+import { Course, Response, Pagination, DLC } from "@/lib/types/response.type";
 
 interface CreateCourseDto {
   courseName: string;
@@ -67,6 +67,29 @@ export const createCourse = async (
     return response.data;
   } catch (error) {
     console.error("Error creating course:", error);
+    return null;
+  }
+};
+export const getDepartmentLevelCourses = async ({
+  departmentId,
+  courseId,
+  page = 1,
+  limit = 10,
+}: {
+  departmentId?: string;
+  courseId?: string;
+  page?: number;
+  limit?: number;
+}): Promise<Response<Pagination<DLC[]>> | null> => {
+  try {
+    let url = `/courses/department-level?page=${page}&limit=${limit}`;
+    if (departmentId) url += `&departmentId=${departmentId}`;
+    if (courseId) url += `&courseId=${courseId}`;
+
+    const response = await api.get<Response<Pagination<DLC[]>>>(url);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching department level courses:", error);
     return null;
   }
 };
