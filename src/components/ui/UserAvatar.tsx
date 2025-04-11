@@ -11,13 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  LayoutDashboard,
-  LogOut,
-  User,
-  ShieldCheck,
-  Bookmark,
-} from "lucide-react";
+import { LayoutDashboard, LogOut, User, Bookmark } from "lucide-react";
 
 interface UserAvatarProps {
   showName?: boolean;
@@ -74,19 +68,6 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ showName = false }) => {
           </div>
         </div>
         <DropdownMenuSeparator />
-
-        {/* Admin Section */}
-        {user.role === "ADMIN" && (
-          <>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => handleNavigation("/admin")}
-            >
-              <ShieldCheck className="mr-2 w-4 h-4" />
-              <span>Admin Panel</span>
-            </DropdownMenuItem>
-          </>
-        )}
 
         {/* Regular User Section */}
         <DropdownMenuItem
