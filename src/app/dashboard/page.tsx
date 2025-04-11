@@ -74,8 +74,8 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-8 mx-auto px-4 py-8 container">
-      <div className="mx-auto container">
+    <div className="flex-grow w-full min-h-screen">
+      <div className="space-y-8 mx-auto px-4 py-8 max-w-7xl">
         {/* Welcome Banner */}
         <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr">
           <div className="flex flex-col items-center md:items-start space-y-4">
@@ -107,32 +107,32 @@ export default function Dashboard() {
             <Image src={Book} alt="Books on Shelf" width={100} height={100} />
           </div>
         </div>
+
+        {/* Course Slider */}
+        <CourseSlider />
+
+        {/* Bookmarks Section */}
+        <section className="mb-8">
+          <h2 className="mb-4 font-semibold text-xl sm:text-2xl">
+            Your Bookmarks
+          </h2>
+          <BookmarkSlider
+            bookmarks={bookmarks}
+            loading={loadingState.bookmarks}
+            error={error.bookmarks}
+          />
+        </section>
+
+        {/* Recommendations Section */}
+        <section className="mb-8">
+          <h2 className="mb-4 font-semibold text-2xl">Recommended Materials</h2>
+          <MaterialGrid
+            materials={recommendations}
+            onMaterialClick={handleMaterialClick}
+            viewMode="grid"
+          />
+        </section>
       </div>
-
-      {/* Course Slider */}
-      <CourseSlider />
-
-      {/* Bookmarks Section */}
-      <section className="mb-8">
-        <h2 className="mb-4 font-semibold text-xl sm:text-2xl">
-          Your Bookmarks
-        </h2>
-        <BookmarkSlider
-          bookmarks={bookmarks}
-          loading={loadingState.bookmarks}
-          error={error.bookmarks}
-        />
-      </section>
-
-      {/* Recommendations Section */}
-      <section className="mb-8">
-        <h2 className="mb-4 font-semibold text-2xl">Recommended Materials</h2>
-        <MaterialGrid
-          materials={recommendations}
-          onMaterialClick={handleMaterialClick}
-          viewMode="grid"
-        />
-      </section>
     </div>
   );
 }

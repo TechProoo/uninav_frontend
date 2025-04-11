@@ -82,7 +82,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   const handleSearch = () => {
     if (!searchValue.trim()) return;
-    router.push(`/search?value=${encodeURIComponent(searchValue)}`);
+    router.push(`/explore?value=${encodeURIComponent(searchValue)}`);
   };
 
   // Apply a small translation based on scroll position, but limit it
@@ -93,14 +93,14 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex bg-slate-50 w-full h-screen overflow-hidden">
         <DashboardSidebar />
         <ProtectedRoute>
-          <main className="flex flex-col flex-1 overflow-hidden">
+          <main className="flex flex-col flex-1 w-full overflow-hidden">
             <header
               className="top-0 z-50 sticky flex justify-between items-center bg-[#003462]/90 shadow-md backdrop-blur-sm p-4 border-b w-full"
               style={{
-                transform: headerTransform,
+                // transform: headerTransform,
                 transition: "transform 0.1s ease-out",
               }}
             >
@@ -112,7 +112,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
               <div className="flex justify-between items-center w-full">
                 {/* Search Bar */}
-                <div className="flex items-center bg-white border rounded-md overflow-hidden">
+                <div className="flex items-center bg-white ml-4 border rounded-md overflow-hidden">
                   <input
                     type="text"
                     placeholder="Search"
@@ -139,8 +139,8 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                 </div>
               </div>
             </header>
-            <div className="flex-1 overflow-y-auto">
-              <div className="m-5 md:m-10">{children}</div>
+            <div className="flex-1 w-full overflow-y-auto">
+              <div className="w-full">{children}</div>
             </div>
           </main>
         </ProtectedRoute>
