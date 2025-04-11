@@ -25,13 +25,10 @@ const Navbar = () => {
           </div>
           <ul className="hidden md:block">
             <li className="flex items-center gap-8 nav_li">
-              <Link href={"/dashboard"} className="hover:text-primary nav_link">
-                Home
-              </Link>
-              <Link href={"/dashboard"} className="hover:text-primary nav_link">
+              <Link href={"/about"} className="hover:text-primary nav_link">
                 About
               </Link>
-              <Link href={"/dashboard"} className="hover:text-primary nav_link">
+              <Link href={"/contact"} className="hover:text-primary nav_link">
                 Contact
               </Link>
             </li>

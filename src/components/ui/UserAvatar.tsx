@@ -95,7 +95,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ showName = false }) => {
 
         <DropdownMenuItem
           className="cursor-pointer"
-          onClick={() => handleNavigation("/profile")}
+          onClick={() => handleNavigation("/dashboard/profile")}
         >
           <User className="mr-2 w-4 h-4" />
           <span>Profile</span>
