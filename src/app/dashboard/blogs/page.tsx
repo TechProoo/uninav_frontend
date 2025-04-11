@@ -24,6 +24,10 @@ const BlogsPage = () => {
     queryFn: () => getUserBlogs(id),
   });
 
+  const handleEditSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ["blogs", id] });
+  };
+
   const deleteBlogMutation = useMutation({
     mutationFn: (postId: string) => deleteUserBlog(postId),
     onSuccess: () => {
@@ -62,7 +66,12 @@ const BlogsPage = () => {
         <h1>Your Blogs</h1>
         <div className="gap-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-6">
           {blogs.map((blog: Blog) => (
-            <Card key={blog.id} data={blog} onDelete={handleDelete} />
+            <Card
+              key={blog.id}
+              data={blog}
+              onDelete={handleDelete}
+              onEditSuccess={handleEditSuccess}
+            />
           ))}
         </div>
       </div>

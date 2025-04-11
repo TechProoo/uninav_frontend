@@ -200,7 +200,7 @@ const Page = () => {
           </div>
 
           {/* Content Display */}
-          <div className="col-span-12 md:col-span-9 pl-6">
+          <div className="col-span-12 md:col-span-9 md:pl-6">
             <Tabs defaultValue="materials" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="materials">Material</TabsTrigger>

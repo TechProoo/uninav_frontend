@@ -1,44 +1,37 @@
-import React, { useEffect, useRef } from "react";
+"use client";
+import React, { useRef } from "react";
 import { gsap } from "gsap";
-import { Power4, Elastic } from "gsap/all";
-
-gsap.registerPlugin(Power4, Elastic);
+import { useGSAP } from "@gsap/react";
 import Button from "./Button-styled";
 import Image from "next/image";
 import Empty from "../../../public/Image/empty.jpg";
 import { useRouter } from "next/navigation";
 
-export const metadata = {
-  layout: false, // Disable layout here
-};
+gsap.registerPlugin(useGSAP);
 
 const NoblogPage: React.FC = () => {
   const messageRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
-
   const router = useRouter();
+
+  useGSAP(() => {
+    gsap.from(messageRef.current, {
+      ease: "power4.out",
+      y: 50,
+      duration: 1,
+    });
+
+    gsap.from(imageRef.current, {
+      opacity: 0,
+      delay: 0.5,
+      duration: 2,
+      ease: "elastic.out(1, 0.75)",
+    });
+  }, []);
 
   const handleNavigation = (path: string) => {
     router.push(path);
   };
-
-  useEffect(() => {
-    // GSAP animations
-    if (messageRef.current && imageRef.current) {
-      gsap.from(messageRef.current, {
-        ease: Power4.easeOut,
-        y: 50,
-        duration: 1,
-      });
-      gsap.from(imageRef.current, {
-        opacity: 0,
-        // ease: Elastic.easeOut.config(1, 0.75),
-        duration: 2,
-        delay: 0.5,
-        ease: "elastic.out(1, 0.75)",
-      });
-    }
-  }, []);
 
   return (
     <div className="noblog-container min-h-screen flex flex-col justify-center items-center text-center p-8">
@@ -54,7 +47,7 @@ const NoblogPage: React.FC = () => {
           exciting content!
         </p>
       </div>
-      <div className="md:mt-20 flex gap-10">
+      <div className="md:mt-5 mt-3 md:flex md:space-y-5 gap-10">
         <Button
           text="All Blogs"
           onClick={() => handleNavigation("/allblogs")}

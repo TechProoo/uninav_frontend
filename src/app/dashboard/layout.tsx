@@ -103,37 +103,36 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
             <header
               className="top-0 z-50 sticky flex justify-between items-center bg-[#003462]/90 shadow-md backdrop-blur-sm p-4 border-b w-full"
               style={{
-                // transform: headerTransform,
                 transition: "transform 0.1s ease-out",
               }}
             >
               <SidebarTrigger
-                style={{ color: "white" }}
+                style={{ color: "white", verticalAlign: "top" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
               />
 
-              <div className="flex justify-between items-center w-full">
+              <div className="w-full flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-3">
                 {/* Search Bar */}
-                <div className="flex items-center bg-white ml-4 border rounded-md overflow-hidden">
+                <div className="flex items-center bg-white border rounded-md overflow-hidden w-full sm:w-auto">
                   <input
                     type="text"
                     placeholder="Search"
                     name="search"
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                     onChange={(e) => setSearchValue(e.target.value)}
-                    className="px-2 py-1 focus:outline-none w-40 sm:w-52 md:w-64 text-black transition-all duration-300 ease-in-out"
+                    className="flex-grow px-3 py-2 focus:outline-none text-black"
                   />
                   <button
                     onClick={handleSearch}
-                    className="bg-[#f0f8ff] px-3 py-1"
+                    className="bg-[#f0f8ff] px-3 py-2"
                   >
                     <Search className="text-[#0c385f]" />
                   </button>
                 </div>
 
-                {/* Notification & Welcome */}
-                <div className="flex items-center gap-4 ml-auto">
+                {/* Welcome Badge */}
+                <div className="flex justify-end sm:justify-start">
                   <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
                 </div>
               </div>
