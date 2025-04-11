@@ -18,6 +18,7 @@ import { SelectType } from "@/components/search/select";
 import { SelectCourse } from "@/components/search/selectCourse";
 import searchData from "@/api/search.api";
 import { Material, Pagination, Response } from "@/lib/types/response.type";
+import MaterialGrid from "@/components/materials/MaterialGrid";
 // import { SearchResponse } from "@/lib/types/response.type";
 
 const items = [
@@ -114,12 +115,17 @@ const Page = () => {
     }
   };
 
+  const handleMaterialClick = (material: Material) => {
+    // Navigate to material detail page or open a modal
+    window.location.href = `/material/${material.id}`;
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] text-gray-900 px-6 py-6">
+    <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-6 py-6 min-h-screen text-gray-900">
       <Toaster />
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="flex items-center gap-2 bg-white rounded-xl shadow px-4 py-2">
+      <div className="flex md:flex-row flex-col justify-between items-center gap-6">
+        <div className="flex items-center gap-2 bg-white shadow px-4 py-2 rounded-xl">
           <Image src={Logo} alt="Logo" className="w-36 h-auto" />
         </div>
 
@@ -128,7 +134,7 @@ const Page = () => {
             <li key={item.url}>
               <Link
                 href={item.url}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-gray-800 transition"
+                className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 px-4 py-2 rounded-xl text-gray-800 transition"
               >
                 <item.icon size={18} />
                 <span>{item.title}</span>
@@ -139,32 +145,32 @@ const Page = () => {
       </div>
 
       {/* Search Section */}
-      <div className="mt-10 bg-[#f0f8ff] p-6 rounded-xl shadow">
-        <div className="w-full flex flex-col sm:flex-row gap-4">
+      <div className="bg-[#f0f8ff] shadow mt-10 p-6 rounded-xl">
+        <div className="flex sm:flex-row flex-col gap-4 w-full">
           <input
             type="text"
             value={inputValue || ""}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Search for study materials, courses..."
-            className="w-full text-[#003666] px-5 py-3 rounded-xl bg-white/10 backdrop-blur-md placeholder-gray-300 border-2 border-[#0036669c] focus:outline-none focus:ring-2 focus:ring-[#003666] focus:border-[#f0f8ff] transition-all duration-300"
+            className="bg-white/10 backdrop-blur-md px-5 py-3 border-[#0036669c] border-2 focus:border-[#f0f8ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-[#003666] transition-all duration-300 placeholder-gray-300"
           />
           <button
             onClick={handleSearch}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#003666] hover:bg-[#003666d2] transition-all duration-300 text-white font-semibold shadow-md"
+            className="bg-[#003666] hover:bg-[#003666d2] shadow-md px-6 py-3 rounded-xl w-full sm:w-auto font-semibold text-white transition-all duration-300"
           >
             Search
           </button>
         </div>
 
         {/* Filters & Results Section */}
-        <div className="grid grid-cols-12 w-full gap-4 mt-10 bg-white rounded-2xl p-6 md:p-10 shadow-xl">
+        <div className="gap-4 grid grid-cols-12 bg-white shadow-xl mt-10 p-6 md:p-10 rounded-2xl w-full">
           {/* Sidebar */}
-          <div className="col-span-12 md:col-span-3 space-y-6 border-r border-gray-300 pr-6">
-            <h1 className="text-gray-900 text-lg font-semibold">
+          <div className="space-y-6 col-span-12 md:col-span-3 pr-6 border-gray-300 border-r">
+            <h1 className="font-semibold text-gray-900 text-lg">
               Refine your search
             </h1>
-            <div className="bg-gray-50 border border-gray-300 rounded-xl p-4 space-y-4 shadow-sm">
-              <h2 className="text-gray-900 text-lg font-semibold">Blogs</h2>
+            <div className="space-y-4 bg-gray-50 shadow-sm p-4 border border-gray-300 rounded-xl">
+              <h2 className="font-semibold text-gray-900 text-lg">Blogs</h2>
               <BadgeDemo text="Category" />
               <div className="w-[100%]">
                 <SelectType onChange={(val) => setType(val)} />
@@ -174,19 +180,19 @@ const Page = () => {
                   type="text"
                   placeholder="Filter by tag"
                   onChange={(e) => setTags(e.target.value)}
-                  className="flex-1 rounded-lg border border-gray-300 text-gray-800 px-4 w-[100%] py-2 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[100%] text-gray-800 placeholder:text-gray-500"
                 />
                 <button
                   onClick={handleSearch}
-                  className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                  className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-white transition"
                 >
                   <MoveRight size={20} />
                 </button>
               </div>
             </div>
 
-            <div className="bg-gray-50 border border-gray-300 rounded-xl p-4 space-y-4 shadow-sm">
-              <h2 className="text-gray-900 text-lg font-semibold">Files</h2>
+            <div className="space-y-4 bg-gray-50 shadow-sm p-4 border border-gray-300 rounded-xl">
+              <h2 className="font-semibold text-gray-900 text-lg">Files</h2>
               <SelectCourse onChange={(val) => setCourse(val)} />
             </div>
           </div>
@@ -199,48 +205,14 @@ const Page = () => {
               </div>
             ) : result?.data?.data?.length ? (
               <div className="space-y-6">
-                {result.data.data.map((material: any) => (
-                  <div
-                    key={material.id}
-                    className="border border-gray-200 rounded-xl p-6 bg-white shadow-sm hover:shadow-md transition-all"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        {material.label}
-                      </h2>
-                      <span className="text-sm text-blue-600 bg-blue-100 px-2 py-1 rounded-full capitalize">
-                        {material.type}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 mb-2">{material.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {material.tags.map((tag: string, idx: number) => (
-                        <span
-                          key={idx}
-                          className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      <p>
-                        <strong>Course:</strong>{" "}
-                        {material.targetCourseInfo?.courseName} (
-                        {material.targetCourseInfo?.courseCode})
-                      </p>
-                      <p>
-                        <strong>Uploaded by:</strong>{" "}
-                        {material.creator?.firstName}{" "}
-                        {material.creator?.lastName} (@
-                        {material.creator?.username})
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                <MaterialGrid
+                  materials={result.data.data}
+                  onMaterialClick={handleMaterialClick}
+                  viewMode="list"
+                />
 
                 {/* Pagination Controls */}
-                <div className="flex items-center justify-end gap-4 mt-8">
+                <div className="flex justify-end items-center gap-4 mt-8">
                   <p className="text-gray-600">Page {page}</p>
                   <button
                     onClick={() => setPage((prev) => Math.max(prev - 1, 1))}

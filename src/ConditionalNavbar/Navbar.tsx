@@ -31,6 +31,9 @@ const Navbar = () => {
               <Link href={"/contact"} className="hover:text-primary nav_link">
                 Contact
               </Link>
+              <Link href={"/search"} className="hover:text-primary nav_link">
+                Explore
+              </Link>
             </li>
           </ul>
           <div className="flex items-center space-x-4">
