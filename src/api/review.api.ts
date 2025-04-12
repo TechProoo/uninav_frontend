@@ -25,7 +25,7 @@ export interface PaginationParams {
 }
 
 // Materials Review Endpoints
-export const listMaterialReviews = async (
+export const getMaterialReviews = async (
   params: PaginationParams & { type?: string } = {}
 ) => {
   try {

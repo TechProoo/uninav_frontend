@@ -20,7 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ApprovalStatusEnum, Material } from "@/lib/types/response.type";
 import {
-  listMaterialReviews,
+  getMaterialReviews,
   reviewMaterial,
   deleteMaterialAsAdmin,
   ReviewActionDTO,
@@ -97,7 +97,7 @@ const MaterialsReviewPage = () => {
     setError(null);
 
     try {
-      const response = await listMaterialReviews({
+      const response = await getMaterialReviews({
         status: activeTab as ApprovalStatusEnum,
         page: currentPage,
         limit: 10,
@@ -220,11 +220,6 @@ const MaterialsReviewPage = () => {
       toast.error("An error occurred while deleting material");
     }
   };
-
-  // If user not loaded yet or not admin/moderator, show nothing
-  if (!user || (user.role !== "admin" && user.role !== "moderator")) {
-    return null;
-  }
 
   return (
     <div className="mx-auto px-4 container">
@@ -365,7 +360,7 @@ const MaterialsReviewPage = () => {
                             </Button>
                           </>
                         )}
-                        {user.role === "admin" && (
+                        {user?.role === "admin" && (
                           <Button
                             variant="destructive"
                             size="sm"
