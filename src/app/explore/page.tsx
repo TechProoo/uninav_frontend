@@ -34,8 +34,25 @@ import {
   Tag,
   Grid,
   List,
+  Info,
+  Wand2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 // Blog type options for filtering
 const blogTypeOptions = [
@@ -85,6 +102,11 @@ const ExplorePage = () => {
   // State for view mode (grid or list)
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
+  // Add state for advanced search
+  const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
+  const [showAdvancedSearchInfo, setShowAdvancedSearchInfo] =
+    useState<boolean>(false);
+
   // State for search inputs
   const [searchQuery, setSearchQuery] = useState<string>(query || "");
   // State for material filters
@@ -123,6 +145,14 @@ const ExplorePage = () => {
     setViewMode(viewMode === "grid" ? "list" : "grid");
   };
 
+  // Toggle advanced search mode
+  const toggleAdvancedSearch = (checked: boolean) => {
+    if (checked && !advancedSearch) {
+      setShowAdvancedSearchInfo(true); // Show info dialog when enabling
+    }
+    setAdvancedSearch(checked);
+  };
+
   // Fetch materials with filters
   const fetchMaterials = async (page = materialPage) => {
     setIsLoadingMaterials(true);
@@ -134,6 +164,7 @@ const ExplorePage = () => {
         tag: materialTag || undefined,
         courseId: materialCourse || undefined,
         type: materialType || undefined,
+        advancedSearch: advancedSearch || undefined,
       });
 
       if (response && response.status === "success") {
@@ -176,6 +207,13 @@ const ExplorePage = () => {
 
   // Handle search for active tab
   const handleSearch = () => {
+    if (advancedSearch) {
+      toast("Using advanced search - this may take longer", {
+        icon: "🔎",
+        duration: 3000,
+      });
+    }
+
     if (activeTab === "materials") {
       setMaterialPage(1);
       fetchMaterials(1);
@@ -292,6 +330,42 @@ const ExplorePage = () => {
     <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-4 py-6 min-h-screen text-gray-900">
       <Toaster />
 
+      {/* Advanced Search Information Dialog */}
+      <Dialog
+        open={showAdvancedSearchInfo}
+        onOpenChange={setShowAdvancedSearchInfo}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="w-5 h-5 text-blue-500" />
+              Advanced Search
+            </DialogTitle>
+            <DialogDescription>
+              <p className="py-2">
+                Advanced search uses more sophisticated algorithms to find
+                relevant results but may take longer to complete.
+              </p>
+              <div className="bg-amber-50 mt-2 p-3 border border-amber-200 rounded-md">
+                <div className="flex items-start gap-2">
+                  <Info className="mt-0.5 w-5 h-5 text-amber-500" />
+                  <div>
+                    <p className="font-medium text-amber-800">
+                      Performance Note
+                    </p>
+                    <p className="text-amber-700 text-sm">
+                      This feature performs in-depth analysis which may slow
+                      down search results. Use it only when standard search
+                      doesn't yield helpful results.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       <div className="mx-auto max-w-7xl">
         <div className="bg-white shadow-md mb-6 p-6 rounded-xl">
           <h1 className="mb-4 font-bold text-2xl">Explore UniNav</h1>
@@ -327,8 +401,34 @@ const ExplorePage = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Search for study materials, courses..."
-                      className="py-3 pr-4 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                      className="py-3 pr-14 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full"
                     />
+
+                    {/* Advanced Search Toggle */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                              advancedSearch
+                                ? "text-blue-600"
+                                : "text-gray-400 hover:text-gray-600"
+                            }`}
+                            onClick={() =>
+                              toggleAdvancedSearch(!advancedSearch)
+                            }
+                          >
+                            <Wand2 className="w-5 h-5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {advancedSearch ? "Disable" : "Enable"} advanced
+                            search
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <button
                     onClick={handleSearch}
@@ -358,6 +458,28 @@ const ExplorePage = () => {
                       <Grid className="w-5 h-5" />
                     )}
                   </button>
+                </div>
+
+                {/* Advanced Search Option */}
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="advanced-search-toggle"
+                    checked={advancedSearch}
+                    onCheckedChange={toggleAdvancedSearch}
+                  />
+                  <Label
+                    htmlFor="advanced-search-toggle"
+                    className="flex items-center"
+                  >
+                    <Wand2 className="mr-1 w-4 h-4 text-blue-600" />
+                    Advanced Search
+                    <button
+                      onClick={() => setShowAdvancedSearchInfo(true)}
+                      className="ml-1 text-gray-400 hover:text-gray-600"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                  </Label>
                 </div>
 
                 {/* Materials Filters */}
@@ -558,8 +680,34 @@ const ExplorePage = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Search for blogs, articles, guides..."
-                      className="py-3 pr-4 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      className="py-3 pr-14 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                     />
+
+                    {/* Advanced Search Toggle */}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                              advancedSearch
+                                ? "text-blue-600"
+                                : "text-gray-400 hover:text-gray-600"
+                            }`}
+                            onClick={() =>
+                              toggleAdvancedSearch(!advancedSearch)
+                            }
+                          >
+                            <Wand2 className="w-5 h-5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>
+                            {advancedSearch ? "Disable" : "Enable"} advanced
+                            search
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <button
                     onClick={handleSearch}
@@ -589,6 +737,28 @@ const ExplorePage = () => {
                       <Grid className="w-5 h-5" />
                     )}
                   </button>
+                </div>
+
+                {/* Advanced Search Option */}
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="advanced-search-toggle-blog"
+                    checked={advancedSearch}
+                    onCheckedChange={toggleAdvancedSearch}
+                  />
+                  <Label
+                    htmlFor="advanced-search-toggle-blog"
+                    className="flex items-center"
+                  >
+                    <Wand2 className="mr-1 w-4 h-4 text-blue-600" />
+                    Advanced Search
+                    <button
+                      onClick={() => setShowAdvancedSearchInfo(true)}
+                      className="ml-1 text-gray-400 hover:text-gray-600"
+                    >
+                      <Info className="w-4 h-4" />
+                    </button>
+                  </Label>
                 </div>
 
                 {/* Blogs Filters */}

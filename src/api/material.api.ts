@@ -40,9 +40,23 @@ export const fetchRecommendedMaterials = async ({
 };
 
 // Get my materials i created
-export const getMyMaterials = async (): Promise<Response<Material[]>> => {
+export const getMyMaterials = async ({
+  page = 1,
+  limit = 10,
+  creatorId,
+  type,
+}: {
+  page?: number;
+  limit?: number;
+  creatorId?: string;
+  type?: string;
+}): Promise<Response<Pagination<Material[]>>> => {
   try {
-    const response = await api.get<Response<Material[]>>(`/materials/me`);
+    let url = `/materials/me?page=${page}&limit=${limit}`;
+    if (creatorId) url += `&creatorId=${creatorId}`;
+    if (type) url += `&type=${type}`;
+
+    const response = await api.get<Response<Pagination<Material[]>>>(url);
 
     if (response.data.status === "success") {
       return response.data;
@@ -63,6 +77,7 @@ export const searchMaterialsLoggedIn = async ({
   courseId,
   type,
   tag,
+  advancedSearch,
 }: {
   query?: string;
   page?: number;
@@ -71,6 +86,7 @@ export const searchMaterialsLoggedIn = async ({
   courseId?: string;
   type?: string;
   tag?: string;
+  advancedSearch?: boolean;
 }): Promise<Response<Pagination<Material[]>>> => {
   try {
     let url = `/materials/search?page=${page}&limit=${limit}`;
@@ -80,6 +96,7 @@ export const searchMaterialsLoggedIn = async ({
     if (courseId) url += `&courseId=${courseId}`;
     if (type) url += `&type=${type}`;
     if (tag) url += `&tag=${tag}`;
+    if (advancedSearch) url += `&advancedSearch=${advancedSearch}`;
 
     const response = await api.get<Response<Pagination<Material[]>>>(url);
 
@@ -102,6 +119,7 @@ export const searchMaterialsNotLoggedIn = async ({
   courseId,
   type,
   tag,
+  advancedSearch,
 }: {
   query?: string;
   page?: number;
@@ -110,6 +128,7 @@ export const searchMaterialsNotLoggedIn = async ({
   courseId?: string;
   type?: string;
   tag?: string;
+  advancedSearch?: boolean;
 }): Promise<Response<Pagination<Material[]>>> => {
   try {
     let url = `/materials?page=${page}&limit=${limit}`;
@@ -119,6 +138,7 @@ export const searchMaterialsNotLoggedIn = async ({
     if (courseId) url += `&courseId=${courseId}`;
     if (type) url += `&type=${type}`;
     if (tag) url += `&tag=${tag}`;
+    if (advancedSearch) url += `&advancedSearch=${advancedSearch}`;
 
     const response = await api.get<Response<Pagination<Material[]>>>(url);
 
