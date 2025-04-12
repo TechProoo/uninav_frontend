@@ -519,7 +519,7 @@ const ExplorePage = () => {
                         <label className="font-medium text-sm">Course</label>
                         <SelectCourse
                           onChange={setMaterialCourse}
-                          // currentValue={materialCourse}
+                          currentValue={materialCourse}
                         />
                       </div>
 

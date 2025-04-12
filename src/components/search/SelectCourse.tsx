@@ -20,12 +20,13 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   onChange: (value: string) => void;
+  currentValue?: string;
 };
 
-export const SelectCourse = ({ onChange }: Props) => {
+export const SelectCourse = ({ onChange, currentValue }: Props) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(currentValue || "");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,6 +44,13 @@ export const SelectCourse = ({ onChange }: Props) => {
 
     fetchCourses();
   }, []);
+
+  // Update value when currentValue prop changes
+  useEffect(() => {
+    if (currentValue) {
+      setValue(currentValue);
+    }
+  }, [currentValue]);
 
   const selectedCourse = courses.find((course) => course.id === value);
 
