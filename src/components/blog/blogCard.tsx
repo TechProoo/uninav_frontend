@@ -155,14 +155,6 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
                 </div>
               )}
             </div>
-            <div className="flex justify-between items-end mt-3">
-              <Link
-                href={`/blogs/${data.id}`}
-                className="flex justify-center items-center bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors"
-              >
-                <ArrowBigRight size={20} className="text-blue-800" />
-              </Link>
-            </div>
           </div>
         </div>
       </div>

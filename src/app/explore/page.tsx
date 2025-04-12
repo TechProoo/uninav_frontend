@@ -450,7 +450,7 @@ const ExplorePage = () => {
                   </button>
                   <button
                     onClick={toggleViewMode}
-                    className="flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                    className="hidden md:flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
                   >
                     {viewMode === "grid" ? (
                       <List className="w-5 h-5" />
@@ -729,7 +729,7 @@ const ExplorePage = () => {
                   </button>
                   <button
                     onClick={toggleViewMode}
-                    className="flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                    className="hidden flex md:flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
                   >
                     {viewMode === "grid" ? (
                       <List className="w-5 h-5" />

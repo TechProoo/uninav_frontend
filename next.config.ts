@@ -22,7 +22,11 @@ const nextConfig: NextConfig = {
     return config;
   },
   images: {
-    domains: ["uninav-media.c8c3.va01.idrivee2-92.com"],
+    domains: [
+      "uninav-media.c8c3.va01.idrivee2-92.com",
+      "img.freepik.com",
+      "randomuser.me",
+    ],
   },
   experimental: {
     // Enable turbo specific optimizations
