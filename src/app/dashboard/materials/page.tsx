@@ -8,7 +8,7 @@ import MaterialForm from "@/components/materials/forms/MaterialForm";
 import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 import { Material, MaterialTypeEnum } from "@/lib/types/response.type";
-import { getMaterials, searchMaterials } from "@/api/material.api";
+import { searchMaterialsLoggedIn, getMyMaterials } from "@/api/material.api";
 
 type ViewMode = "grid" | "list";
 
@@ -40,14 +40,14 @@ const MaterialsPage = () => {
       let response;
 
       if (searchQuery.trim()) {
-        response = await searchMaterials({
+        response = await searchMaterialsLoggedIn({
           query: searchQuery,
           page,
           creatorId: user?.id,
           type: filterType || undefined,
         });
       } else {
-        response = await getMaterials({
+        response = await getMyMaterials({
           page,
           creatorId: user?.id,
           type: filterType || undefined,

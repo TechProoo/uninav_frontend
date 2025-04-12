@@ -133,16 +133,42 @@ export const getBlogByCreatorId = async (
 };
 
 // This gets user blogs that are currently in session
-export const getUserBlogs = async (): Promise<Blog[]> => {
+export const getUserBlogs = async (filters?: {
+  page?: number;
+  limit?: number;
+}): Promise<Response<Pagination<Blog[]>>> => {
   try {
-    const response = await api.get<Response<Blog[]>>("/blogs/me");
+    // Build query parameters
+    const params = new URLSearchParams();
+    if (filters?.page) params.append("page", filters.page.toString());
+    if (filters?.limit) params.append("limit", filters.limit.toString());
+
+    const response = await api.get<Response<Pagination<Blog[]>>>(
+      `/blogs/me${params.toString() ? `?${params.toString()}` : ""}`
+    );
 
     if (response.data.status === "success") {
-      return response.data.data;
+      return response.data;
     }
     throw new Error(response.data.message || "Failed to fetch your blogs");
   } catch (error: any) {
     console.error("Error fetching user blogs:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
+};
+
+// Like/Unlike Material
+export const toggleBlogLike = async (
+  id: string
+): Promise<Response<{ liked: boolean; likesCount: number }>> => {
+  try {
+    const response = await api.post<
+      Response<{ liked: boolean; likesCount: number }>
+    >(`/blogs/like/${id}`);
+
+    return response.data;
+  } catch (error: any) {
+    console.error(`Error toggling like for blog with ID ${id}:`, error);
     throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };

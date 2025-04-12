@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, KeyboardEvent } from "react";
 import { useAuth } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -11,10 +11,12 @@ import { fetchRecommendedMaterials } from "@/api/material.api";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 import CourseSlider from "@/components/dashboard/CourseSlider";
 import BookmarkSlider from "@/components/materials/BookmarkSlider";
+import { Search } from "lucide-react";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
 
   // State for recommendations
   const [recommendations, setRecommendations] = useState<Material[]>([]);
@@ -65,18 +67,30 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  if (loading || !user) {
-    return null;
-  }
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/explore?query=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   const handleMaterialClick = (material: Material) => {
     router.push(`/dashboard/materials/${material.id}`);
   };
 
+  if (loading || !user) {
+    return null;
+  }
+
   return (
     <div className="flex-grow w-full min-h-screen">
       <div className="space-y-8 mx-auto px-4 py-8 max-w-7xl">
-        {/* Welcome Banner */}
+        {/* Welcome Banner with Search */}
         <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr">
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Image
@@ -95,12 +109,27 @@ export default function Dashboard() {
               connecting you with study materials, past questions, and peer
               support.
             </p>
-            <button
-              onClick={() => router.push("/dashboard/materials")}
-              className="bg-white hover:bg-blue-100 shadow mt-4 px-6 py-2 rounded-full text-slate-600 transition fst"
-            >
-              Browse All Materials
-            </button>
+
+            {/* Search Bar */}
+            <div className="flex mx-auto md:mx-0 mt-4 w-full max-w-md">
+              <div className="relative flex-1">
+                <Search className="top-1/2 left-3 absolute w-5 h-5 text-slate-600 -translate-y-1/2 transform" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Search for materials..."
+                  className="bg-white px-10 py-2 rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-200 w-full text-slate-800"
+                />
+              </div>
+              <button
+                onClick={handleSearch}
+                className="bg-blue-100 hover:bg-blue-200 px-6 py-2 rounded-r-full text-slate-600 transition"
+              >
+                Search
+              </button>
+            </div>
           </div>
 
           <div className="hidden md:block">
