@@ -82,21 +82,7 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar className="w-64 min-w-[4rem]">
-      <SidebarContent className="flex flex-col pt-[5rem] h-full">
-        <div className="relative flex items-center px-3 py-4 h-16">
-          <Link
-            href="/"
-            className="group flex items-center space-x-2 cursor-pointer"
-          >
-            <Image
-              src="/Image/uninav-logo.svg"
-              alt="UniNav Logo"
-              width={32}
-              height={32}
-              className="w-8 h-8"
-            />
-          </Link>
-        </div>
+      <SidebarContent className="flex flex-col pt-[7rem] h-full">
         <SidebarMenu className="space-y-1 px-3">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.url;
@@ -107,7 +93,7 @@ export function DashboardSidebar() {
                   className={cn(
                     "flex items-center space-x-2 p-2 rounded-md",
                     isActive
-                      ? "bg-blue-100 text-primary hover:bg-blue-200"
+                      ? "bg-blue-100 text-primar hover:bg-blue-200"
                       : "hover:bg-gray-100"
                   )}
                 >

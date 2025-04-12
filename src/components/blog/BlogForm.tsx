@@ -76,18 +76,13 @@ const PostForm = ({ data }: dataProp) => {
         response = await createBlog(formDataToSend);
       }
 
-      console.log(response);
+      console.log();
 
-      if (response) {
-        // @ts-ignore
-        router.push("/dashboard/blogs").then(() => {
-          // Refresh the page after navigation
-          router.refresh();
-        });
-        toast.success("Post submitted successfully");
-      } else {
-        toast.error("Failed to submit post");
-      }
+      // @ts-ignore
+      router.push("/dashboard/blogs");
+      // Refresh the page after navigation
+      router.refresh();
+      toast.success("Post submitted successfully");
     } catch (error) {
       console.error("Error:", error);
       toast.error("Failed to submit post");
@@ -133,12 +128,6 @@ const PostForm = ({ data }: dataProp) => {
 
   return (
     <div className="mx-auto w-full max-w-7xl">
-      <button
-        onClick={() => router.back()}
-        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white transition"
-      >
-        Go Back
-      </button>
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Cover Image Section */}
         <div className="w-full">
@@ -294,13 +283,13 @@ const PostForm = ({ data }: dataProp) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#003666] hover:bg-blue-700 shadow-md px-8 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full md:w-auto font-medium text-white text-lg transition-all duration-300 ease-in-out"
+            className="bg-[#003666] hover:bg-blue-900 shadow-md px-8 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full md:w-auto font-medium text-white text-lg transition-all duration-300 ease-in-out"
           >
             {isSubmitting
               ? "Submitting..."
               : data
-              ? "Update Post"
-              : "Create Post"}
+              ? "Update Blog"
+              : "Create Blog"}
           </button>
         </div>
       </form>
