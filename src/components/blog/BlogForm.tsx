@@ -79,11 +79,9 @@ const PostForm = ({ data }: dataProp) => {
       console.log(response);
 
       if (response) {
-        // @ts-ignore
-        router.push("/dashboard/blogs").then(() => {
-          // Refresh the page after navigation
-          router.refresh();
-        });
+        router.push("/dashboard/blogs");
+        router.refresh();
+
         toast.success("Post submitted successfully");
       } else {
         toast.error("Failed to submit post");
@@ -133,12 +131,6 @@ const PostForm = ({ data }: dataProp) => {
 
   return (
     <div className="mx-auto w-full max-w-7xl">
-      <button
-        onClick={() => router.back()}
-        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white transition"
-      >
-        Go Back
-      </button>
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Cover Image Section */}
         <div className="w-full">

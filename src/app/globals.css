@@ -452,6 +452,60 @@ body {
 }
 
 /* TEXT EDITOR */
+/* Styling for h1, h2, h3, and p elements inside .ql-editor */
+.ql-editor h1 {
+  font-size: 2rem; /* Font size for h1 */
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  color: #333;
+  font-family: "Georgia", serif;
+}
+
+.ql-editor h2 {
+  font-size: 1.75rem; /* Font size for h2 */
+  font-weight: bold;
+  margin-bottom: 1.3rem;
+  line-height: 1.4;
+  color: #333;
+  font-family: "Georgia", serif;
+}
+
+.ql-editor h3 {
+  font-size: 1.5rem; 
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  line-height: 1.4;
+  color: #333;
+  font-family: "Georgia", serif;
+}
+
 .ql-editor p {
   margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1rem;
+  color: #555;
+  font-family: "Georgia", serif;
+}
+
+@media (max-width: 768px) {
+  .ql-editor h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.3rem;
+  }
+
+  .ql-editor h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .ql-editor h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .ql-editor p {
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
 }

@@ -143,7 +143,7 @@ const ProfilePage = () => {
           className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
             isEditing
               ? "bg-gray-200 hover:bg-gray-300 text-gray-800"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
+              : "bg-[#003666] hover:bg-[#002a52] text-white"
           }`}
         >
           {isEditing ? (
@@ -159,7 +159,7 @@ const ProfilePage = () => {
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         {/* Profile Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-8 text-white">
+        <div className="bg-gradient-to-r from-[#003666] to-[#75bfff] px-6 py-8 text-white">
           <div className="flex items-center gap-6">
             <div className="flex justify-center items-center bg-white/20 backdrop-blur-sm border-2 border-white/50 rounded-full w-24 h-24 font-medium text-white text-3xl">
               {user?.firstName?.[0]}
