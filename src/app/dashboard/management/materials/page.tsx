@@ -340,8 +340,8 @@ const MaterialsReviewPage = () => {
                                     Rejected by:{" "}
                                   </span>
                                 )}
-                                {material.reviewedBy.firstName}{" "}
-                                {material.reviewedBy.lastName}
+
+                                {"@" + material.reviewedBy.username}
                               </p>
                               {material.reviewStatus ===
                                 ApprovalStatusEnum.REJECTED && (

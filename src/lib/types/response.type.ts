@@ -68,16 +68,7 @@ export type UserProfile = {
   courses: {
     userId: string;
     courseId: string;
-    course: {
-      id: string;
-      courseName: string;
-      courseCode: string;
-      description: string;
-      reviewStatus: ApprovalStatusEnum;
-      reviewedBy: string | null;
-      createdAt: string;
-      updatedAt: string;
-    };
+    course: Course;
   }[];
 };
 export type Pagination<T> = {
@@ -229,6 +220,14 @@ export interface Blog {
   createdAt: string;
   updatedAt: string;
   creator: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  };
+  reviewStatus: ApprovalStatusEnum;
+  reviewedById: string | null;
+  reviewedBy?: {
     id: string;
     firstName: string;
     lastName: string;

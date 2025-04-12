@@ -100,7 +100,7 @@ const BlogsReviewPage = () => {
         status: activeTab as ApprovalStatusEnum,
         page: currentPage,
         limit: 6,
-        query: searchQuery || undefined
+        query: searchQuery || undefined,
       });
 
       if (response?.status === "success") {
@@ -292,7 +292,8 @@ const BlogsReviewPage = () => {
               {blogs.map((blog) => (
                 <div
                   key={blog.id}
-                  className="bg-white shadow-sm hover:shadow-md border rounded-lg overflow-hidden transition-shadow"
+                  className="bg-white shadow-sm hover:shadow-md border rounded-lg overflow-hidden transition-shadow cursor-pointer"
+                  onClick={() => handleBlogClick(blog)}
                 >
                   {/* Blog Image */}
                   <div className="relative bg-gray-100 w-full aspect-video overflow-hidden">
@@ -327,6 +328,33 @@ const BlogsReviewPage = () => {
                       by {blog.creator.firstName} {blog.creator.lastName}
                     </p>
 
+                    {activeTab !== ApprovalStatusEnum.PENDING &&
+                      blog.reviewedBy && (
+                        <div className="bg-gray-50 mt-4 p-3 rounded-md">
+                          <p className="font-medium text-sm">
+                            {activeTab === ApprovalStatusEnum.APPROVED ? (
+                              <span className="text-green-600">
+                                Approved by:{" "}
+                              </span>
+                            ) : (
+                              <span className="text-red-600">
+                                Rejected by:{" "}
+                              </span>
+                            )}
+                            {"@" + blog.reviewedBy.username}
+                          </p>
+                          {blog.reviewStatus ===
+                            ApprovalStatusEnum.REJECTED && (
+                            <p className="mt-1 text-sm line-clamp-2">
+                              <span className="font-medium">Reason: </span>
+                              {
+                                "Comment not available in current data structure"
+                              }
+                            </p>
+                          )}
+                        </div>
+                      )}
+
                     {/* Description */}
                     <p className="mb-3 text-gray-700 text-sm line-clamp-2">
                       {blog.description || "No description provided."}
@@ -360,26 +388,19 @@ const BlogsReviewPage = () => {
 
                     {/* Action buttons */}
                     <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleBlogClick(blog)}
-                      >
-                        <Eye className="mr-2 w-4 h-4" />
-                        View
-                      </Button>
                       {activeTab === ApprovalStatusEnum.PENDING && (
                         <>
                           <Button
                             variant="default"
                             size="sm"
                             className="bg-green-600 hover:bg-green-700"
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
                               handleReviewAction(
                                 blog,
                                 ApprovalStatusEnum.APPROVED
-                              )
-                            }
+                              );
+                            }}
                           >
                             <CheckCircle className="mr-1 w-3.5 h-3.5" />
                             Approve
@@ -387,12 +408,13 @@ const BlogsReviewPage = () => {
                           <Button
                             variant="destructive"
                             size="sm"
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.stopPropagation();
                               handleReviewAction(
                                 blog,
                                 ApprovalStatusEnum.REJECTED
-                              )
-                            }
+                              );
+                            }}
                           >
                             <XCircle className="mr-1 w-3.5 h-3.5" />
                             Reject
@@ -405,7 +427,10 @@ const BlogsReviewPage = () => {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => handleDeleteAction(blog)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteAction(blog);
+                          }}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           Delete
