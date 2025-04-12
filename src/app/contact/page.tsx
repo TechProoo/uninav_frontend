@@ -409,7 +409,7 @@ const ContactPage = () => {
             />
             <TeamMemberCard
               name="Alex Johnson"
-              role="Brand Manager"
+              role="Marketing Manager"
               image="https://randomuser.me/api/portraits/men/32.jpg"
               github="https://github.com/buildminds"
               linkedin="https://linkedin.com/in/buildminds"

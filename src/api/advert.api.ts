@@ -203,12 +203,16 @@ export const getAdvertsByCreatorId = async (
       `/adverts/user/${creatorId}`
     );
 
-    if (response.data.status === "success") {
-      return response.data;
-    }
-    return null;
+    return response.data;
   } catch (error) {
     console.error(`Error fetching adverts for creator ${creatorId}:`, error);
     return null;
+  }
+};
+export const incrementClick = async (id: string) => {
+  try {
+    await api.post(`/adverts/click/${id}`);
+  } catch (error: any) {
+    throw new Error(error?.response?.data?.message || "something went wrong");
   }
 };
