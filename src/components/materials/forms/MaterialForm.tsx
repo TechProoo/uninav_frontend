@@ -19,7 +19,7 @@ import {
 import { CreateFreeAdvertDto, createFreeAdvert } from "@/api/advert.api";
 import { getCourses } from "@/api/course.api";
 import { useDropzone } from "react-dropzone";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/search/selectCourse";
 import toast from "react-hot-toast";
 
 interface MaterialFormProps {
@@ -906,8 +906,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             {isSubmitting
               ? "Saving..."
               : initialData
-              ? "Update Material"
-              : "Create Material"}
+                ? "Update Material"
+                : "Create Material"}
           </Button>
         </div>
       </form>
