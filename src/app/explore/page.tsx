@@ -5,7 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SelectType } from "@/components/search/select";
 import { SelectCourse } from "@/components/search/selectCourse";
-import { searchMaterials } from "@/api/material.api";
+import {
+  searchMaterialsLoggedIn,
+  searchMaterialsNotLoggedIn,
+} from "@/api/material.api";
 import { searchBlogs } from "@/api/blog.api";
 import {
   Blog,
@@ -32,6 +35,7 @@ import {
   Grid,
   List,
 } from "lucide-react";
+import { useAuth } from "@/contexts/authContext";
 
 // Blog type options for filtering
 const blogTypeOptions = [
@@ -64,6 +68,10 @@ const restrictionOptions = [
 
 const ExplorePage = () => {
   const router = useRouter();
+  const { user } = useAuth();
+  const searchMaterialsApi = user
+    ? searchMaterialsLoggedIn
+    : searchMaterialsNotLoggedIn;
   const searchParams = useSearchParams();
   const query = searchParams.get("query");
   const courseId = searchParams.get("courseId");
@@ -79,7 +87,6 @@ const ExplorePage = () => {
 
   // State for search inputs
   const [searchQuery, setSearchQuery] = useState<string>(query || "");
-
   // State for material filters
   const [materialType, setMaterialType] = useState<string>("");
   const [materialTag, setMaterialTag] = useState<string>("");
@@ -120,7 +127,7 @@ const ExplorePage = () => {
   const fetchMaterials = async (page = materialPage) => {
     setIsLoadingMaterials(true);
     try {
-      const response = await searchMaterials({
+      const response = await searchMaterialsApi({
         query: searchQuery,
         page,
         limit: 10,
@@ -134,12 +141,11 @@ const ExplorePage = () => {
         setMaterialTotalPages(response.data.pagination?.totalPages || 1);
         return;
       }
-
-      toast.error("Failed to fetch materials");
     } catch (error) {
+      console.error("Error fetching materials:", error);
+      // Only show toast from catch block, remove the duplicate toast
       const err = error as Error;
       toast.error(err?.message || "Failed to fetch materials");
-      console.error("Error fetching materials:", error);
     } finally {
       setIsLoadingMaterials(false);
     }
@@ -159,9 +165,10 @@ const ExplorePage = () => {
       setBlogTotalPages(response.data.pagination?.totalPages || 1);
       setBlogContentLoaded(true);
     } catch (error) {
+      console.error("Error fetching blogs:", error);
+      // Show only one toast message
       const err = error as Error;
       toast.error(err?.message || "Failed to fetch blogs");
-      console.error("Error fetching blogs:", error);
     } finally {
       setIsLoadingBlogs(false);
     }

@@ -54,8 +54,8 @@ export const getMyMaterials = async (): Promise<Response<Material[]>> => {
   }
 };
 
-// Search Materials
-export const searchMaterials = async ({
+// Search Materials when user is loggedin (this does some ranking based on users crendentials)
+export const searchMaterialsLoggedIn = async ({
   query,
   page = 1,
   limit = 10,
@@ -74,6 +74,45 @@ export const searchMaterials = async ({
 }): Promise<Response<Pagination<Material[]>>> => {
   try {
     let url = `/materials/search?page=${page}&limit=${limit}`;
+
+    if (query) url += `&query=${encodeURIComponent(query)}`;
+    if (creatorId) url += `&creatorId=${creatorId}`;
+    if (courseId) url += `&courseId=${courseId}`;
+    if (type) url += `&type=${type}`;
+    if (tag) url += `&tag=${tag}`;
+
+    const response = await api.get<Response<Pagination<Material[]>>>(url);
+
+    if (response.data.status === "success") {
+      return response.data;
+    }
+    throw new Error(response.data.message || "Failed to search materials");
+  } catch (error: any) {
+    console.error("Error searching materials:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
+};
+
+// Search Materials when user is not loggedin doesn't require user session
+export const searchMaterialsNotLoggedIn = async ({
+  query,
+  page = 1,
+  limit = 10,
+  creatorId,
+  courseId,
+  type,
+  tag,
+}: {
+  query?: string;
+  page?: number;
+  limit?: number;
+  creatorId?: string;
+  courseId?: string;
+  type?: string;
+  tag?: string;
+}): Promise<Response<Pagination<Material[]>>> => {
+  try {
+    let url = `/materials?page=${page}&limit=${limit}`;
 
     if (query) url += `&query=${encodeURIComponent(query)}`;
     if (creatorId) url += `&creatorId=${creatorId}`;
