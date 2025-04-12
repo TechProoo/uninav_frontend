@@ -98,7 +98,6 @@ const Page = () => {
     try {
       setLoading(true);
       const response = await signup(formData);
-
       toast.success(
         "Account created successfully! Please verify your email to continue.",
         { duration: 5000 }

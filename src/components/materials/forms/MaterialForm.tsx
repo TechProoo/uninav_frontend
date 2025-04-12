@@ -1,26 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Check, ChevronsUpDown, Upload, Megaphone } from "lucide-react";
+import { Upload, Megaphone, PlusCircle, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Material,
   MaterialTypeEnum,
   VisibilityEnum,
   RestrictionEnum,
   Course,
+  Advert,
 } from "@/lib/types/response.type";
 import {
   CreateMaterialDto,
@@ -31,6 +20,7 @@ import { CreateFreeAdvertDto, createFreeAdvert } from "@/api/advert.api";
 import { getCourses } from "@/api/course.api";
 import { useDropzone } from "react-dropzone";
 import { SelectCourse } from "@/components/search/selectCourse";
+import toast from "react-hot-toast";
 
 interface MaterialFormProps {
   initialData?: Material;
@@ -50,6 +40,19 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [includeAdvert, setIncludeAdvert] = useState(false);
 
+  // Define the maximum number of free adverts allowed per material
+  const MAX_FREE_ADVERTS = 3;
+
+  // Track existing and new adverts separately
+  const [existingAdverts, setExistingAdverts] = useState<Advert[]>([]);
+  const [newAdverts, setNewAdverts] = useState<
+    {
+      label: string;
+      description: string;
+      image: File | null;
+      imagePreview: string | null;
+    }[]
+  >([]);
   const [formData, setFormData] = useState<CreateMaterialDto>({
     label: "",
     description: "",
@@ -60,18 +63,9 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     resourceAddress: "",
   });
 
-  const [advertData, setAdvertData] = useState<CreateFreeAdvertDto>({
-    label: "",
-    description: "",
-  });
-
+  const [tagInput, setTagInput] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
-  const [advertImage, setAdvertImage] = useState<File | null>(null);
-  const [advertImagePreview, setAdvertImagePreview] = useState<string | null>(
-    null
-  );
-  const [tagInput, setTagInput] = useState("");
 
   // Initialize form with existing data if editing
   useEffect(() => {
@@ -86,6 +80,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         resourceAddress: initialData.resource?.resourceAddress || "",
         targetCourseId: initialData.targetCourseId || undefined,
       });
+
       if (initialData.targetCourse) {
         const { id, courseName, courseCode } = initialData.targetCourse;
         const course = courses.find((c) => c.id === id) || {
@@ -99,6 +94,12 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           level: 100,
         };
         setSelectedCourse(course);
+      }
+
+      // Initialize existing adverts if available
+      if (initialData.adverts && initialData.adverts.length > 0) {
+        setExistingAdverts(initialData.adverts);
+        setIncludeAdvert(true);
       }
     }
   }, [initialData, courses]);
@@ -117,6 +118,19 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     };
     loadCourses();
   }, []);
+
+  // Effect to check and enforce advert limits when toggling includeAdvert
+  useEffect(() => {
+    if (includeAdvert && existingAdverts.length >= MAX_FREE_ADVERTS) {
+      // If existing adverts already reach or exceed the limit, don't allow adding new ones
+      setNewAdverts([]);
+      if (existingAdverts.length > 0) {
+        toast.error(
+          `This material already has ${existingAdverts.length}/${MAX_FREE_ADVERTS} advertisements and cannot have more.`
+        );
+      }
+    }
+  }, [includeAdvert, existingAdverts.length]);
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -138,18 +152,37 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }
   };
 
-  const onAdvertImageDrop = (acceptedFiles: File[]) => {
+  const handleAdvertImageDrop = (
+    acceptedFiles: File[],
+    advertIndex: number
+  ) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      setAdvertImage(file);
 
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setAdvertImagePreview(reader.result as string);
+      setNewAdverts((prevAdverts) => {
+        const updatedAdverts = [...prevAdverts];
+        updatedAdverts[advertIndex] = {
+          ...updatedAdverts[advertIndex],
+          image: file,
         };
-        reader.readAsDataURL(file);
-      }
+
+        if (file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            setNewAdverts((prevAdverts) => {
+              const updatedAdverts = [...prevAdverts];
+              updatedAdverts[advertIndex] = {
+                ...updatedAdverts[advertIndex],
+                imagePreview: reader.result as string,
+              };
+              return updatedAdverts;
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+
+        return updatedAdverts;
+      });
     }
   };
 
@@ -158,17 +191,36 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     multiple: false,
   });
 
-  const {
-    getRootProps: getAdvertRootProps,
-    getInputProps: getAdvertInputProps,
-    isDragActive: isAdvertDragActive,
-  } = useDropzone({
-    onDrop: onAdvertImageDrop,
-    multiple: false,
-    accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".gif"],
-    },
-  });
+  const getAdvertDropzoneProps = (index: number) => {
+    return {
+      getRootProps: () => ({
+        onClick: (e: React.MouseEvent) => e.stopPropagation(),
+        onDragOver: (e: React.DragEvent) => e.stopPropagation(),
+        onDragEnter: (e: React.DragEvent) => e.stopPropagation(),
+        onDrop: (e: React.DragEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const files = Array.from(e.dataTransfer.files);
+          if (files.length > 0) {
+            handleAdvertImageDrop([files[0]], index);
+          }
+        },
+        className: cn(
+          "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
+          "border-blue-300 hover:border-blue-400"
+        ),
+      }),
+      getInputProps: () => ({
+        type: "file",
+        accept: "image/*",
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+          if (e.target.files && e.target.files.length > 0) {
+            handleAdvertImageDrop([e.target.files[0]], index);
+          }
+        },
+      }),
+    };
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -183,13 +235,18 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   };
 
   const handleAdvertChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number
   ) => {
     const { name, value } = e.target;
-    setAdvertData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setNewAdverts((prev) => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [name]: value,
+      };
+      return updated;
+    });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -200,21 +257,6 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         ...prev,
         resourceAddress: "",
       }));
-    }
-  };
-
-  const handleAdvertImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setAdvertImage(file);
-
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setAdvertImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
-      }
     }
   };
 
@@ -235,12 +277,47 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }));
   };
 
+  const handleAddNewAdvert = () => {
+    if (existingAdverts.length + newAdverts.length >= MAX_FREE_ADVERTS) {
+      toast.error(
+        `You can only add up to ${MAX_FREE_ADVERTS} advertisements per material`
+      );
+      return;
+    }
+
+    setNewAdverts((prev) => [
+      ...prev,
+      {
+        label: "",
+        description: "",
+        image: null,
+        imagePreview: null,
+      },
+    ]);
+  };
+
+  const handleRemoveNewAdvert = (index: number) => {
+    setNewAdverts((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     try {
+      // Additional validation to prevent exceeding MAX_FREE_ADVERTS
+      if (
+        includeAdvert &&
+        existingAdverts.length + newAdverts.length > MAX_FREE_ADVERTS
+      ) {
+        setError(
+          `You cannot exceed ${MAX_FREE_ADVERTS} advertisements per material.`
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
       const materialData: CreateMaterialDto = {
         ...formData,
         targetCourseId: selectedCourse?.id,
@@ -260,21 +337,26 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       if (materialResponse && materialResponse.status === "success") {
         const material = materialResponse.data;
 
-        // Create advert if checkbox is checked
-        if (includeAdvert) {
+        // Create adverts if checkbox is checked and there are new adverts to create
+        if (includeAdvert && newAdverts.length > 0) {
           try {
-            const advertPayload: CreateFreeAdvertDto = {
-              ...advertData,
-              materialId: material.id,
-              image: advertImage || undefined,
-            };
+            // Create all new adverts in parallel
+            const advertPromises = newAdverts.map((advertData) => {
+              if (!advertData.label.trim()) return null; // Skip empty adverts
 
-            const advertResponse = await createFreeAdvert(advertPayload);
-            if (!advertResponse || advertResponse.status !== "success") {
-              console.error("Failed to create advert, but material was saved");
-            }
+              const advertPayload: CreateFreeAdvertDto = {
+                label: advertData.label,
+                description: advertData.description,
+                materialId: material.id,
+                image: advertData.image || undefined,
+              };
+
+              return createFreeAdvert(advertPayload);
+            });
+
+            await Promise.all(advertPromises.filter(Boolean));
           } catch (advertError) {
-            console.error("Error creating advert:", advertError);
+            console.error("Error creating some adverts:", advertError);
           }
         }
 
@@ -557,16 +639,47 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
               <input
                 type="checkbox"
                 id="includeAdvert"
-                checked={includeAdvert}
-                onChange={(e) => setIncludeAdvert(e.target.checked)}
-                className="rounded w-4 h-4 text-blue-600"
+                checked={includeAdvert || existingAdverts.length > 0}
+                onChange={(e) => {
+                  // If trying to enable adverts when already at limit, show warning and prevent
+                  if (
+                    e.target.checked &&
+                    existingAdverts.length >= MAX_FREE_ADVERTS
+                  ) {
+                    toast.error(
+                      `This material already has the maximum ${MAX_FREE_ADVERTS} advertisements allowed.`
+                    );
+                    return;
+                  }
+                  setIncludeAdvert(e.target.checked);
+                }}
+                disabled={
+                  existingAdverts.length >= MAX_FREE_ADVERTS && !includeAdvert
+                }
+                className={cn(
+                  "rounded w-4 h-4 text-blue-600",
+                  existingAdverts.length >= MAX_FREE_ADVERTS &&
+                    !includeAdvert &&
+                    "opacity-50 cursor-not-allowed"
+                )}
               />
               <label
                 htmlFor="includeAdvert"
-                className="flex items-center font-medium text-gray-800"
+                className={cn(
+                  "flex items-center font-medium text-gray-800",
+                  existingAdverts.length >= MAX_FREE_ADVERTS &&
+                    !includeAdvert &&
+                    "opacity-50 cursor-not-allowed"
+                )}
               >
                 <Megaphone className="mr-1.5 w-4 h-4 text-blue-600" />
-                Add Free Advertisement for this Material
+                Advertisements for this Material
+                {existingAdverts.length >= MAX_FREE_ADVERTS &&
+                  !includeAdvert && (
+                    <span className="ml-2 text-red-500 text-xs">
+                      (Maximum {MAX_FREE_ADVERTS} advertisements reached)
+                    </span>
+                  )}
               </label>
             </div>
 
@@ -576,112 +689,205 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   Advertisement Details
                 </h3>
 
-                <div className="gap-4 grid md:grid-cols-1">
-                  <div>
-                    <label
-                      htmlFor="advert-label"
-                      className="block mb-1 font-medium text-gray-700 text-sm"
-                    >
-                      Ad Title *
-                    </label>
-                    <input
-                      id="advert-label"
-                      name="label"
-                      type="text"
-                      required={includeAdvert}
-                      value={advertData.label}
-                      onChange={handleAdvertChange}
-                      className="p-2 border border-gray-300 rounded-md w-full"
-                      placeholder="Enter a catchy title for your advertisement"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="advert-description"
-                      className="block mb-1 font-medium text-gray-700 text-sm"
-                    >
-                      Ad Description
-                    </label>
-                    <textarea
-                      id="advert-description"
-                      name="description"
-                      rows={2}
-                      value={advertData.description}
-                      onChange={handleAdvertChange}
-                      className="p-2 border border-gray-300 rounded-md w-full"
-                      placeholder="Briefly describe your advertisement"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="advert-image"
-                      className="block mb-1 font-medium text-gray-700 text-sm"
-                    >
-                      Ad Image (Recommended)
-                    </label>
-                    <div
-                      {...getAdvertRootProps()}
-                      className={cn(
-                        "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
-                        isAdvertDragActive
-                          ? "border-blue-500 bg-blue-100"
-                          : "border-blue-300 hover:border-blue-400"
-                      )}
-                    >
-                      <input {...getAdvertInputProps()} />
-                      <div className="flex flex-col items-center space-y-2">
-                        <Megaphone className="w-8 h-8 text-blue-500" />
-                        {isAdvertDragActive ? (
-                          <p>Drop the image here...</p>
-                        ) : (
-                          <>
-                            <p className="text-gray-600 text-sm">
-                              Drag & drop an image for your ad, or click to
-                              select
-                            </p>
-                            {advertImage && (
-                              <p className="font-medium text-blue-600 text-sm">
-                                Selected: {advertImage.name}
+                {/* Display existing adverts if any */}
+                {existingAdverts.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="mb-2 font-medium text-blue-700">
+                      Existing Advertisements
+                    </h4>
+                    <div className="space-y-4">
+                      {existingAdverts.map((advert, index) => (
+                        <div
+                          key={advert.id}
+                          className="bg-white p-4 border border-blue-200 rounded-lg"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h5 className="font-medium">{advert.label}</h5>
+                              <p className="text-gray-600 text-sm">
+                                {advert.description}
                               </p>
+                            </div>
+                            {advert.imageUrl && (
+                              <div className="w-20 h-20">
+                                <img
+                                  src={advert.imageUrl}
+                                  alt={advert.label}
+                                  className="rounded-md w-full h-full object-cover"
+                                />
+                              </div>
                             )}
-                          </>
-                        )}
-                      </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
+                    <div className="flex items-center gap-2 bg-amber-50 mt-3 p-2 rounded-md text-amber-600">
+                      <AlertCircle className="w-4 h-4" />
+                      <p className="text-sm">
+                        Existing advertisements cannot be removed or modified
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-                    {/* Ad Image Preview */}
-                    {advertImagePreview && (
-                      <div className="mt-3">
-                        <p className="mb-1 font-medium text-gray-700 text-sm">
-                          Ad Preview:
-                        </p>
-                        <div className="relative w-full max-w-xs">
-                          <img
-                            src={advertImagePreview}
-                            alt="Advertisement preview"
-                            className="border border-blue-200 rounded-lg w-full h-auto object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setAdvertImage(null);
-                              setAdvertImagePreview(null);
-                            }}
-                            className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                {/* Add new adverts */}
+                <div className="mt-4">
+                  <h4 className="mb-2 font-medium text-blue-700">
+                    {existingAdverts.length > 0
+                      ? "Add New Advertisements"
+                      : "Create Advertisements"}
+                  </h4>
+
+                  <div className="space-y-6">
+                    {newAdverts.map((advert, index) => (
+                      <div
+                        key={index}
+                        className="relative p-4 border border-blue-300 rounded-lg"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNewAdvert(index)}
+                          className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                        >
+                          ×
+                        </button>
+
+                        <div className="gap-4 grid md:grid-cols-2">
+                          <div>
+                            <label
+                              htmlFor={`advert-label-${index}`}
+                              className="block mb-1 font-medium text-gray-700 text-sm"
+                            >
+                              Ad Title *
+                            </label>
+                            <input
+                              id={`advert-label-${index}`}
+                              name="label"
+                              type="text"
+                              required={includeAdvert}
+                              value={advert.label}
+                              onChange={(e) => handleAdvertChange(e, index)}
+                              className="p-2 border border-gray-300 rounded-md w-full"
+                              placeholder="Enter a catchy title for your advertisement"
+                            />
+                          </div>
+
+                          <div>
+                            <label
+                              htmlFor={`advert-description-${index}`}
+                              className="block mb-1 font-medium text-gray-700 text-sm"
+                            >
+                              Ad Description
+                            </label>
+                            <textarea
+                              id={`advert-description-${index}`}
+                              name="description"
+                              rows={2}
+                              value={advert.description}
+                              onChange={(e) => handleAdvertChange(e, index)}
+                              className="p-2 border border-gray-300 rounded-md w-full"
+                              placeholder="Briefly describe your advertisement"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-3">
+                          <label
+                            htmlFor={`advert-image-${index}`}
+                            className="block mb-1 font-medium text-gray-700 text-sm"
                           >
-                            ×
-                          </button>
+                            Ad Image (Recommended)
+                          </label>
+                          <div
+                            {...getAdvertDropzoneProps(index).getRootProps()}
+                          >
+                            <input
+                              {...getAdvertDropzoneProps(index).getInputProps()}
+                            />
+                            <div className="flex flex-col items-center space-y-2">
+                              <Megaphone className="w-8 h-8 text-blue-500" />
+                              <p className="text-gray-600 text-sm">
+                                Drag & drop an image for your ad, or click to
+                                select
+                              </p>
+                              {advert.image && (
+                                <p className="font-medium text-blue-600 text-sm">
+                                  Selected: {advert.image.name}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Ad Image Preview */}
+                          {advert.imagePreview && (
+                            <div className="mt-3">
+                              <p className="mb-1 font-medium text-gray-700 text-sm">
+                                Ad Preview:
+                              </p>
+                              <div className="relative w-full max-w-xs">
+                                <img
+                                  src={advert.imagePreview}
+                                  alt="Advertisement preview"
+                                  className="border border-blue-200 rounded-lg w-full h-auto object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setNewAdverts((prev) => {
+                                      const updated = [...prev];
+                                      updated[index] = {
+                                        ...updated[index],
+                                        image: null,
+                                        imagePreview: null,
+                                      };
+                                      return updated;
+                                    });
+                                  }}
+                                  className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    )}
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleAddNewAdvert}
+                      disabled={
+                        existingAdverts.length + newAdverts.length >=
+                        MAX_FREE_ADVERTS
+                      }
+                      className={cn(
+                        "flex items-center gap-2 border-dashed border-blue-500 text-blue-600",
+                        existingAdverts.length + newAdverts.length >=
+                          MAX_FREE_ADVERTS && "opacity-50 cursor-not-allowed"
+                      )}
+                    >
+                      <PlusCircle className="w-4 h-4" />
+                      Add Another Advertisement
+                    </Button>
+
+                    <div className="flex items-center gap-2 bg-blue-50 mt-3 p-2 rounded-md text-blue-600">
+                      <AlertCircle className="w-4 h-4" />
+                      <p className="text-sm">
+                        You can add up to {MAX_FREE_ADVERTS} advertisements per
+                        material ({existingAdverts.length + newAdverts.length}/
+                        {MAX_FREE_ADVERTS} used)
+                      </p>
+                    </div>
+
+                    <p className="mt-3 text-blue-600 text-xs">
+                      Your advertisements will be shown to users browsing
+                      materials, helping to promote your content and increase
+                      visibility.
+                    </p>
                   </div>
                 </div>
-                <p className="text-blue-600 text-xs">
-                  Your advertisement will be shown to users browsing materials,
-                  helping to promote your content and increase visibility.
-                </p>
               </div>
             )}
           </div>
@@ -700,8 +906,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             {isSubmitting
               ? "Saving..."
               : initialData
-              ? "Update Material"
-              : "Create Material"}
+                ? "Update Material"
+                : "Create Material"}
           </Button>
         </div>
       </form>
