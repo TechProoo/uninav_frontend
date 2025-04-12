@@ -2,12 +2,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import createBlog from "../../api/blog.api";
+import { createBlog } from "../../api/blog.api";
 import { useDropzone } from "react-dropzone";
 import Editor from "./quill";
 import { Plus, X } from "lucide-react";
 import { Blog } from "@/lib/types/response.type";
-import { editBlog } from "@/api/editBlog.api";
+import { editBlog } from "@/api/blog.api";
 
 type dataProp = {
   data?: Blog;
@@ -82,10 +82,10 @@ const PostForm = ({ data }: dataProp) => {
       router.push("/dashboard/blogs");
       // Refresh the page after navigation
       router.refresh();
-      toast.success("Post submitted successfully");
+      toast.success("Blog Submitted successfully");
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Failed to submit post");
+      toast.error("Failed to submit blog");
     } finally {
       setIsSubmitting(false);
     }

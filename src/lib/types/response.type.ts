@@ -215,7 +215,7 @@ export interface Blog {
   creatorId: string;
   title: string;
   description: string;
-  type: "article" | "scheme_of_work" | "guidline" | "tutorial";
+  type: BlogType;
   headingImageAddress: string;
   headingImageKey: string;
   bodyKey: string;
@@ -234,18 +234,12 @@ export interface Blog {
   };
 }
 
-export interface BlogResponse {
-  data: Blog[];
-  pagination: {
-    page: string;
-    limit: number;
-    totalItems: number;
-    totalPages: number;
-    hasMore: boolean;
-    hasPrev: boolean;
-  };
+export enum BlogType {
+  ARTICLE = "article",
+  SCHEME_OF_WORK = "scheme_of_work",
+  GUIDELINE = "guidline",
+  TUTORIAL = "tutorial",
 }
-
 export enum AdvertTypeEnum {
   FREE = "free",
   PAID = "pro",

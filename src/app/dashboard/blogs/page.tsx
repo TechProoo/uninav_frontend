@@ -6,10 +6,9 @@ import Button from "@/components/blog/Button-styled";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
-import getUserBlogs from "@/api/userBlogs.api";
-import deleteUserBlog from "@/api/deleteBlog.api"; // Make sure this exists
 import Loader from "../loading";
 import { Blog } from "@/lib/types/response.type";
+import { deleteBlog } from "@/api/blog.api";
 
 const BlogsPage = () => {
   const router = useRouter();
@@ -45,7 +44,7 @@ const BlogsPage = () => {
       setBlogs(
         (prevBlogs) => prevBlogs?.filter((blog) => blog.id !== postId) || null
       );
-      await deleteUserBlog(postId);
+      await deleteBlog(postId);
     } catch (error) {
       console.error("Error deleting blog:", error);
     }
@@ -61,7 +60,7 @@ const BlogsPage = () => {
         <div className="flex items-center gap-4">
           <Button
             text="All Blogs"
-            onClick={() => handleNavigation("/allblogs")}
+            onClick={() => handleNavigation("/explore?defaultTab=blogs")}
           />
           <Button
             text="Create Blog"

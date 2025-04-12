@@ -1,13 +1,17 @@
-import { api } from "@/api/base.api"; // Adjust the import path as needed
+import { api } from "./base.api";
+import { Blog, Response } from "@/lib/types/response.type";
 
-const getBlogById = async (blogId: string) => {
+const getBlogById = async (blogId: string): Promise<Blog> => {
   try {
-    console.log(blogId)
-    const response = await api.get(`/blogs/${blogId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching user blogs:", error);
-    throw error;
+    const response = await api.get<Response<Blog>>(`/blogs/${blogId}`);
+
+    if (response.data.status === "success") {
+      return response.data.data;
+    }
+
+    throw new Error(response.data.message || "Failed to fetch blog details");
+  } catch (error: any) {
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 

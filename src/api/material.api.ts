@@ -21,7 +21,7 @@ export const fetchRecommendedMaterials = async ({
 }: {
   page?: number;
   limit?: number;
-}): Promise<Response<Pagination<Material[]>> | null> => {
+}): Promise<Response<Pagination<Material[]>>> => {
   try {
     const response = await api.get<Response<Pagination<Material[]>>>(
       `/materials/recommendations?page=${page}`
@@ -30,65 +30,30 @@ export const fetchRecommendedMaterials = async ({
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(
+      response.data.message || "Failed to fetch recommended materials"
+    );
+  } catch (error: any) {
     console.error("Error fetching recommended materials:", error);
-    return null;
-  }
-};
-
-// List Materials with filtering
-export const getFilteredMaterials = async ({
-  page = 1,
-  limit = 10,
-  creatorId,
-  courseId,
-  type,
-  tag,
-}: {
-  page?: number;
-  limit?: number;
-  creatorId?: string;
-  courseId?: string;
-  type?: string;
-  tag?: string;
-}): Promise<Response<Pagination<Material[]>> | null> => {
-  try {
-    let url = `/materials?page=${page}&limit=${limit}`;
-
-    if (creatorId) url += `&creatorId=${creatorId}`;
-    if (courseId) url += `&courseId=${courseId}`;
-    if (type) url += `&type=${type}`;
-    if (tag) url += `&tag=${tag}`;
-
-    const response = await api.get<Response<Pagination<Material[]>>>(url);
-
-    if (response.data.status === "success") {
-      return response.data;
-    }
-    return null;
-  } catch (error) {
-    console.error("Error fetching materials:", error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
 // Get my materials i created
-export const getMyMaterials = async (): Promise<Response<
-  Material[]
-> | null> => {
+export const getMyMaterials = async (): Promise<Response<Material[]>> => {
   try {
     const response = await api.get<Response<Material[]>>(`/materials/me`);
 
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to fetch my materials");
+  } catch (error: any) {
     console.error("Error fetching my materials:", error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
+
 // Search Materials
 export const searchMaterials = async ({
   query,
@@ -99,19 +64,18 @@ export const searchMaterials = async ({
   type,
   tag,
 }: {
-  query: string;
+  query?: string;
   page?: number;
   limit?: number;
   creatorId?: string;
   courseId?: string;
   type?: string;
   tag?: string;
-}): Promise<Response<Pagination<Material[]>> | null> => {
+}): Promise<Response<Pagination<Material[]>>> => {
   try {
-    let url = `/materials/search?query=${encodeURIComponent(
-      query
-    )}&page=${page}&limit=${limit}`;
+    let url = `/materials/search?page=${page}&limit=${limit}`;
 
+    if (query) url += `&query=${encodeURIComponent(query)}`;
     if (creatorId) url += `&creatorId=${creatorId}`;
     if (courseId) url += `&courseId=${courseId}`;
     if (type) url += `&type=${type}`;
@@ -122,34 +86,36 @@ export const searchMaterials = async ({
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to search materials");
+  } catch (error: any) {
     console.error("Error searching materials:", error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
 // Get Material By ID
 export const getMaterialById = async (
   id: string
-): Promise<Response<Material> | null> => {
+): Promise<Response<Material>> => {
   try {
     const response = await api.get<Response<Material>>(`/materials/${id}`);
 
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(
+      response.data.message || "Failed to fetch material details"
+    );
+  } catch (error: any) {
     console.error(`Error fetching material with ID ${id}:`, error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
 // Create Material
 export const createMaterial = async (
   materialData: CreateMaterialDto
-): Promise<Response<Material> | null> => {
+): Promise<Response<Material>> => {
   try {
     const formData = new FormData();
 
@@ -192,10 +158,10 @@ export const createMaterial = async (
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to create material");
+  } catch (error: any) {
     console.error("Error creating material:", error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
@@ -203,7 +169,7 @@ export const createMaterial = async (
 export const updateMaterial = async (
   id: string,
   materialData: Partial<CreateMaterialDto>
-): Promise<Response<Material> | null> => {
+): Promise<Response<Material>> => {
   try {
     const formData = new FormData();
 
@@ -246,17 +212,17 @@ export const updateMaterial = async (
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to update material");
+  } catch (error: any) {
     console.error(`Error updating material with ID ${id}:`, error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
 // Delete Material
 export const deleteMaterial = async (
   id: string
-): Promise<Response<{ id: string }> | null> => {
+): Promise<Response<{ id: string }>> => {
   try {
     const response = await api.delete<Response<{ id: string }>>(
       `/materials/${id}`
@@ -265,17 +231,17 @@ export const deleteMaterial = async (
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to delete material");
+  } catch (error: any) {
     console.error(`Error deleting material with ID ${id}:`, error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
 // Like/Unlike Material
 export const toggleMaterialLike = async (
   id: string
-): Promise<Response<{ liked: boolean; likesCount: number }> | null> => {
+): Promise<Response<{ liked: boolean; likesCount: number }>> => {
   try {
     const response = await api.post<
       Response<{ liked: boolean; likesCount: number }>
@@ -284,17 +250,17 @@ export const toggleMaterialLike = async (
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to toggle material like");
+  } catch (error: any) {
     console.error(`Error toggling like for material with ID ${id}:`, error);
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
 // Get Download URL for Material
 export const getMaterialDownloadUrl = async (
   id: string
-): Promise<Response<{ url: string }> | null> => {
+): Promise<Response<{ url: string }>> => {
   try {
     const response = await api.get<Response<{ url: string }>>(
       `/materials/download/${id}`
@@ -303,25 +269,27 @@ export const getMaterialDownloadUrl = async (
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to get download URL");
+  } catch (error: any) {
     console.error(
       `Error getting download URL for material with ID ${id}:`,
       error
     );
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
 
 // Get Material Resource
 export const getMaterialResource = async (
   materialId: string
-): Promise<Response<{
-  resourceType: string;
-  resourceAddress: string;
-  metaData: string[];
-  fileKey: string;
-}> | null> => {
+): Promise<
+  Response<{
+    resourceType: string;
+    resourceAddress: string;
+    metaData: string[];
+    fileKey: string;
+  }>
+> => {
   try {
     const response = await api.get<
       Response<{
@@ -335,23 +303,34 @@ export const getMaterialResource = async (
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to get material resource");
+  } catch (error: any) {
     console.error(
       `Error getting resource for material with ID ${materialId}:`,
       error
     );
-    return null;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
-export const incrementDownloadCount = async (materialId: string) => {
-  await api.post(`/materials/downloaded/${materialId}`);
+
+export const incrementDownloadCount = async (
+  materialId: string
+): Promise<void> => {
+  try {
+    await api.post(`/materials/downloaded/${materialId}`);
+  } catch (error: any) {
+    console.error(
+      `Error incrementing download count for material with ID ${materialId}:`,
+      error
+    );
+    throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
 };
 
 // This will toggle like and unlike material and prevents duplicates
 export const likeOrUnlikeMaterial = async (
   materialId: string
-): Promise<Response<{ liked: boolean; likesCount: number }> | null> => {
+): Promise<Response<{ liked: boolean; likesCount: number }>> => {
   try {
     const response = await api.post<
       Response<{ liked: boolean; likesCount: number; message: string }>
@@ -360,9 +339,9 @@ export const likeOrUnlikeMaterial = async (
     if (response.data.status === "success") {
       return response.data;
     }
-    return null;
-  } catch (error) {
+    throw new Error(response.data.message || "Failed to like/unlike material");
+  } catch (error: any) {
     console.error("Error liking/unliking material:", error);
-    throw error;
+    throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };

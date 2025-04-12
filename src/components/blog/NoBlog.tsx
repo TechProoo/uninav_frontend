@@ -34,23 +34,23 @@ const NoblogPage: React.FC = () => {
   };
 
   return (
-    <div className="noblog-container min-h-screen flex flex-col justify-center items-center text-center p-8">
-      <div ref={imageRef} className="noblog-img mb-6">
+    <div className="flex flex-col justify-center items-center p-8 min-h-screen text-center noblog-container">
+      <div ref={imageRef} className="mb-6 noblog-img">
         <Image src={Empty} alt="No blog icon" className="rounded-full w-100" />
       </div>
       <div ref={messageRef}>
-        <h1 className="text-4xl font-bold text-gray-800">
+        <h1 className="font-bold text-gray-800 text-4xl">
           Oops, no blogs published yet!
         </h1>
-        <p className="text-xl text-gray-600 mt-4">
+        <p className="mt-4 text-gray-600 text-xl">
           It seems like you haven't written any blogs yet. Stay tuned for more
           exciting content!
         </p>
       </div>
-      <div className="md:mt-5 mt-3 md:flex md:space-y-5 gap-10">
+      <div className="md:flex gap-10 md:space-y-5 mt-3 md:mt-5">
         <Button
           text="All Blogs"
-          onClick={() => handleNavigation("/allblogs")}
+          onClick={() => handleNavigation("/explore?defaultTab=blogs")}
         />
         <Button
           text="Create Blog"

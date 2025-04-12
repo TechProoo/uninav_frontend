@@ -37,8 +37,8 @@ const BlogCard = ({ data }: DataContent) => {
           className="rounded-[24px] rounded-br-[0px] w-full h-48 object-cover"
         />
         <Link
-          href={`/allblogs/viewblog?id=${data.id}`}
-          className="absolute bottom-10 right-10 w-20 h-20 bg-[#f0f8ff] rounded-tl-full flex items-center justify-center translate-x-1/2 translate-y-1/2 group transition-colors duration-300 cursor-pointer"
+          href={`/blogs/${data.id}`}
+          className="group right-10 bottom-10 absolute flex justify-center items-center bg-[#f0f8ff] rounded-tl-full w-20 h-20 transition-colors translate-x-1/2 translate-y-1/2 duration-300 cursor-pointer"
         >
           <span className="mt-2 text-white text-xl transition-transform group-hover:translate-x-2 duration-300">
             <ArrowBigRight size={30} className="text-[#0c385f]" />

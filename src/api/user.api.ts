@@ -136,3 +136,13 @@ export const removeUserCourses = async (courseIds: string[]) => {
     throw error;
   }
 };
+
+export const getUserBlogs = async (creatorId: string | undefined) => {
+  try {
+    const response = await api.get(`/blogs/user/${creatorId}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching user blogs:", error);
+    throw error;
+  }
+};

@@ -1,270 +1,673 @@
 "use client";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, KeyboardEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import Link from "next/link";
-import {
-  BookOpen,
-  GraduationCap,
-  LayoutDashboard,
-  MoveRight,
-  Settings,
-  User,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import { useSearchParams } from "next/navigation";
-import { BadgeDemo } from "@/components/ui/BadgeUi";
 import { SelectType } from "@/components/search/select";
 import { SelectCourse } from "@/components/search/selectCourse";
-import searchData from "@/api/search.api";
+import { searchMaterials } from "@/api/material.api";
+import { searchBlogs } from "@/api/blog.api";
 import {
   Blog,
-  BlogResponse,
+  BlogType,
   Material,
+  MaterialTypeEnum,
   Pagination,
-  Response,
+  RestrictionEnum,
+  VisibilityEnum,
 } from "@/lib/types/response.type";
 import MaterialGrid from "@/components/materials/MaterialGrid";
-import allBlog from "@/api/allBlog";
 import BlogCard from "@/components/blog/blogCard";
+import { Badge } from "@/components/ui/badge";
+import {
+  Search,
+  Filter,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  SlidersHorizontal,
+  BookOpen,
+  FileText,
+  Tag,
+} from "lucide-react";
 
-const Page = () => {
+// Blog type options for filtering
+const blogTypeOptions = [
+  { value: "article", label: "Article" },
+  { value: "scheme_of_work", label: "Scheme of Work" },
+  { value: "guideline", label: "Guideline" },
+  { value: "tutorial", label: "Tutorial" },
+];
+
+// Material type options for filtering
+const materialTypeOptions = [
+  { value: MaterialTypeEnum.PDF, label: "PDF" },
+  { value: MaterialTypeEnum.VIDEO, label: "Video" },
+  { value: MaterialTypeEnum.ARTICLE, label: "Article" },
+  { value: MaterialTypeEnum.IMAGE, label: "Image" },
+  { value: MaterialTypeEnum.OTHER, label: "Other" },
+];
+
+// Visibility options for filtering
+const visibilityOptions = [
+  { value: VisibilityEnum.PUBLIC, label: "Public" },
+  { value: VisibilityEnum.PRIVATE, label: "Private" },
+];
+
+// Restriction options for filtering
+const restrictionOptions = [
+  { value: RestrictionEnum.DOWNLOADABLE, label: "Downloadable" },
+  { value: RestrictionEnum.READONLY, label: "Read Only" },
+];
+
+const ExplorePage = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const value = searchParams.get("value");
-  const [inputValue, setInputValue] = useState<string | null>(value);
-  const [tags, setTags] = useState<string>("");
-  const [type, setType] = useState<string>("");
-  const [course, setCourse] = useState<string>("");
-  const [result, setResult] = useState<Response<Pagination<Material[]>>>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [allBlogs, setAllBlogs] = useState<BlogResponse | null>(null);
+  const query = searchParams.get("query");
+  const defaultTab = searchParams.get("defaultTab");
 
-  useEffect(() => {
-    const search = async () => {
-      setIsLoading(true);
-      try {
-        const response = await searchData({
-          query: value,
-          tag: tags,
-          courseId: course,
-          type,
-          page,
-        });
+  // State for active tab
+  const [activeTab, setActiveTab] = useState<string>(
+    defaultTab === "blogs" ? "blogs" : "materials"
+  );
 
-        if (response.status === "success") {
-          setResult(response);
-          const total = response.data.pagination?.totalPages || 1;
-          setTotalPages(total);
-        }
+  // State for search inputs
+  const [searchQuery, setSearchQuery] = useState<string>(query || "");
 
-        if (response.status === "error") toast.error("Failed to fetch results");
-      } catch (err) {
-        console.error("Error fetching data", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    search();
-  }, [value, course, type, tags, page]);
+  // State for material filters
+  const [materialType, setMaterialType] = useState<string>("");
+  const [materialTag, setMaterialTag] = useState<string>("");
+  const [materialCourse, setMaterialCourse] = useState<string>("");
+  const [materialVisibility, setMaterialVisibility] = useState<string>("");
+  const [materialRestriction, setMaterialRestriction] = useState<string>("");
+  const [showMaterialFilters, setShowMaterialFilters] =
+    useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchBlog = async () => {
-      setIsLoading(true);
-      try {
-        const blogs = await allBlog();
-        console.log(blogs);
-        if (blogs) {
-          setAllBlogs(blogs);
-        }
-      } catch (err) {
-        console.error("Error fetching Blogs", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchBlog();
-  }, []);
+  // State for blog filters
+  const [blogType, setBlogType] = useState<string>("");
+  const [blogTag, setBlogTag] = useState<string>("");
+  const [showBlogFilters, setShowBlogFilters] = useState<boolean>(false);
 
-  const handleSearch = async () => {
-    setPage(1);
-    setIsLoading(true);
+  // State for pagination
+  const [materialPage, setMaterialPage] = useState<number>(1);
+  const [blogPage, setBlogPage] = useState<number>(1);
+  const [materialTotalPages, setMaterialTotalPages] = useState<number>(1);
+  const [blogTotalPages, setBlogTotalPages] = useState<number>(1);
+
+  // State for loading and results
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState<boolean>(false);
+  const [isLoadingBlogs, setIsLoadingBlogs] = useState<boolean>(false);
+  const [materials, setMaterials] = useState<Pagination<Material[]> | null>(
+    null
+  );
+  const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
+
+  // Fetch materials with filters
+  const fetchMaterials = async (page = materialPage) => {
+    setIsLoadingMaterials(true);
     try {
-      const response = await searchData({
-        query: inputValue,
-        tag: tags,
-        courseId: course,
-        type,
-        page: 1,
+      const response = await searchMaterials({
+        query: searchQuery,
+        page,
+        limit: 10,
+        tag: materialTag || undefined,
+        courseId: materialCourse || undefined,
+        type: materialType || undefined,
       });
 
-      if (response.status === "success") {
-        setResult(response);
-        const total = response.data.pagination?.totalPages || 1;
-        setTotalPages(total);
+      if (response && response.status === "success") {
+        setMaterials(response.data);
+        setMaterialTotalPages(response.data.pagination?.totalPages || 1);
+        return;
       }
 
-      if (response.status === "error") toast.error("Failed to fetch results");
-    } catch (err) {
-      console.error("Error fetching data", err);
+      toast.error("Failed to fetch materials");
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err?.message || "Failed to fetch materials");
+      console.error("Error fetching materials:", error);
     } finally {
-      setIsLoading(false);
+      setIsLoadingMaterials(false);
     }
   };
 
-  const handleMaterialClick = (material: Material) => {
-    // Navigate to material detail page or open a modal
-    window.location.href = `/material/${material.id}`;
+  // Fetch blogs with filters
+  const fetchBlogs = async (page = blogPage) => {
+    setIsLoadingBlogs(true);
+    try {
+      const response = await searchBlogs({
+        query: searchQuery,
+        page,
+        type: (blogType as BlogType) || undefined,
+      });
+
+      if (response && response.status === "success") {
+        setBlogs(response.data);
+        setBlogTotalPages(response.data.pagination?.totalPages || 1);
+        return;
+      }
+
+      toast.error("Failed to fetch blogs");
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err?.message || "Failed to fetch blogs");
+      console.error("Error fetching blogs:", error);
+    } finally {
+      setIsLoadingBlogs(false);
+    }
   };
 
-  if (allBlogs?.data.length === 0) {
-    return (
-      <div className="flex flex-col justify-center items-center mt-20 space-y-6">
-        <h1 className="text-4xl font-semibold text-gray-700">
-          No blogs available
-        </h1>
-        <p className="text-lg text-gray-500">
-          It looks like there aren't any blogs right now. Please check back
-          later!
-        </p>
-        <div className="w-16 h-16 border-4 border-t-4 border-blue-600 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
+  // Handle search for active tab
+  const handleSearch = () => {
+    if (activeTab === "materials") {
+      setMaterialPage(1);
+      fetchMaterials(1);
+    } else {
+      setBlogPage(1);
+      fetchBlogs(1);
+    }
+  };
+
+  // Handle Enter key press in search input
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  // Clear all filters for materials
+  const clearMaterialFilters = () => {
+    setMaterialType("");
+    setMaterialTag("");
+    setMaterialCourse("");
+    setMaterialVisibility("");
+    setMaterialRestriction("");
+    setMaterialPage(1);
+    fetchMaterials(1);
+  };
+
+  // Clear all filters for blogs
+  const clearBlogFilters = () => {
+    setBlogType("");
+    setBlogTag("");
+    setBlogPage(1);
+    fetchBlogs(1);
+  };
+
+  // Handle material click to navigate to detail page
+  const handleMaterialClick = (material: Material) => {
+    router.push(`/material/${material.id}`);
+  };
+
+  // Handle blog click to navigate to detail page
+  const handleBlogClick = (blog: Blog) => {
+    router.push(`/blogs/${blog.id}`);
+  };
+
+  // Initial fetch when component mounts or when URL parameters change
+  useEffect(() => {
+    if (query) {
+      setSearchQuery(query);
+      // Only perform initial search if query is present
+      if (activeTab === "materials") {
+        fetchMaterials();
+      } else {
+        fetchBlogs();
+      }
+    }
+  }, [activeTab, query]);
+
+  // Update when material filters change
+  useEffect(() => {
+    if (activeTab === "materials") {
+      fetchMaterials();
+    }
+  }, [materialPage]);
+
+  // Update when blog filters change
+  useEffect(() => {
+    if (activeTab === "blogs") {
+      fetchBlogs();
+    }
+  }, [blogPage]);
+
+  // Active filter count helpers
+  const getActiveMaterialFiltersCount = () => {
+    let count = 0;
+    if (materialType) count++;
+    if (materialTag) count++;
+    if (materialCourse) count++;
+    if (materialVisibility) count++;
+    if (materialRestriction) count++;
+    return count;
+  };
+
+  const getActiveBlogFiltersCount = () => {
+    let count = 0;
+    if (blogType) count++;
+    if (blogTag) count++;
+    return count;
+  };
 
   return (
-    <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-6 py-6 min-h-screen text-gray-900">
+    <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-4 py-6 min-h-screen text-gray-900">
       <Toaster />
 
-      {/* Search Section */}
-      <div className="bg-[#f0f8ff] shadow rounded-xl">
-        {value && (
-          <div className="flex sm:flex-row flex-col gap-4 w-full">
-            <input
-              type="text"
-              value={inputValue || ""}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Search for study materials, courses..."
-              className="bg-white/10 backdrop-blur-md px-5 py-3 border-[#0036669c] border-2 focus:border-[#f0f8ff] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-[#003666] transition-all duration-300 placeholder-gray-300"
-            />
-            <button
-              onClick={handleSearch}
-              className="bg-[#003666] hover:bg-[#003666d2] shadow-md px-6 py-3 rounded-xl w-full sm:w-auto font-semibold text-white transition-all duration-300"
-            >
-              Search
-            </button>
-          </div>
-        )}
+      <div className="mx-auto max-w-7xl">
+        <div className="bg-white shadow-md mb-6 p-6 rounded-xl">
+          <h1 className="mb-4 font-bold text-2xl">Explore UniNav</h1>
 
-        {/* Filters & Results Section */}
-        <div className="gap-4 grid grid-cols-12 bg-white shadow-xl mt-10 p-6 md:p-10 rounded-2xl w-full">
-          {/* Sidebar */}
-          <div className="space-y-6  col-span-12 md:col-span-3 pr-6 border-gray-300 border-r">
-            <div className="sticky top-10 space-y-6 ">
-              <h1 className="font-semibold text-gray-900 text-lg">
-                {value
-                  ? "Refine your search results"
-                  : "Discover blogs and materials tailored for you"}
-              </h1>
-              <div className="space-y-4 bg-gray-50 shadow-sm p-4 border border-gray-300 rounded-xl">
-                <BadgeDemo text="Filter By:" />
-                <div className="w-[100%]">
-                  <SelectType onChange={(val) => setType(val)} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder=" tag"
-                    onChange={(e) => setTags(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[100%] text-gray-800 placeholder:text-gray-500"
-                  />
+          {/* Main Tabs - Fixed container width */}
+          <div className="w-full overflow-hidden">
+            <Tabs
+              defaultValue={activeTab}
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
+              <TabsList className="grid grid-cols-2 mb-6 w-full">
+                <TabsTrigger value="materials" className="py-3">
+                  <BookOpen className="mr-2 w-4 h-4" />
+                  Study Materials
+                </TabsTrigger>
+                <TabsTrigger value="blogs" className="py-3">
+                  <FileText className="mr-2 w-4 h-4" />
+                  Blogs
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Materials Tab Content */}
+              <TabsContent value="materials" className="space-y-6">
+                {/* Materials Search Bar */}
+                <div className="flex md:flex-row flex-col gap-4">
+                  <div className="relative flex-1">
+                    <Search className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2 transform" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Search for study materials, courses..."
+                      className="py-3 pr-4 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                    />
+                  </div>
                   <button
                     onClick={handleSearch}
-                    className="bg-blue-600 hover:bg-blue-700 p-2 rounded-lg text-white transition"
+                    className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium text-white transition-colors"
                   >
-                    <MoveRight size={20} />
+                    Search
+                  </button>
+                  <button
+                    onClick={() => setShowMaterialFilters(!showMaterialFilters)}
+                    className="relative flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    <Filter className="w-5 h-5" />
+                    <span>Filters</span>
+                    {getActiveMaterialFiltersCount() > 0 && (
+                      <span className="-top-2 -right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-5 h-5 text-white text-xs">
+                        {getActiveMaterialFiltersCount()}
+                      </span>
+                    )}
                   </button>
                 </div>
-              </div>
 
-              <div className="space-y-4 bg-gray-50 shadow-sm p-4 border border-gray-300 rounded-xl">
-                <h2 className="font-semibold text-gray-900 text-lg">Courses</h2>
-                <SelectCourse onChange={(val) => setCourse(val)} />
-              </div>
-            </div>
-          </div>
+                {/* Materials Filters */}
+                {showMaterialFilters && (
+                  <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-medium">Filter Materials</h3>
+                      <button
+                        onClick={clearMaterialFilters}
+                        className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                      >
+                        <X className="w-4 h-4" /> Clear all filters
+                      </button>
+                    </div>
 
-          {/* Content Display */}
-          <div className="col-span-12 md:col-span-9 md:pl-6">
-            <Tabs defaultValue="materials" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="materials">Material</TabsTrigger>
-                <TabsTrigger value="blogs">Blogs</TabsTrigger>
-              </TabsList>
-              {isLoading ? (
-                <div className="flex justify-center items-center min-h-[60vh]">
-                  <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
-                </div>
-              ) : (
-                <>
-                  <TabsContent value="materials">
-                    {result?.data?.data?.length ? (
-                      <div className="space-y-6">
-                        <MaterialGrid
-                          materials={result.data.data}
-                          onMaterialClick={handleMaterialClick}
-                          viewMode="list"
+                    <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                      {/* Material Type Filter */}
+                      <div className="space-y-2">
+                        <label className="font-medium text-sm">
+                          Material Type
+                        </label>
+                        <select
+                          value={materialType}
+                          onChange={(e) => setMaterialType(e.target.value)}
+                          className="p-2 border border-gray-300 rounded-md w-full"
+                        >
+                          <option value="">All Types</option>
+                          {materialTypeOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Course Filter */}
+                      <div className="space-y-2">
+                        <label className="font-medium text-sm">Course</label>
+                        <SelectCourse
+                          onChange={setMaterialCourse}
+                          currentValue={materialCourse}
                         />
+                      </div>
 
-                        {/* Pagination Controls */}
-                        <div className="flex justify-end items-center gap-4 mt-8">
-                          <p className="text-gray-600">Page {page}</p>
+                      {/* Tags Filter */}
+                      <div className="space-y-2">
+                        <label className="font-medium text-sm">Tags</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={materialTag}
+                            onChange={(e) => setMaterialTag(e.target.value)}
+                            placeholder="Enter tag"
+                            className="flex-1 p-2 border border-gray-300 rounded-md"
+                          />
                           <button
-                            onClick={() =>
-                              setPage((prev) => Math.max(prev - 1, 1))
-                            }
-                            disabled={page === 1}
-                            className={`border px-4 py-2 rounded-md transition ${
-                              page === 1
-                                ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                : "text-blue-600 border-blue-500 hover:bg-blue-50"
-                            }`}
+                            onClick={() => fetchMaterials()}
+                            className="bg-gray-200 hover:bg-gray-300 p-2 rounded-md"
                           >
-                            Prev
-                          </button>
-                          <button
-                            onClick={() =>
-                              setPage((prev) => Math.min(prev + 1, totalPages))
-                            }
-                            disabled={page === totalPages}
-                            className={`border px-4 py-2 rounded-md transition ${
-                              page === totalPages
-                                ? "text-gray-400 border-gray-300 cursor-not-allowed"
-                                : "text-blue-600 border-blue-500 hover:bg-blue-50"
-                            }`}
-                          >
-                            Next
+                            <Tag className="w-5 h-5" />
                           </button>
                         </div>
                       </div>
-                    ) : (
-                      <p className="text-gray-600">No results found.</p>
-                    )}
-                  </TabsContent>
-                  <TabsContent value="blogs">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
-                      {allBlogs?.data.map((blog: Blog) => (
-                        <BlogCard key={blog.id} data={blog} />
-                      ))}{" "}
+
+                      {/* Visibility Filter */}
+                      <div className="space-y-2">
+                        <label className="font-medium text-sm">
+                          Visibility
+                        </label>
+                        <select
+                          value={materialVisibility}
+                          onChange={(e) =>
+                            setMaterialVisibility(e.target.value)
+                          }
+                          className="p-2 border border-gray-300 rounded-md w-full"
+                        >
+                          <option value="">All Visibilities</option>
+                          {visibilityOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Restriction Filter */}
+                      <div className="space-y-2">
+                        <label className="font-medium text-sm">
+                          Restriction
+                        </label>
+                        <select
+                          value={materialRestriction}
+                          onChange={(e) =>
+                            setMaterialRestriction(e.target.value)
+                          }
+                          className="p-2 border border-gray-300 rounded-md w-full"
+                        >
+                          <option value="">All Restrictions</option>
+                          {restrictionOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                  </TabsContent>
-                </>
-              )}
+
+                    <button
+                      onClick={() => fetchMaterials(1)}
+                      className="bg-blue-600 hover:bg-blue-700 mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                )}
+
+                {/* Materials Results */}
+                <div className="bg-white rounded-lg">
+                  {isLoadingMaterials ? (
+                    <div className="flex justify-center items-center py-16">
+                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
+                    </div>
+                  ) : (
+                    <>
+                      {materials?.data && materials.data.length > 0 ? (
+                        <div className="space-y-6">
+                          <MaterialGrid
+                            materials={materials.data}
+                            onMaterialClick={handleMaterialClick}
+                            viewMode="list"
+                          />
+
+                          {/* Materials Pagination */}
+                          {materialTotalPages > 1 && (
+                            <div className="flex justify-between items-center pt-4 border-t">
+                              <p className="text-gray-500 text-sm">
+                                Page {materialPage} of {materialTotalPages}
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() =>
+                                    setMaterialPage((prev) =>
+                                      Math.max(prev - 1, 1)
+                                    )
+                                  }
+                                  disabled={materialPage === 1}
+                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                    materialPage === 1
+                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  <ChevronLeft className="w-4 h-4" /> Prev
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setMaterialPage((prev) =>
+                                      Math.min(prev + 1, materialTotalPages)
+                                    )
+                                  }
+                                  disabled={materialPage === materialTotalPages}
+                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                    materialPage === materialTotalPages
+                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  Next <ChevronRight className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="py-16 text-center">
+                          <p className="text-gray-500 text-lg">
+                            No materials found
+                          </p>
+                          <p className="text-gray-400">
+                            Try a different search term or adjust your filters
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </TabsContent>
+
+              {/* Blogs Tab Content */}
+              <TabsContent value="blogs" className="space-y-6">
+                {/* Blogs Search Bar */}
+                <div className="flex md:flex-row flex-col gap-4">
+                  <div className="relative flex-1">
+                    <Search className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2 transform" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Search for blogs, articles, guides..."
+                      className="py-3 pr-4 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                    />
+                  </div>
+                  <button
+                    onClick={handleSearch}
+                    className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium text-white transition-colors"
+                  >
+                    Search
+                  </button>
+                  <button
+                    onClick={() => setShowBlogFilters(!showBlogFilters)}
+                    className="relative flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    <Filter className="w-5 h-5" />
+                    <span>Filters</span>
+                    {getActiveBlogFiltersCount() > 0 && (
+                      <span className="-top-2 -right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-5 h-5 text-white text-xs">
+                        {getActiveBlogFiltersCount()}
+                      </span>
+                    )}
+                  </button>
+                </div>
+
+                {/* Blogs Filters */}
+                {showBlogFilters && (
+                  <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-medium">Filter Blogs</h3>
+                      <button
+                        onClick={clearBlogFilters}
+                        className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                      >
+                        <X className="w-4 h-4" /> Clear all filters
+                      </button>
+                    </div>
+
+                    <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+                      {/* Blog Type Filter */}
+                      <div className="space-y-2">
+                        <label className="font-medium text-sm">Blog Type</label>
+                        <select
+                          value={blogType}
+                          onChange={(e) => setBlogType(e.target.value)}
+                          className="p-2 border border-gray-300 rounded-md w-full"
+                        >
+                          <option value="">All Types</option>
+                          {blogTypeOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Tags Filter */}
+                      <div className="space-y-2">
+                        <label className="font-medium text-sm">Tags</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={blogTag}
+                            onChange={(e) => setBlogTag(e.target.value)}
+                            placeholder="Enter tag"
+                            className="flex-1 p-2 border border-gray-300 rounded-md"
+                          />
+                          <button
+                            onClick={() => fetchBlogs()}
+                            className="bg-gray-200 hover:bg-gray-300 p-2 rounded-md"
+                          >
+                            <Tag className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => fetchBlogs(1)}
+                      className="bg-blue-600 hover:bg-blue-700 mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                )}
+
+                {/* Blogs Results */}
+                <div className="bg-white rounded-lg">
+                  {isLoadingBlogs ? (
+                    <div className="flex justify-center items-center py-16">
+                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
+                    </div>
+                  ) : (
+                    <>
+                      {blogs?.data && blogs.data.length > 0 ? (
+                        <div className="space-y-6">
+                          <div className="gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                            {blogs.data.map((blog: Blog) => (
+                              <div
+                                key={blog.id}
+                                onClick={() => handleBlogClick(blog)}
+                                className="cursor-pointer"
+                              >
+                                <BlogCard data={blog} />
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Blogs Pagination */}
+                          {blogTotalPages > 1 && (
+                            <div className="flex justify-between items-center pt-4 border-t">
+                              <p className="text-gray-500 text-sm">
+                                Page {blogPage} of {blogTotalPages}
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() =>
+                                    setBlogPage((prev) => Math.max(prev - 1, 1))
+                                  }
+                                  disabled={blogPage === 1}
+                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                    blogPage === 1
+                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  <ChevronLeft className="w-4 h-4" /> Prev
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setBlogPage((prev) =>
+                                      Math.min(prev + 1, blogTotalPages)
+                                    )
+                                  }
+                                  disabled={blogPage === blogTotalPages}
+                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                    blogPage === blogTotalPages
+                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
+                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
+                                  }`}
+                                >
+                                  Next <ChevronRight className="w-4 h-4" />
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="py-16 text-center">
+                          <p className="text-gray-500 text-lg">
+                            No blogs found
+                          </p>
+                          <p className="text-gray-400">
+                            Try a different search term or adjust your filters
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </TabsContent>
             </Tabs>
           </div>
         </div>
@@ -273,4 +676,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default ExplorePage;

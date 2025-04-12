@@ -8,7 +8,7 @@ import MaterialForm from "@/components/materials/forms/MaterialForm";
 import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 import { Material, MaterialTypeEnum } from "@/lib/types/response.type";
-import { getFilteredMaterials, searchMaterials } from "@/api/material.api";
+import { getMaterials, searchMaterials } from "@/api/material.api";
 
 type ViewMode = "grid" | "list";
 
@@ -47,7 +47,7 @@ const MaterialsPage = () => {
           type: filterType || undefined,
         });
       } else {
-        response = await getFilteredMaterials({
+        response = await getMaterials({
           page,
           creatorId: user?.id,
           type: filterType || undefined,
