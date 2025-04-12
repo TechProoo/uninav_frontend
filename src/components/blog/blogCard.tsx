@@ -1,22 +1,19 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { ArrowBigRight, Edit, Trash } from "lucide-react";
+import { ArrowBigRight } from "lucide-react";
 import { Blog } from "@/lib/types/response.type";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-type DataContent = {
+type BlogCardProps = {
   data: Blog;
+  viewMode?: "grid" | "list";
 };
 
-const BlogCard = ({ data }: DataContent) => {
-  const router = useRouter();
+const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
   const [deleting, setDeleting] = useState(false);
 
   if (!data) return null;
-
-  console.log(data);
 
   if (deleting) {
     return (
@@ -26,8 +23,54 @@ const BlogCard = ({ data }: DataContent) => {
     );
   }
 
+  if (viewMode === "list") {
+    return (
+      <div className="bg-white shadow-sm hover:shadow-md p-4 rounded-xl transition-shadow">
+        <div className="flex md:flex-row flex-col gap-4">
+          <div className="md:w-1/4">
+            <div className="relative rounded-lg overflow-hidden">
+              <Image
+                src={data.headingImageAddress || "/fallback.jpg"}
+                alt="Blog Image"
+                width={300}
+                height={200}
+                className="rounded-lg w-full h-48 md:h-32 object-cover"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col justify-between md:w-3/4">
+            <div>
+              <h2 className="font-semibold text-gray-900 text-xl line-clamp-1">
+                {data.title}
+              </h2>
+              <p className="mt-1 text-gray-500 text-sm line-clamp-3">
+                {data.description}
+              </p>
+            </div>
+            <div className="flex justify-between items-end mt-3">
+              <div className="flex gap-2">
+                <span className="bg-orange-200 px-3 py-1 rounded-full font-medium text-orange-800 text-xs">
+                  {new Date(data.createdAt).toLocaleDateString()}
+                </span>
+                <span className="bg-green-200 px-3 py-1 rounded-full font-medium text-green-800 text-xs">
+                  {data.creator?.username || "Anonymous"}
+                </span>
+              </div>
+              <Link
+                href={`/blogs/${data.id}`}
+                className="flex justify-center items-center bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors"
+              >
+                <ArrowBigRight size={20} className="text-blue-800" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative p-4 rounded-[24px] max-w-sm">
+    <div className="relative bg-white shadow-sm hover:shadow-md p-4 rounded-[24px] transition-shadow">
       <div className="relative rounded-[24px] overflow-hidden">
         <Image
           src={data.headingImageAddress || "/fallback.jpg"}

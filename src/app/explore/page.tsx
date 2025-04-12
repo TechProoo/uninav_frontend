@@ -17,7 +17,7 @@ import {
   VisibilityEnum,
 } from "@/lib/types/response.type";
 import MaterialGrid from "@/components/materials/MaterialGrid";
-import BlogCard from "@/components/blog/blogCard";
+import BlogGrid from "@/components/blog/BlogGrid";
 import { Badge } from "@/components/ui/badge";
 import {
   Search,
@@ -29,6 +29,8 @@ import {
   BookOpen,
   FileText,
   Tag,
+  Grid,
+  List,
 } from "lucide-react";
 
 // Blog type options for filtering
@@ -71,6 +73,9 @@ const ExplorePage = () => {
     defaultTab === "blogs" ? "blogs" : "materials"
   );
 
+  // State for view mode (grid or list)
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
+
   // State for search inputs
   const [searchQuery, setSearchQuery] = useState<string>(query || "");
 
@@ -101,6 +106,11 @@ const ExplorePage = () => {
     null
   );
   const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
+
+  // Toggle view mode between grid and list
+  const toggleViewMode = () => {
+    setViewMode(viewMode === "grid" ? "list" : "grid");
+  };
 
   // Fetch materials with filters
   const fetchMaterials = async (page = materialPage) => {
@@ -283,12 +293,12 @@ const ExplorePage = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Search for study materials, courses..."
-                      className="py-3 pr-4 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      className="py-3 pr-4 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full"
                     />
                   </div>
                   <button
                     onClick={handleSearch}
-                    className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium text-white transition-colors"
+                    className="bg-primary hover:bg-blue-700 px-6 py-3 rounded-lg font-medium text-white transition-colors"
                   >
                     Search
                   </button>
@@ -302,6 +312,16 @@ const ExplorePage = () => {
                       <span className="-top-2 -right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-5 h-5 text-white text-xs">
                         {getActiveMaterialFiltersCount()}
                       </span>
+                    )}
+                  </button>
+                  <button
+                    onClick={toggleViewMode}
+                    className="flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    {viewMode === "grid" ? (
+                      <List className="w-5 h-5" />
+                    ) : (
+                      <Grid className="w-5 h-5" />
                     )}
                   </button>
                 </div>
@@ -433,7 +453,7 @@ const ExplorePage = () => {
                           <MaterialGrid
                             materials={materials.data}
                             onMaterialClick={handleMaterialClick}
-                            viewMode="list"
+                            viewMode={viewMode}
                           />
 
                           {/* Materials Pagination */}
@@ -525,6 +545,16 @@ const ExplorePage = () => {
                       </span>
                     )}
                   </button>
+                  <button
+                    onClick={toggleViewMode}
+                    className="flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    {viewMode === "grid" ? (
+                      <List className="w-5 h-5" />
+                    ) : (
+                      <Grid className="w-5 h-5" />
+                    )}
+                  </button>
                 </div>
 
                 {/* Blogs Filters */}
@@ -598,17 +628,11 @@ const ExplorePage = () => {
                     <>
                       {blogs?.data && blogs.data.length > 0 ? (
                         <div className="space-y-6">
-                          <div className="gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                            {blogs.data.map((blog: Blog) => (
-                              <div
-                                key={blog.id}
-                                onClick={() => handleBlogClick(blog)}
-                                className="cursor-pointer"
-                              >
-                                <BlogCard data={blog} />
-                              </div>
-                            ))}
-                          </div>
+                          <BlogGrid
+                            blogs={blogs.data}
+                            onBlogClick={handleBlogClick}
+                            viewMode={viewMode}
+                          />
 
                           {/* Blogs Pagination */}
                           {blogTotalPages > 1 && (

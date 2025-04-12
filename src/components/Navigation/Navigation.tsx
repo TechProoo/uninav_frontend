@@ -24,15 +24,15 @@ const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(true);
   const isHomePage = pathname === "/";
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const scrollPosition = window.scrollY;
-  //     setIsScrolled(scrollPosition > 20);
-  //   };
-
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
+  // Helper function to check if a link is active
+  const isActive = (path: string) => {
+    // For dashboard pages, consider all dashboard routes as active for the dashboard link
+    if (path === "/dashboard" && pathname?.startsWith("/dashboard")) {
+      return true;
+    }
+    // For exact matches
+    return pathname === path;
+  };
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -45,6 +45,11 @@ const Navigation = () => {
     { label: "Contact", path: "/contact" },
     { label: "Explore", path: "/explore" },
   ];
+
+  // Add dashboard to menu items if user is logged in
+  if (user) {
+    menuItems.push({ label: "Dashboard", path: "/dashboard" });
+  }
 
   return (
     <div
@@ -70,26 +75,19 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <ul className="hidden md:block">
             <li className="flex items-center gap-8 nav_li">
-              <Link href={"/"} className="hover:text-primary nav_link">
-                Home
-              </Link>
-              <Link href={"/about"} className="hover:text-primary nav_link">
-                About
-              </Link>
-              <Link href={"/contact"} className="hover:text-primary nav_link">
-                Contact
-              </Link>
-              <Link href={"/explore"} className="hover:text-primary nav_link">
-                Explore
-              </Link>
-              {user && (
+              {menuItems.map((item) => (
                 <Link
-                  href={"/dashboard"}
-                  className="hover:text-primary nav_link"
+                  key={item.path}
+                  href={item.path}
+                  className={`nav_link ${
+                    isActive(item.path)
+                      ? "font-bold text-[#003666] after:w-full before:w-full"
+                      : "hover:text-primary"
+                  }`}
                 >
-                  Dashboard
+                  {item.label}
                 </Link>
-              )}
+              ))}
             </li>
           </ul>
 
@@ -158,7 +156,11 @@ const Navigation = () => {
               <button
                 key={item.path}
                 onClick={() => handleNavigation(item.path)}
-                className="hover:bg-gray-100 px-3 py-3 rounded-md text-base text-left transition-colors"
+                className={`px-3 py-3 rounded-md text-base text-left transition-colors ${
+                  isActive(item.path)
+                    ? "bg-blue-50 text-[#003666] font-medium border-l-4 border-[#003666]"
+                    : "hover:bg-gray-100"
+                }`}
               >
                 {item.label}
               </button>

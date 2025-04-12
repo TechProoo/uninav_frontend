@@ -5,30 +5,25 @@ import NoBlog from "@/components/blog/NoBlog";
 import Button from "@/components/blog/Button-styled";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/authContext";
 import Loader from "../loading";
 import { Blog } from "@/lib/types/response.type";
-import { deleteBlog } from "@/api/blog.api";
+import { deleteBlog, getUserBlogs } from "@/api/blog.api";
 
 const BlogsPage = () => {
   const router = useRouter();
-  const { user } = useAuth();
-  const id = user?.id;
 
   const [blogs, setBlogs] = useState<Blog[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchBlogs = async () => {
-      if (id) {
-        try {
-          const fetchedBlogs = await getUserBlogs(id);
-          setBlogs(fetchedBlogs);
-        } catch (error) {
-          console.error("Error fetching blogs:", error);
-        } finally {
-          setIsLoading(false);
-        }
+      try {
+        const fetchedBlogs = await getUserBlogs();
+        setBlogs(fetchedBlogs);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
