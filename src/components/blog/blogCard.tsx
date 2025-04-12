@@ -81,7 +81,7 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
     const blogTypeInfo = getBlogTypeDisplay(data.type);
 
     return (
-      <div className="bg-white shadow-sm hover:shadow-md p-4 rounded-xl transition-shadow">
+      <div className="bg-white shadow-md hover:shadow-lg mx-2 my-3 p-4 rounded-xl transition-shadow">
         <div className="flex md:flex-row flex-col gap-4">
           <div className="md:w-1/4">
             <div className="relative rounded-lg overflow-hidden">

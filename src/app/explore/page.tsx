@@ -66,6 +66,7 @@ const ExplorePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("query");
+  const courseId = searchParams.get("courseId");
   const defaultTab = searchParams.get("defaultTab");
 
   // State for active tab
@@ -82,7 +83,7 @@ const ExplorePage = () => {
   // State for material filters
   const [materialType, setMaterialType] = useState<string>("");
   const [materialTag, setMaterialTag] = useState<string>("");
-  const [materialCourse, setMaterialCourse] = useState<string>("");
+  const [materialCourse, setMaterialCourse] = useState<string>(courseId || "");
   const [materialVisibility, setMaterialVisibility] = useState<string>("");
   const [materialRestriction, setMaterialRestriction] = useState<string>("");
   const [showMaterialFilters, setShowMaterialFilters] =
@@ -215,16 +216,27 @@ const ExplorePage = () => {
 
   // Initial fetch when component mounts or when URL parameters change
   useEffect(() => {
+    // Set state from URL parameters
     if (query) {
       setSearchQuery(query);
-      // Only perform initial search if query is present
+    }
+
+    if (courseId) {
+      setMaterialCourse(courseId);
+      // If courseId is provided, automatically show the materials tab and show filters
+      setActiveTab("materials");
+      setShowMaterialFilters(true);
+    }
+
+    // Perform initial search if query or courseId is present
+    if (query || courseId) {
       if (activeTab === "materials") {
         fetchMaterials();
-      } else {
+      } else if (query) {
         fetchBlogs();
       }
     }
-  }, [query]);
+  }, [query, courseId]);
 
   // Effect to handle tab changes and initial data loading
   useEffect(() => {

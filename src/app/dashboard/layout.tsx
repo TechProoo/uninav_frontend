@@ -112,32 +112,13 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                 onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
               />
 
-              <div className="w-full flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-3">
-                {/* Search Bar */}
-                <div className="flex items-center bg-white border rounded-md overflow-hidden w-full sm:w-auto">
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    name="search"
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                    className="flex-grow px-3 py-2 focus:outline-none text-black"
-                  />
-                  <button
-                    onClick={handleSearch}
-                    className="bg-[#f0f8ff] px-3 py-2"
-                  >
-                    <Search className="text-[#0c385f]" />
-                  </button>
-                </div>
-
-                {/* Welcome Badge */}
+              <div className="flex sm:flex-row flex-col-reverse sm:justify-end sm:items-center gap-3 w-full">
                 <div className="flex justify-end sm:justify-start">
                   <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
                 </div>
               </div>
             </header>
-            <div className="flex-1 w-full overflow-y-auto p-10">
+            <div className="flex-1 p-10 w-full overflow-y-auto">
               <div className="w-full">{children}</div>
             </div>
           </main>

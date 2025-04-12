@@ -2,13 +2,19 @@ import React from "react";
 import Card from "@/components/ui/card/card";
 import { useAuth } from "@/contexts/authContext";
 import { BookOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const CourseSlider = () => {
   const { user } = useAuth();
+  const router = useRouter();
 
   if (!user?.courses || user.courses.length === 0) {
     return null;
   }
+
+  const handleCourseClick = (courseId: string) => {
+    router.push(`/explore?courseId=${courseId}`);
+  };
 
   return (
     <div className="w-full">
@@ -19,6 +25,7 @@ const CourseSlider = () => {
             <Card
               key={courseEnrollment.courseId}
               className="flex flex-col bg-white/50 hover:shadow-lg backdrop-blur-sm p-4 min-w-[250px] transition-shadow cursor-pointer"
+              onClick={() => handleCourseClick(courseEnrollment.courseId)}
             >
               <div className="flex items-center gap-3 mb-2">
                 <div className="bg-blue-100 p-2 rounded-lg">
