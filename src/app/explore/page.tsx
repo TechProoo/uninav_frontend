@@ -141,13 +141,8 @@ const ExplorePage = () => {
         type: (blogType as BlogType) || undefined,
       });
 
-      if (response && response.status === "success") {
-        setBlogs(response.data);
-        setBlogTotalPages(response.data.pagination?.totalPages || 1);
-        return;
-      }
-
-      toast.error("Failed to fetch blogs");
+      setBlogs(response.data);
+      setBlogTotalPages(response.data.pagination?.totalPages || 1);
     } catch (error) {
       const err = error as Error;
       toast.error(err?.message || "Failed to fetch blogs");
@@ -265,7 +260,7 @@ const ExplorePage = () => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-2 mb-6 w-full">
+              <TabsList className="grid grid-cols-2 mb-6 w-full h-max">
                 <TabsTrigger value="materials" className="py-3">
                   <BookOpen className="mr-2 w-4 h-4" />
                   Study Materials

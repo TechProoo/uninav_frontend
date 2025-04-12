@@ -9,27 +9,25 @@ interface CreateCourseDto {
   level: number;
 }
 
-export const getCourses = async ({
-  departmentId,
-  level,
-  page = 1,
-  limit = 10,
-}: {
+export const getCourses = async (filters?: {
   departmentId?: string;
   level?: number;
   page?: number;
   limit?: number;
-}): Promise<Response<Course[]> | null> => {
+}): Promise<Response<Course[]>> => {
   try {
+    const { departmentId, level, page = 1, limit = 10 } = filters || {};
     let url = `/courses?page=${page}&limit=${limit}`;
     if (departmentId) url += `&departmentId=${departmentId}`;
     if (level) url += `&level=${level}`;
 
     const response = await api.get<Response<Course[]>>(url);
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching courses:", error);
-    return null;
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch courses"
+    );
   }
 };
 

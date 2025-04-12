@@ -54,7 +54,6 @@ export const searchBlogs = async (filters?: {
     const response = await api<Response<Pagination<Blog[]>>>(config);
 
     return response.data;
-    throw new Error(response.data.message || "Failed to search blogs");
   } catch (error: any) {
     console.error("Error searching blogs:", error);
     throw new Error(error?.response?.data?.message || "Something went wrong");

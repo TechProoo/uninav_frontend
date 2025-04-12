@@ -30,7 +30,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
       if (!blogId) throw new Error("Blog ID is required");
       const data = await getBlogById(blogId);
       if (!data) throw new Error("Blog not found");
-      return data;
+      return data.data;
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
     refetchOnWindowFocus: false,
