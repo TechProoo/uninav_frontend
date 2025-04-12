@@ -278,137 +278,142 @@ const MaterialsReviewPage = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {materials.map((material) => (
-                <div
-                  key={material.id}
-                  className="bg-white border rounded-lg overflow-hidden"
-                >
-                  <div className="p-4">
-                    <div className="flex md:flex-row flex-col justify-between items-start gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-lg">
-                          {material.label}
-                        </h3>
-                        <p className="mb-2 text-gray-500 text-sm">
-                          by {material.creator.firstName}{" "}
-                          {material.creator.lastName} (
-                          {material.creator.username})
-                        </p>
-                        <p className="mb-2 text-gray-700">
-                          {material.description || "No description provided."}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <Badge variant="secondary">{material.type}</Badge>
-                          {material.tags.map((tag) => (
-                            <Badge key={tag} variant="outline">
-                              {tag}
-                            </Badge>
-                          ))}
-                          {material.targetCourse && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                            >
-                              Course: {material.targetCourse.courseCode}
-                            </Badge>
-                          )}
+            <div>
+              <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                {materials.map((material) => (
+                  <div
+                    key={material.id}
+                    className="bg-white hover:shadow-md border rounded-lg overflow-hidden transition-shadow"
+                  >
+                    <div className="p-4">
+                      <div className="flex flex-col justify-between h-full">
+                        <div>
+                          <h3 className="font-medium text-lg line-clamp-1">
+                            {material.label}
+                          </h3>
+                          <p className="mb-2 text-gray-500 text-sm">
+                            by {material.creator.firstName}{" "}
+                            {material.creator.lastName} (
+                            {material.creator.username})
+                          </p>
+                          <p className="mb-2 text-gray-700 line-clamp-2">
+                            {material.description || "No description provided."}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <Badge variant="secondary">{material.type}</Badge>
+                            {material.tags.slice(0, 2).map((tag) => (
+                              <Badge key={tag} variant="outline">
+                                {tag}
+                              </Badge>
+                            ))}
+                            {material.tags.length > 2 && (
+                              <Badge variant="outline">
+                                +{material.tags.length - 2}
+                              </Badge>
+                            )}
+                            {material.targetCourse && (
+                              <Badge
+                                variant="secondary"
+                                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                              >
+                                {material.targetCourse.courseCode}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-gray-500 text-sm">
+                            Created:{" "}
+                            {new Date(material.createdAt).toLocaleDateString()}
+                          </p>
                         </div>
-                        <p className="text-gray-500 text-sm">
-                          Created:{" "}
-                          {new Date(material.createdAt).toLocaleString()}
-                        </p>
-                      </div>
 
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleMaterialClick(material)}
-                        >
-                          <Eye className="mr-2 w-4 h-4" />
-                          View
-                        </Button>
-                        {activeTab === ApprovalStatusEnum.PENDING && (
-                          <>
-                            <Button
-                              variant="default"
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700"
-                              onClick={() =>
-                                handleReviewAction(
-                                  material,
-                                  ApprovalStatusEnum.APPROVED
-                                )
-                              }
-                            >
-                              <CheckCircle className="mr-2 w-4 h-4" />
-                              Approve
-                            </Button>
+                        {/* Additional material details for reviewed items */}
+                        {activeTab !== ApprovalStatusEnum.PENDING &&
+                          material.reviewedBy && (
+                            <div className="bg-gray-50 mt-4 p-3 rounded-md">
+                              <p className="font-medium text-sm">
+                                {activeTab === ApprovalStatusEnum.APPROVED ? (
+                                  <span className="text-green-600">
+                                    Approved by:{" "}
+                                  </span>
+                                ) : (
+                                  <span className="text-red-600">
+                                    Rejected by:{" "}
+                                  </span>
+                                )}
+                                {material.reviewedBy.firstName}{" "}
+                                {material.reviewedBy.lastName}
+                              </p>
+                              {material.reviewStatus ===
+                                ApprovalStatusEnum.REJECTED && (
+                                <p className="mt-1 text-sm line-clamp-2">
+                                  <span className="font-medium">Reason: </span>
+                                  {
+                                    "Comment not available in current data structure"
+                                  }
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleMaterialClick(material)}
+                          >
+                            <Eye className="mr-2 w-4 h-4" />
+                            View
+                          </Button>
+                          {activeTab === ApprovalStatusEnum.PENDING && (
+                            <>
+                              <Button
+                                variant="default"
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700"
+                                onClick={() =>
+                                  handleReviewAction(
+                                    material,
+                                    ApprovalStatusEnum.APPROVED
+                                  )
+                                }
+                              >
+                                <CheckCircle className="mr-2 w-4 h-4" />
+                                Approve
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() =>
+                                  handleReviewAction(
+                                    material,
+                                    ApprovalStatusEnum.REJECTED
+                                  )
+                                }
+                              >
+                                <XCircle className="mr-2 w-4 h-4" />
+                                Reject
+                              </Button>
+                            </>
+                          )}
+                          {user?.role === "admin" && (
                             <Button
                               variant="destructive"
                               size="sm"
-                              onClick={() =>
-                                handleReviewAction(
-                                  material,
-                                  ApprovalStatusEnum.REJECTED
-                                )
-                              }
+                              onClick={() => handleDeleteAction(material)}
                             >
-                              <XCircle className="mr-2 w-4 h-4" />
-                              Reject
+                              <Trash2 className="mr-2 w-4 h-4" />
+                              Delete
                             </Button>
-                          </>
-                        )}
-                        {user?.role === "admin" && (
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteAction(material)}
-                          >
-                            <Trash2 className="mr-2 w-4 h-4" />
-                            Delete
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Additional material details */}
-                    {activeTab !== ApprovalStatusEnum.PENDING &&
-                      material.reviewedBy && (
-                        <div className="bg-gray-50 mt-4 p-3 rounded-md">
-                          <p className="font-medium text-sm">
-                            {activeTab === ApprovalStatusEnum.APPROVED ? (
-                              <span className="text-green-600">
-                                Approved by:{" "}
-                              </span>
-                            ) : (
-                              <span className="text-red-600">
-                                Rejected by:{" "}
-                              </span>
-                            )}
-                            {material.reviewedBy.firstName}{" "}
-                            {material.reviewedBy.lastName}
-                          </p>
-                          {/* Show rejection comment if available */}
-                          {/* This data structure might need adjustment based on actual API response */}
-                          {material.reviewStatus ===
-                            ApprovalStatusEnum.REJECTED && (
-                            <p className="mt-1 text-sm">
-                              <span className="font-medium">Reason: </span>
-                              {
-                                "Comment not available in current data structure"
-                              }
-                            </p>
                           )}
                         </div>
-                      )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
               {/* Pagination controls */}
-              <div className="flex justify-between items-center pt-4">
+              <div className="flex justify-between items-center mt-6 pt-4">
                 <p className="text-gray-600">
                   Page {currentPage} of {totalPages}
                 </p>
