@@ -221,7 +221,6 @@ export interface Blog {
   bodyKey: string;
   likes: number;
   views: number;
-  clicks: number;
   tags: string[];
   body: string;
   createdAt: string;

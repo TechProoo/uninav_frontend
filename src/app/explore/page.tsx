@@ -93,6 +93,9 @@ const ExplorePage = () => {
   const [blogTag, setBlogTag] = useState<string>("");
   const [showBlogFilters, setShowBlogFilters] = useState<boolean>(false);
 
+  // State to track if blogs have been loaded at least once
+  const [blogContentLoaded, setBlogContentLoaded] = useState<boolean>(false);
+
   // State for pagination
   const [materialPage, setMaterialPage] = useState<number>(1);
   const [blogPage, setBlogPage] = useState<number>(1);
@@ -153,6 +156,7 @@ const ExplorePage = () => {
 
       setBlogs(response.data);
       setBlogTotalPages(response.data.pagination?.totalPages || 1);
+      setBlogContentLoaded(true);
     } catch (error) {
       const err = error as Error;
       toast.error(err?.message || "Failed to fetch blogs");
@@ -220,7 +224,18 @@ const ExplorePage = () => {
         fetchBlogs();
       }
     }
-  }, [activeTab, query]);
+  }, [query]);
+
+  // Effect to handle tab changes and initial data loading
+  useEffect(() => {
+    if (activeTab === "blogs" && !blogContentLoaded) {
+      // Only fetch blogs if they haven't been loaded yet
+      fetchBlogs();
+    } else if (activeTab === "materials" && !materials) {
+      // Load materials if not loaded yet
+      fetchMaterials();
+    }
+  }, [activeTab]);
 
   // Update when material filters change
   useEffect(() => {
