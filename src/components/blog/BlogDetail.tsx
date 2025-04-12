@@ -3,7 +3,6 @@
 import { Blog } from "@/lib/types/response.type";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, ChevronLeft, Eye, X } from "lucide-react";
-import Image from "next/image";
 import React from "react";
 import draftToHtml from "draftjs-to-html";
 import getBlogById from "@/api/blogById.api";

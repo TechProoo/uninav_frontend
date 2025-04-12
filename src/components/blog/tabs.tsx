@@ -26,7 +26,7 @@ export function TabsDemo() {
     };
     fetchBlog();
   }, []);
-  
+
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-48">
@@ -53,13 +53,15 @@ export function TabsDemo() {
 
   return (
     <Tabs defaultValue="all" className="w-full">
-      <TabsList className="grid w-full sticky z-10 top-0 md:grid-cols-5 grid-cols-2 gap-4">
-        <TabsTrigger value="all">All</TabsTrigger>
-        <TabsTrigger value="article">Article</TabsTrigger>
-        <TabsTrigger value="scheme">Scheme</TabsTrigger>
-        <TabsTrigger value="guideline">Guideline</TabsTrigger>
-        <TabsTrigger value="tutorial">Tutorial</TabsTrigger>
-      </TabsList>
+      <div className="overflow-x-auto scrollbar-hide w-full">
+        <TabsList className="flex w-max gap-4 px-2 md:grid md:grid-cols-5 md:w-full">
+          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="article">Article</TabsTrigger>
+          <TabsTrigger value="scheme">Scheme</TabsTrigger>
+          <TabsTrigger value="guideline">Guideline</TabsTrigger>
+          <TabsTrigger value="tutorial">Tutorial</TabsTrigger>
+        </TabsList>
+      </div>
 
       {/* Tab Content - All */}
       <TabsContent value="all">

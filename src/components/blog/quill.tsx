@@ -23,7 +23,7 @@ import {
 
 interface EditorProps {
   onContentChange: (content: string) => void;
-  value?: string; // optional input value
+  value?: string;
 }
 
 const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
@@ -87,18 +87,46 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
     return null;
   };
 
+  const blockStyleFn = (block: any) => {
+    switch (block.getType()) {
+      case "header-one":
+        return "text-4xl font-bold my-4";
+      case "header-two":
+        return "text-3xl font-bold my-3";
+      case "header-three":
+        return "text-2xl font-semibold my-2";
+      case "blockquote":
+        return "border-l-4 border-gray-400 pl-4 italic text-gray-600 my-2";
+      default:
+        return "";
+    }
+  };
+
+  const getCurrentStyle = () => editorState.getCurrentInlineStyle();
+
+  const getCurrentBlockType = () =>
+    editorState
+      .getCurrentContent()
+      .getBlockForKey(editorState.getSelection().getStartKey())
+      .getType();
+
   const renderToolbar = () => (
     <div className="toolbar" style={toolbarStyle}>
-      {[["header-one"], ["header-two"], ["header-three"]].map(([block]) => (
+      {[
+        { type: "header-one", label: "H1" },
+        { type: "header-two", label: "H2" },
+        { type: "header-three", label: "H3" },
+      ].map(({ type, label }) => (
         <button
           type="button"
-          key={block}
-          onMouseDown={(e) => toggleBlockType(e, block)}
-          style={buttonStyle(getCurrentBlockType() === block)}
+          key={type}
+          onMouseDown={(e) => toggleBlockType(e, type)}
+          style={buttonStyle(getCurrentBlockType() === type)}
         >
-          <h1>H1</h1> {/* Replace with an icon */}
+          {label}
         </button>
       ))}
+
       <button
         type="button"
         onMouseDown={(e) => toggleBlockType(e, "blockquote")}
@@ -127,6 +155,7 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
       >
         <Code size={18} />
       </button>
+
       <button
         type="button"
         onMouseDown={(e) => toggleInlineStyle(e, "BOLD")}
@@ -155,6 +184,7 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
       >
         <Code size={18} />
       </button>
+
       <button
         type="button"
         onClick={() => fileInputRef.current?.click()}
@@ -172,33 +202,17 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
     </div>
   );
 
-  const getCurrentStyle = () => editorState.getCurrentInlineStyle();
-
-  const getCurrentBlockType = () =>
-    editorState
-      .getCurrentContent()
-      .getBlockForKey(editorState.getSelection().getStartKey())
-      .getType();
-
   return (
-    <div
-      style={{
-        width: "100%",
-      }}
-    >
+    <div style={{ width: "100%" }}>
       <div
-        style={{
-          width: "100%",
-          borderRadius: "4px",
-          overflow: "hidden",
-        }}
         className="border"
+        style={{ width: "100%", borderRadius: "4px", overflow: "hidden" }}
       >
         {renderToolbar()}
         <div
           style={{
             padding: "20px",
-            minHeight: "400px", // Increased minimum height
+            minHeight: "400px",
             fontSize: "16px",
             lineHeight: "1.6",
             fontFamily: "Georgia, serif",
@@ -211,6 +225,7 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
             onChange={handleChange}
             placeholder="Start typing..."
             blockRendererFn={blockRendererFn}
+            blockStyleFn={blockStyleFn}
           />
         </div>
       </div>

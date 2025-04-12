@@ -3,12 +3,11 @@
 import Card from "@/components/blog/card";
 import NoBlog from "@/components/blog/NoBlog";
 import Button from "@/components/blog/Button-styled";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import getUserBlogs from "@/api/userBlogs.api";
 import deleteUserBlog from "@/api/deleteBlog.api"; // Make sure this exists
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "../loading";
 import { Blog } from "@/lib/types/response.type";
 
@@ -17,34 +16,47 @@ const BlogsPage = () => {
   const { user } = useAuth();
   const id = user?.id;
 
-  const queryClient = useQueryClient();
+  const [blogs, setBlogs] = useState<Blog[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const { data: blogs, isLoading } = useQuery({
-    queryKey: ["blogs", id],
-    queryFn: () => getUserBlogs(id),
-  });
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      if (id) {
+        try {
+          const fetchedBlogs = await getUserBlogs(id);
+          setBlogs(fetchedBlogs);
+        } catch (error) {
+          console.error("Error fetching blogs:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
 
-  const deleteBlogMutation = useMutation({
-    mutationFn: (postId: string) => deleteUserBlog(postId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["blogs", id] });
-    },
-  });
+    fetchBlogs();
+  }, []);
 
   const handleNavigation = (path: string) => {
     router.push(path);
   };
 
-  const handleDelete = (postId: string) => {
-    deleteBlogMutation.mutate(postId);
+  const handleDelete = async (postId: string) => {
+    try {
+      setBlogs(
+        (prevBlogs) => prevBlogs?.filter((blog) => blog.id !== postId) || null
+      );
+      await deleteUserBlog(postId);
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+    }
   };
 
   if (isLoading) return <Loader />;
   if (!blogs || blogs.length === 0) return <NoBlog />;
 
   return (
-    <div className="mx-auto container">
-      <div className="md:flex justify-between items-center mb-5 md:mb-1">
+    <div className="w-full">
+      <div className="md:flex justify-between items-center mb-5 md:mb-1 w-full">
         <h1 className="mb-6 font-bold text-3xl fst">Manage Blogs</h1>
         <div className="flex items-center gap-4">
           <Button

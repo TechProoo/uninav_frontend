@@ -11,25 +11,26 @@ import Link from "next/link";
 type DataContent = {
   data: Blog;
   onDelete?: (id: string) => void;
+  onEditSuccess?: () => void;
 };
 
-const Card = ({ data, onDelete }: DataContent) => {
+const Card = ({ data, onDelete, onEditSuccess }: DataContent) => {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
   if (!data) return null;
 
-  console.log(data);
-
   const handleEdit = () => {
     router.push(`/dashboard/blogs/editblog?id=${data.id}`);
+    // If you're editing inline or in a modal, trigger refetch after success:
+    onEditSuccess?.();
   };
 
   const handleDeletePost = async (postId: string) => {
     setDeleting(true);
     try {
       await deleteBlog(postId);
-      onDelete?.(postId);
+      onDelete?.(postId); // Triggers refetch from parent
       router.refresh();
       toast.success("Post deleted successfully");
     } catch (error) {

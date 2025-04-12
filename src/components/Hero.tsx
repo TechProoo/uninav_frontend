@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Bag from "../../public/Image/landing-removebg-preview.png";
 import Button from "./ui/Button-styled";
-import Book from "../../public/Image/blank-book-cover-white-vector-illustration.png";
 
 export default function Hero() {
   return (
