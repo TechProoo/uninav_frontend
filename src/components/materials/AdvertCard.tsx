@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import AdvertDetail from "./AdvertDetail";
+import { incrementClick } from "@/api/advert.api";
 
 interface AdvertCardProps {
   advert: Advert;
@@ -34,6 +35,7 @@ const AdvertCard: React.FC<AdvertCardProps> = ({
     } else {
       setShowDetail(true);
     }
+    incrementClick(advert.id);
   };
 
   const handleCloseModal = () => {
@@ -82,16 +84,18 @@ const AdvertCard: React.FC<AdvertCardProps> = ({
         <div className="p-4">
           {/* Ad Type Badge */}
           <div className="flex justify-between items-start mb-2">
-            <Badge
-              variant={advert.type === "free" ? "secondary" : "default"}
-              className={
-                advert.type === "free"
-                  ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                  : ""
-              }
-            >
-              {advert.type}
-            </Badge>
+            {!isPreview && (
+              <Badge
+                variant={advert.type === "free" ? "secondary" : "default"}
+                className={
+                  advert.type === "free"
+                    ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    : ""
+                }
+              >
+                {advert.type}
+              </Badge>
+            )}
 
             {!isPreview && (
               <div className="flex gap-2 text-gray-500 text-xs">
@@ -111,7 +115,7 @@ const AdvertCard: React.FC<AdvertCardProps> = ({
             {advert.label}
           </h3>
 
-          {advert.description && (
+          {!isPreview && advert.description && (
             <p className="mb-3 text-gray-600 text-sm line-clamp-2">
               {advert.description}
             </p>

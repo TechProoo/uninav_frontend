@@ -2,32 +2,61 @@
 
 import { Blog } from "@/lib/types/response.type";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, ChevronLeft, Eye, X, ThumbsUp } from "lucide-react";
-import React, { useState } from "react";
+import {
+  Calendar,
+  ChevronLeft,
+  Eye,
+  X,
+  ThumbsUp,
+  Edit,
+  Trash2,
+} from "lucide-react";
+import React, { useEffect, useState } from "react";
 import draftToHtml from "draftjs-to-html";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import { getBlogById, toggleBlogLike } from "@/api/blog.api";
+import { getBlogById, toggleBlogLike, deleteBlog } from "@/api/blog.api";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
+import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
+import { useAuth } from "@/contexts/authContext";
 
 interface BlogDetailProps {
   blogId: string;
   onClose?: () => void;
   showBackButton?: boolean;
+  isOwner?: boolean;
+  onEdit?: (blog: Blog) => void;
+  onDelete?: (blogId: string) => void;
 }
 
 const BlogDetail: React.FC<BlogDetailProps> = ({
   blogId,
   onClose,
   showBackButton = false,
+  isOwner = false,
+  onEdit,
+  onDelete,
 }) => {
   const router = useRouter();
   const [isLiking, setIsLiking] = useState<boolean>(false);
   const [localBlog, setLocalBlog] = useState<
     (Blog & { isLiked: boolean }) | null
   >(null);
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { user } = useAuth();
+  const [isOwnerState, setIsOwnerState] = useState(isOwner);
+  useEffect(() => {
+    if (user && localBlog && user.id === localBlog.creatorId) {
+      setIsOwnerState(true);
+    } else {
+      setIsOwnerState(isOwner);
+    }
+  }, [user, localBlog]);
+  useEffect(() => {
+    console.log("is owner state", isOwnerState);
+  }, [isOwnerState]);
   const {
     data: blog,
     isLoading,
@@ -101,6 +130,38 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     }
   };
 
+  const handleEdit = () => {
+    if (onEdit && localBlog) {
+      onEdit(localBlog);
+    }
+  };
+
+  const handleDelete = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!localBlog) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteBlog(localBlog.id);
+      toast.success("Blog deleted successfully");
+
+      if (onDelete) {
+        onDelete(localBlog.id);
+      } else {
+        // If no onDelete handler is provided, navigate to blogs page
+        router.push("/dashboard/blogs");
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      toast.error("Failed to delete blog. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center py-20">
@@ -131,133 +192,170 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
   const isModal = !!onClose;
 
   return (
-    <div
-      className={`relative ${isModal ? "overflow-y-auto max-h-[85vh]" : ""}`}
-    >
-      {/* Header with close button for modal or back button for standalone */}
-      {(isModal || showBackButton) && (
-        <div className="top-0 z-10 sticky flex justify-between items-center bg-white px-6 py-4 border-b">
-          <div className="flex items-center">
-            {showBackButton && !isModal && (
-              <Button variant="ghost" className="mr-2" onClick={handleBack}>
-                <ChevronLeft className="mr-1 w-5 h-5" />
-                Back
-              </Button>
-            )}
-            {isModal && <h2 className="font-bold text-xl">Blog Details</h2>}
-          </div>
-          {onClose && (
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-5 h-5" />
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Blog content */}
-      <div>
-        <div className="bg-gray-900 p-4 sm:p-6 md:p-8">
-          <div className="gap-4 grid grid-cols-1 md:grid-cols-12">
-            <div className="md:col-span-5 px-2 md:px-6 text-left md:text-right">
-              <span className="inline-block bg-red-700 px-3 py-1 rounded-xl font-bold text-white text-sm">
-                {localBlog.type}
-              </span>
-              <h1 className="mt-4 font-bold text-white text-3xl md:text-4xl leading-tight">
-                {localBlog.title}
-              </h1>
-              <div className="mt-4 text-gray-400 text-sm">
-                <b>
-                  Author -{" "}
-                  <span className="font-semibold text-white">
-                    {localBlog.creator.username}
-                  </span>
-                </b>
-              </div>
-              <div className="flex justify-start md:justify-end items-center gap-4 mt-4 text-gray-300 text-sm">
-                <div className="flex items-center gap-1">
-                  <Eye size={15} className="text-gray-500" />
-                  <b className="text-sm">{localBlog.views}</b>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLikeToggle}
-                  disabled={isLiking}
-                  className={cn(
-                    "flex items-center gap-1 p-1",
-                    localBlog.isLiked ? "text-blue-400" : "text-gray-400"
-                  )}
-                >
-                  <ThumbsUp
-                    className={cn(
-                      "w-4 h-4",
-                      localBlog.isLiked && "fill-current"
-                    )}
-                  />
-                  <span>{localBlog.likes}</span>
+    <>
+      <div
+        className={`relative ${isModal ? "overflow-y-auto max-h-[85vh]" : ""}`}
+      >
+        {/* Header with close button for modal or back button for standalone */}
+        {(isModal || showBackButton) && (
+          <div className="top-0 z-10 sticky flex justify-between items-center bg-white px-6 py-4 border-b">
+            <div className="flex items-center">
+              {showBackButton && !isModal && (
+                <Button variant="ghost" className="mr-2" onClick={handleBack}>
+                  <ChevronLeft className="mr-1 w-5 h-5" />
+                  Back
                 </Button>
-              </div>
+              )}
+              {isModal && <h2 className="font-bold text-xl">Blog Details</h2>}
+            </div>
+            <div className="flex items-center gap-2">
+              {onClose && (
+                <Button variant="ghost" size="icon" onClick={onClose}>
+                  <X className="w-5 h-5" />
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
 
-              <div className="flex justify-start md:justify-end items-center mt-4 text-gray-300 text-sm">
-                <Calendar size={14} className="mr-2" />
-                <span>
-                  {new Date(localBlog.createdAt).toLocaleDateString()}
+        {/* Blog content */}
+        <div>
+          <div className="bg-gray-900 p-4 sm:p-6 md:p-8">
+            <div className="gap-4 grid grid-cols-1 md:grid-cols-12">
+              <div className="md:col-span-5 px-2 md:px-6 text-left md:text-right">
+                <span className="inline-block bg-red-700 px-3 py-1 rounded-xl font-bold text-white text-sm">
+                  {localBlog.type}
                 </span>
-              </div>
-            </div>
-
-            <div className="md:col-span-7">
-              <div className="shadow-lg rounded-md overflow-hidden">
-                {localBlog.headingImageAddress ? (
-                  <img
-                    src={localBlog.headingImageAddress}
-                    alt="Blog cover"
-                    className="w-full h-auto max-h-[400px] object-cover"
-                  />
-                ) : (
-                  <div className="flex justify-center items-center bg-gray-800 w-full h-[200px] md:h-[300px]">
-                    <p className="text-gray-400">No cover image available</p>
+                <h1 className="mt-4 font-bold text-white text-3xl md:text-4xl leading-tight">
+                  {localBlog.title}
+                </h1>
+                <div className="mt-4 text-gray-400 text-sm">
+                  <b>
+                    Author -{" "}
+                    <span className="font-semibold text-white">
+                      {localBlog.creator.username}
+                    </span>
+                  </b>
+                </div>
+                <div className="flex justify-start md:justify-end items-center gap-4 mt-4 text-gray-300 text-sm">
+                  <div className="flex items-center gap-1">
+                    <Eye size={15} className="text-gray-500" />
+                    <b className="text-sm">{localBlog.views}</b>
                   </div>
-                )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLikeToggle}
+                    disabled={isLiking}
+                    className={cn(
+                      "flex items-center gap-1 p-1",
+                      localBlog.isLiked ? "text-blue-400" : "text-gray-400"
+                    )}
+                  >
+                    <ThumbsUp
+                      className={cn(
+                        "w-4 h-4",
+                        localBlog.isLiked && "fill-current"
+                      )}
+                    />
+                    <span>{localBlog.likes}</span>
+                  </Button>
+                </div>
+
+                <div className="flex justify-start md:justify-end items-center mt-4 text-gray-300 text-sm">
+                  <Calendar size={14} className="mr-2" />
+                  <span>
+                    {new Date(localBlog.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+
+              <div className="md:col-span-7">
+                <div className="shadow-lg rounded-md overflow-hidden">
+                  {localBlog.headingImageAddress ? (
+                    <img
+                      src={localBlog.headingImageAddress}
+                      alt="Blog cover"
+                      className="w-full h-auto max-h-[400px] object-cover"
+                    />
+                  ) : (
+                    <div className="flex justify-center items-center bg-gray-800 w-full h-[200px] md:h-[300px]">
+                      <p className="text-gray-400">No cover image available</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="p-4 sm:p-6 md:p-8">
-          <div className="mb-8 text-center">
-            <blockquote className="pl-4 border-gray-400 border-l-4 text-gray-600 text-base md:text-lg italic">
-              {localBlog.description}
-            </blockquote>
-          </div>
-
-          <article className="max-w-none prose">
-            <div
-              className="ql-editor"
-              dangerouslySetInnerHTML={{
-                __html: draftToHtml(JSON.parse(localBlog.body)),
-              }}
-            />
-          </article>
-
-          {localBlog.tags && localBlog.tags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-3 mt-8 pt-4 border-t">
-              <p className="font-medium">Tags:</p>
-              <div className="flex flex-wrap gap-2">
-                {localBlog.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="bg-gray-100 px-3 py-1 rounded-lg text-gray-800 text-sm"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+          {/* Owner actions */}
+          {isOwner && (
+            <div className="flex justify-end items-center gap-2 p-4 sm:px-6 md:px-8">
+              <Button
+                variant="outline"
+                onClick={handleEdit}
+                className="flex items-center gap-1 hover:bg-[#003666] border-[#003666] text-[#003666] hover:text-white transition-colors"
+              >
+                <Edit className="w-4 h-4" />
+                Edit Blog
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleDelete}
+                className="flex items-center gap-1 hover:bg-red-600 border-red-600 text-red-600 hover:text-white transition-colors"
+                disabled={isDeleting}
+              >
+                <Trash2 className="w-4 h-4" />
+                {isDeleting ? "Deleting..." : "Delete Blog"}
+              </Button>
             </div>
           )}
+
+          <div className="p-4 sm:p-6 md:p-8">
+            <div className="mb-8 text-center">
+              <blockquote className="pl-4 border-gray-400 border-l-4 text-gray-600 text-base md:text-lg italic">
+                {localBlog.description}
+              </blockquote>
+            </div>
+
+            <article className="max-w-none prose">
+              <div
+                className="ql-editor"
+                dangerouslySetInnerHTML={{
+                  __html: draftToHtml(JSON.parse(localBlog.body)),
+                }}
+              />
+            </article>
+
+            {localBlog.tags && localBlog.tags.length > 0 && (
+              <div className="flex flex-wrap items-center gap-3 mt-8 pt-4 border-t">
+                <p className="font-medium">Tags:</p>
+                <div className="flex flex-wrap gap-2">
+                  {localBlog.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="bg-gray-100 px-3 py-1 rounded-lg text-gray-800 text-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Blog"
+        message="Are you sure you want to delete this blog? This action cannot be undone."
+        itemType="blog"
+      />
+    </>
   );
 };
 

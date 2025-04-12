@@ -98,8 +98,11 @@ export type Course = {
   description: string;
   reviewStatus: ApprovalStatusEnum;
   reviewedById: string | null;
-  departmentId: string;
-  level: number;
+
+  // only available for duplicate courses
+  departmentId?: string;
+  // only available for duplicate courses
+  level?: number;
   createdAt?: string;
   updatedAt?: string;
 };

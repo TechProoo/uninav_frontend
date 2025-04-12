@@ -391,17 +391,8 @@ const ContactPage = () => {
 
           <div className="gap-8 grid md:grid-cols-2 lg:grid-cols-4">
             <TeamMemberCard
-              name="Alex Johnson"
-              role="Lead Developer"
-              image="https://randomuser.me/api/portraits/men/32.jpg"
-              github="https://github.com/buildminds"
-              linkedin="https://linkedin.com/in/buildminds"
-              twitter="https://twitter.com/uninav"
-            />
-
-            <TeamMemberCard
               name="Sarah Chen"
-              role="UI/UX Designer"
+              role="Frontend Developer"
               image="https://randomuser.me/api/portraits/women/44.jpg"
               github="https://github.com/buildminds"
               linkedin="https://linkedin.com/in/buildminds"
@@ -412,6 +403,14 @@ const ContactPage = () => {
               name="David Okonkwo"
               role="Backend Engineer"
               image="https://randomuser.me/api/portraits/men/75.jpg"
+              github="https://github.com/buildminds"
+              linkedin="https://linkedin.com/in/buildminds"
+              twitter="https://twitter.com/uninav"
+            />
+            <TeamMemberCard
+              name="Alex Johnson"
+              role="Marketing Manager"
+              image="https://randomuser.me/api/portraits/men/32.jpg"
               github="https://github.com/buildminds"
               linkedin="https://linkedin.com/in/buildminds"
               twitter="https://twitter.com/uninav"

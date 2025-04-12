@@ -23,6 +23,9 @@ import {
   Share2,
   Link as LinkIcon,
   Check,
+  Edit,
+  Trash2,
+  ChevronLeft,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -30,12 +33,16 @@ import {
   incrementDownloadCount,
   likeOrUnlikeMaterial,
   getMaterialById,
+  deleteMaterial,
 } from "@/api/material.api";
 import AdvertCard from "./AdvertCard";
 import AdvertDetail from "./AdvertDetail";
 import { useBookmarks } from "@/contexts/bookmarksContext";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
+import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
+import { useAuth } from "@/contexts/authContext";
+import { useRouter } from "next/navigation";
 
 interface MaterialDetailProps {
   material: Material;
@@ -47,7 +54,7 @@ interface MaterialDetailProps {
 
 const MaterialDetail: React.FC<MaterialDetailProps> = ({
   material: initialMaterial,
-  isOwner = false,
+  isOwner: isOwnerProp = false,
   onEdit,
   onDelete,
   onClose,
@@ -65,6 +72,25 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   const [shareLoading, setShareLoading] = useState(false);
   const [downloadLinkLoading, setDownloadLinkLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  const router = useRouter();
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Get user context
+  const { user } = useAuth();
+
+  // Combine prop-based ownership with detected ownership
+  const [detectedIsOwner, setDetectedIsOwner] = useState(false);
+
+  useEffect(() => {
+    if (user && initialMaterial && user.id === initialMaterial.creatorId) {
+      setDetectedIsOwner(true);
+    }
+  }, [user, initialMaterial]);
+
+  // Use either the prop or detected ownership
+  const isOwner = isOwnerProp || detectedIsOwner;
 
   useEffect(() => {
     const fetchCompleteData = async () => {
@@ -269,7 +295,25 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   };
 
   const handleDelete = () => {
-    if (onDelete) onDelete(material.id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setIsDeleting(true);
+      const response = await deleteMaterial(material.id);
+      if (response?.status === "success") {
+        toast.success("Material deleted successfully");
+        if (onDelete) onDelete(material.id);
+      } else {
+        toast.error("Failed to delete material");
+      }
+    } catch (error) {
+      console.error("Error deleting material:", error);
+      toast.error("Failed to delete material. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleAdvertClick = (advert: Advert) => {
@@ -350,6 +394,16 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       <Card className="bg-white/80 backdrop-blur-sm mx-auto p-6 max-w-4xl">
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center gap-4">
+            {!onClose && (
+              <Button
+                variant="ghost"
+                onClick={() => router.back()}
+                className="mr-2"
+              >
+                <ChevronLeft className="mr-1 w-5 h-5" />
+                Back
+              </Button>
+            )}
             {getFileIcon(material.type)}
             <div>
               <h1 className="font-bold text-gray-900 text-2xl">
@@ -377,16 +431,6 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
                 )}
               />
             </Button>
-            {isOwner && (
-              <>
-                <Button variant="outline" onClick={handleEdit}>
-                  Edit
-                </Button>
-                <Button variant="destructive" onClick={handleDelete}>
-                  Delete
-                </Button>
-              </>
-            )}
             {onClose && (
               <Button variant="outline" onClick={onClose}>
                 Close
@@ -394,6 +438,28 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             )}
           </div>
         </div>
+
+        {isOwner && (
+          <div className="flex justify-end items-center gap-2 mt-2 mb-4">
+            <Button
+              variant="outline"
+              onClick={handleEdit}
+              className="flex items-center gap-1 hover:bg-[#003666] border-[#003666] text-[#003666] hover:text-white transition-colors"
+            >
+              <Edit className="w-4 h-4" />
+              Edit Material
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleDelete}
+              className="flex items-center gap-1 hover:bg-red-600 border-red-600 text-red-600 hover:text-white transition-colors"
+              disabled={isDeleting}
+            >
+              <Trash2 className="w-4 h-4" />
+              {isDeleting ? "Deleting..." : "Delete Material"}
+            </Button>
+          </div>
+        )}
 
         {/* Display associated adverts if available */}
         {material.adverts && material.adverts.length > 0 && (
@@ -590,6 +656,16 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        title="Delete Material"
+        message="Are you sure you want to delete this material? This action cannot be undone and will remove all associated data including resources and advertisements."
+        itemType="material"
+      />
     </>
   );
 };

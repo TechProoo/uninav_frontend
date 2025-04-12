@@ -30,6 +30,7 @@ import {
 import { CreateFreeAdvertDto, createFreeAdvert } from "@/api/advert.api";
 import { getCourses } from "@/api/course.api";
 import { useDropzone } from "react-dropzone";
+import { SelectCourse } from "@/components/search/selectCourse";
 
 interface MaterialFormProps {
   initialData?: Material;
@@ -318,54 +319,23 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
               />
             </div>
 
-            {/* Course Selection Combobox */}
+            {/* Course Selection using SelectCourse component */}
             <div>
               <label className="block mb-1 font-medium text-gray-700 text-sm">
                 Target Course
               </label>
-              <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="justify-between w-full"
-                  >
-                    {selectedCourse
-                      ? selectedCourse.courseCode
-                      : "Select course..."}
-                    <ChevronsUpDown className="opacity-50 ml-2 w-4 h-4 shrink-0" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="p-0 w-full">
-                  <Command>
-                    <CommandInput placeholder="Search courses..." />
-                    <CommandEmpty>No course found.</CommandEmpty>
-                    <CommandGroup className="max-h-60 overflow-y-auto">
-                      {courses.map((course) => (
-                        <CommandItem
-                          key={course.id}
-                          value={course.courseCode}
-                          onSelect={() => {
-                            setSelectedCourse(course);
-                            setOpen(false);
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              selectedCourse?.id === course.id
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {course.courseCode} - {course.courseName}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <SelectCourse
+                onChange={(courseId) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    targetCourseId: courseId,
+                  }));
+                  setSelectedCourse(
+                    courses.find((c) => c.id === courseId) || null
+                  );
+                }}
+                currentValue={formData.targetCourseId}
+              />
             </div>
           </div>
 

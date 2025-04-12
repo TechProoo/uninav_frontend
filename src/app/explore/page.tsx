@@ -3,7 +3,7 @@ import React, { useEffect, useState, KeyboardEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { SelectCourse } from "../../components/search/selectCourse";
+import { SelectCourse } from "../../components/search/selectCourse";
 import {
   searchMaterialsLoggedIn,
   searchMaterialsNotLoggedIn,
@@ -255,7 +255,7 @@ const ExplorePage = () => {
 
   // Handle blog click to navigate to detail page
   const handleBlogClick = (blog: Blog) => {
-    router.push(`/blogs/${blog.id}`);
+    router.push(`/blog/${blog.id}`);
   };
 
   // Initial fetch when component mounts or when URL parameters change
@@ -517,10 +517,10 @@ const ExplorePage = () => {
                       {/* Course Filter */}
                       <div className="space-y-2">
                         <label className="font-medium text-sm">Course</label>
-                        {/* <SelectCourse
+                        <SelectCourse
                           onChange={setMaterialCourse}
                           // currentValue={materialCourse}
-                        /> */}
+                        />
                       </div>
 
                       {/* Tags Filter */}
