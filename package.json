@@ -47,7 +47,7 @@
     "quill-image-resize-module": "^3.0.0",
     "quill-markdown-shortcuts": "^0.0.10",
     "react": "^19.1.0",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "react-hot-toast": "^2.5.2",
     "react-markdown": "^10.1.0",
