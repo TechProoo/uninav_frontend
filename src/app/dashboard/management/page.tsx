@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
+  School,
 } from "lucide-react";
 
 // Define card data with icons and paths
@@ -37,6 +38,13 @@ const managementCards = [
     icon: GraduationCap,
     path: "/dashboard/management/courses",
     color: "bg-purple-50 text-purple-600",
+  },
+  {
+    title: "Course Management",
+    description: "Create and link courses to departments",
+    icon: School,
+    path: "/dashboard/management/course-management",
+    color: "bg-teal-50 text-teal-600",
   },
   {
     title: "DLC Review",

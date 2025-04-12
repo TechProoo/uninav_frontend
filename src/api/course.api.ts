@@ -9,6 +9,12 @@ interface CreateCourseDto {
   level: number;
 }
 
+interface LinkCourseDto {
+  courseId: string;
+  departmentId: string;
+  level: number;
+}
+
 export const getCourses = async (filters?: {
   departmentId?: string;
   level?: number;
@@ -68,6 +74,22 @@ export const createCourse = async (
     return null;
   }
 };
+
+export const linkCourseToDepartment = async (
+  linkData: LinkCourseDto
+): Promise<Response<DLC> | null> => {
+  try {
+    const response = await api.post<Response<DLC>>(
+      "/courses/department-level",
+      linkData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error linking course to department:", error);
+    return null;
+  }
+};
+
 export const getDepartmentLevelCourses = async ({
   departmentId,
   courseId,
