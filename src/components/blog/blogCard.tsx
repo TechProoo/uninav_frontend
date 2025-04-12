@@ -173,7 +173,7 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
           className="rounded-[24px] rounded-br-[0px] w-full h-48 object-cover"
         />
         <Link
-          href={`/blogs/${data.id}`}
+          href={`/blog/${data.id}`}
           className="group right-10 bottom-10 absolute flex justify-center items-center bg-[#f0f8ff] rounded-tl-full w-20 h-20 transition-colors translate-x-1/2 translate-y-1/2 duration-300 cursor-pointer"
         >
           <span className="mt-2 text-white text-xl transition-transform group-hover:translate-x-2 duration-300">

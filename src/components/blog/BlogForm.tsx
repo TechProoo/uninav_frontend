@@ -8,19 +8,21 @@ import Editor from "./quill";
 import { Plus, X } from "lucide-react";
 import { Blog } from "@/lib/types/response.type";
 import { editBlog } from "@/api/blog.api";
+import { Button } from "../ui/button";
 
-type dataProp = {
+type BlogFormProps = {
   data?: Blog;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 };
 
-const PostForm = ({ data }: dataProp) => {
+const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
   const [formData, setFormData] = useState({
     title: data?.title || "",
     description: data?.description || "",
     category: data?.type || "",
     tags: data?.tags || [],
   });
-  console.log(data?.type);
 
   const [editorContent, setEditorContent] = useState(data?.body || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -30,7 +32,6 @@ const PostForm = ({ data }: dataProp) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tagInput, setTagInput] = useState("");
 
-  // const router = useRouter();
   const router = useRouter();
 
   useEffect(() => {
@@ -76,16 +77,20 @@ const PostForm = ({ data }: dataProp) => {
         response = await createBlog(formDataToSend);
       }
 
-      console.log();
+      toast.success(
+        data ? "Blog updated successfully" : "Blog created successfully"
+      );
 
-      // @ts-ignore
-      router.push("/dashboard/blogs");
-      // Refresh the page after navigation
-      router.refresh();
-      toast.success("Blog Submitted successfully");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // Default behavior if no onSuccess handler is provided
+        router.push("/dashboard/blogs");
+        router.refresh();
+      }
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Failed to submit blog");
+      toast.error(data ? "Failed to update blog" : "Failed to create blog");
     } finally {
       setIsSubmitting(false);
     }
@@ -124,6 +129,15 @@ const PostForm = ({ data }: dataProp) => {
       ...formData,
       tags: formData.tags.filter((tag) => tag !== tagToRemove),
     });
+  };
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      // Default behavior if no onCancel handler is provided
+      router.push("/dashboard/blogs");
+    }
   };
 
   return (
@@ -279,22 +293,30 @@ const PostForm = ({ data }: dataProp) => {
         </div>
 
         {/* Submit Button */}
-        <div className="pt-6 border-gray-200 border-t">
-          <button
+        <div className="flex justify-end gap-3 pt-6 border-gray-200 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isSubmitting}
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+          <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#003666] hover:bg-blue-900 shadow-md px-8 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full md:w-auto font-medium text-white text-lg transition-all duration-300 ease-in-out"
+            className="bg-[#003666] hover:bg-blue-900 shadow-md px-8 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] font-medium text-white text-lg transition-all duration-300 ease-in-out"
           >
             {isSubmitting
               ? "Submitting..."
               : data
               ? "Update Blog"
               : "Create Blog"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>
   );
 };
 
-export default PostForm;
+export default BlogForm;

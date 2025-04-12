@@ -6,7 +6,7 @@ import Button from "@/components/blog/Button-styled";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "../loading";
-import { Blog, Pagination } from "@/lib/types/response.type";
+import { Blog } from "@/lib/types/response.type";
 import { deleteBlog, getUserBlogs } from "@/api/blog.api";
 
 const BlogsPage = () => {
