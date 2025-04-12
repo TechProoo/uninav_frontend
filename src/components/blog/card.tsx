@@ -5,7 +5,7 @@ import { ArrowBigRight, Edit, Trash } from "lucide-react";
 import { Blog } from "@/lib/types/response.type";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import deleteBlog from "@/api/deleteBlog.api";
+import { deleteBlog } from "@/api/blog.api";
 import Link from "next/link";
 
 type DataContent = {

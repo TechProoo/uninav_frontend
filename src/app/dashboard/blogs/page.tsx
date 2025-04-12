@@ -19,7 +19,7 @@ const BlogsPage = () => {
     const fetchBlogs = async () => {
       try {
         const fetchedBlogs = await getUserBlogs();
-        setBlogs(fetchedBlogs);
+        setBlogs(fetchedBlogs.data);
       } catch (error) {
         console.error("Error fetching blogs:", error);
       } finally {

@@ -345,3 +345,39 @@ export const likeOrUnlikeMaterial = async (
     throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
+
+// Get Materials
+export const getMaterials = async ({
+  creatorId,
+  courseId,
+  type,
+  tag,
+  page = 1,
+  limit = 10,
+}: {
+  creatorId?: string;
+  courseId?: string;
+  type?: string;
+  tag?: string;
+  page?: number;
+  limit?: number;
+}): Promise<Response<Pagination<Material[]>>> => {
+  try {
+    let url = `/materials?page=${page}&limit=${limit}`;
+
+    if (creatorId) url += `&creatorId=${creatorId}`;
+    if (courseId) url += `&courseId=${courseId}`;
+    if (type) url += `&type=${type}`;
+    if (tag) url += `&tag=${tag}`;
+
+    const response = await api.get<Response<Pagination<Material[]>>>(url);
+
+    if (response.data.status === "success") {
+      return response.data;
+    }
+    throw new Error(response.data.message || "Failed to fetch materials");
+  } catch (error: any) {
+    console.error("Error fetching materials:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
+};
