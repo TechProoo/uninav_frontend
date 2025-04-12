@@ -58,7 +58,7 @@ const BlogsPage = () => {
   };
 
   const handleBlogClick = (blog: Blog) => {
-    router.push(`/blogs/${blog.id}`);
+    router.push(`/blog/${blog.id}`);
   };
 
   const handleDelete = async (postId: string) => {

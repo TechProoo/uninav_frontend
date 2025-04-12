@@ -256,7 +256,7 @@ const ExplorePage = () => {
 
   // Handle blog click to navigate to detail page
   const handleBlogClick = (blog: Blog) => {
-    router.push(`/blogs/${blog.id}`);
+    router.push(`/blog/${blog.id}`);
   };
 
   // Initial fetch when component mounts or when URL parameters change
