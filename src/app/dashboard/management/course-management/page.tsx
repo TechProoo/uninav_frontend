@@ -10,15 +10,15 @@ import {
   GraduationCap,
   Search,
   Building,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import {
-  getCourses,
-  createCourse,
   getDepartmentLevelCourses,
+  getCoursesPaginated,
 } from "@/api/course.api";
 import { Course, DLC } from "@/lib/types/response.type";
 import { Badge } from "@/components/ui/badge";
@@ -53,14 +53,16 @@ const CourseManagementPage = () => {
       setIsLoading(true);
       setError(null);
 
-      const response = await getCourses({
+      const response = await getCoursesPaginated({
         page: currentPage,
         limit: 10,
         allowDuplicates: true,
+        ...(searchQuery ? { query: searchQuery } : {}),
       });
 
       if (response?.status === "success") {
-        setCourses(response.data);
+        setCourses(response.data.data);
+        setTotalPages(response.data.pagination.totalPages);
       } else {
         setError("Failed to load courses");
       }
@@ -92,6 +94,7 @@ const CourseManagementPage = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setCurrentPage(1); // Reset to first page when searching
     fetchCourses();
   };
 
@@ -103,6 +106,12 @@ const CourseManagementPage = () => {
     setShowForm(false);
     fetchCourses();
     toast.success("Course created successfully");
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
   };
 
   // If user not loaded yet or not admin/moderator, show nothing
@@ -167,40 +176,69 @@ const CourseManagementPage = () => {
             </p>
           </div>
         ) : (
-          <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => (
-              <div
-                key={course.id}
-                className="bg-white shadow-sm hover:shadow-md border rounded-lg overflow-hidden transition-shadow"
-              >
-                <div className="p-6">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center">
-                      <GraduationCap className="mr-2 w-5 h-5 text-blue-600" />
-                      <Badge className="bg-blue-100 text-blue-700">
-                        {course.courseCode}
-                      </Badge>
+          <>
+            <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {courses.map((course) => (
+                <div
+                  key={course.id}
+                  className="bg-white shadow-sm hover:shadow-md border rounded-lg overflow-hidden transition-shadow"
+                >
+                  <div className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="flex items-center">
+                        <GraduationCap className="mr-2 w-5 h-5 text-blue-600" />
+                        <Badge className="bg-blue-100 text-blue-700">
+                          {course.courseCode}
+                        </Badge>
+                      </div>
+                      <Badge variant="outline">Level {course.level}</Badge>
                     </div>
-                    <Badge variant="outline">Level {course.level}</Badge>
-                  </div>
 
-                  <h3 className="mb-2 font-semibold text-lg">
-                    {course.courseName}
-                  </h3>
-                  <p className="mb-4 text-gray-500 text-sm line-clamp-2">
-                    {course.description || "No description provided."}
-                  </p>
+                    <h3 className="mb-2 font-semibold text-lg">
+                      {course.courseName}
+                    </h3>
+                    <p className="mb-4 text-gray-500 text-sm line-clamp-2">
+                      {course.description || "No description provided."}
+                    </p>
 
-                  <div className="flex items-center text-gray-500 text-sm">
-                    <Building className="mr-1 w-4 h-4" />
-                    <span>
-                      Department: {course.departmentId.substring(0, 8)}...
-                    </span>
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <Building className="mr-1 w-4 h-4" />
+                      <span>
+                        Department: {course?.departmentId.substring(0, 8)}...
+                      </span>
+                    </div>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            {/* Pagination controls */}
+            {courses.length > 0 && (
+              <div className="flex justify-between items-center pt-8">
+                <p className="text-gray-600">
+                  Page {currentPage} of {totalPages}
+                </p>
+                <div className="space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                  >
+                    <ChevronLeft className="mr-1 w-4 h-4" /> Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                  >
+                    Next <ChevronRight className="ml-1 w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>

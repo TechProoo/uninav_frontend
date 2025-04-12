@@ -53,7 +53,6 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       imagePreview: string | null;
     }[]
   >([]);
-
   const [formData, setFormData] = useState<CreateMaterialDto>({
     label: "",
     description: "",
@@ -119,6 +118,19 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     };
     loadCourses();
   }, []);
+
+  // Effect to check and enforce advert limits when toggling includeAdvert
+  useEffect(() => {
+    if (includeAdvert && existingAdverts.length >= MAX_FREE_ADVERTS) {
+      // If existing adverts already reach or exceed the limit, don't allow adding new ones
+      setNewAdverts([]);
+      if (existingAdverts.length > 0) {
+        toast.error(
+          `This material already has ${existingAdverts.length}/${MAX_FREE_ADVERTS} advertisements and cannot have more.`
+        );
+      }
+    }
+  }, [includeAdvert, existingAdverts.length]);
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -294,6 +306,18 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     setError(null);
 
     try {
+      // Additional validation to prevent exceeding MAX_FREE_ADVERTS
+      if (
+        includeAdvert &&
+        existingAdverts.length + newAdverts.length > MAX_FREE_ADVERTS
+      ) {
+        setError(
+          `You cannot exceed ${MAX_FREE_ADVERTS} advertisements per material.`
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
       const materialData: CreateMaterialDto = {
         ...formData,
         targetCourseId: selectedCourse?.id,
@@ -616,15 +640,46 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 type="checkbox"
                 id="includeAdvert"
                 checked={includeAdvert || existingAdverts.length > 0}
-                onChange={(e) => setIncludeAdvert(e.target.checked)}
-                className="rounded w-4 h-4 text-blue-600"
+                onChange={(e) => {
+                  // If trying to enable adverts when already at limit, show warning and prevent
+                  if (
+                    e.target.checked &&
+                    existingAdverts.length >= MAX_FREE_ADVERTS
+                  ) {
+                    toast.error(
+                      `This material already has the maximum ${MAX_FREE_ADVERTS} advertisements allowed.`
+                    );
+                    return;
+                  }
+                  setIncludeAdvert(e.target.checked);
+                }}
+                disabled={
+                  existingAdverts.length >= MAX_FREE_ADVERTS && !includeAdvert
+                }
+                className={cn(
+                  "rounded w-4 h-4 text-blue-600",
+                  existingAdverts.length >= MAX_FREE_ADVERTS &&
+                    !includeAdvert &&
+                    "opacity-50 cursor-not-allowed"
+                )}
               />
               <label
                 htmlFor="includeAdvert"
-                className="flex items-center font-medium text-gray-800"
+                className={cn(
+                  "flex items-center font-medium text-gray-800",
+                  existingAdverts.length >= MAX_FREE_ADVERTS &&
+                    !includeAdvert &&
+                    "opacity-50 cursor-not-allowed"
+                )}
               >
                 <Megaphone className="mr-1.5 w-4 h-4 text-blue-600" />
                 Advertisements for this Material
+                {existingAdverts.length >= MAX_FREE_ADVERTS &&
+                  !includeAdvert && (
+                    <span className="ml-2 text-red-500 text-xs">
+                      (Maximum {MAX_FREE_ADVERTS} advertisements reached)
+                    </span>
+                  )}
               </label>
             </div>
 
