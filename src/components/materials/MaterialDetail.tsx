@@ -25,6 +25,7 @@ import {
   Check,
   Edit,
   Trash2,
+  ChevronLeft,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -41,6 +42,7 @@ import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import { useAuth } from "@/contexts/authContext";
+import { useRouter } from "next/navigation";
 
 interface MaterialDetailProps {
   material: Material;
@@ -70,6 +72,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   const [shareLoading, setShareLoading] = useState(false);
   const [downloadLinkLoading, setDownloadLinkLoading] = useState(false);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
+  const router = useRouter();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -391,6 +394,16 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       <Card className="bg-white/80 backdrop-blur-sm mx-auto p-6 max-w-4xl">
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center gap-4">
+            {!onClose && (
+              <Button
+                variant="ghost"
+                onClick={() => router.back()}
+                className="mr-2"
+              >
+                <ChevronLeft className="mr-1 w-5 h-5" />
+                Back
+              </Button>
+            )}
             {getFileIcon(material.type)}
             <div>
               <h1 className="font-bold text-gray-900 text-2xl">
