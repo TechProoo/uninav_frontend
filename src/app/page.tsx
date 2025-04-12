@@ -6,6 +6,11 @@ export default function Home() {
     <div>
       <Hero />
       <About />
+      <footer className="w-full bg-[var(--bg-dark)] text-white text-center py-4">
+        <p className="text-sm">
+          &copy; {new Date().getFullYear()} Build Minds. All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 }

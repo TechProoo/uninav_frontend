@@ -1,8 +1,17 @@
+"use client"
+
 import Image from "next/image";
 import Bag from "../../public/Image/landing-removebg-preview.png";
 import Button from "./ui/Button-styled";
+import { useRouter } from "next/navigation";
 
 export default function Hero() {
+  const router = useRouter();
+
+  const navigateTo = (path: string) => {
+    router.push(path);
+  };
+
   return (
     <div className="relative overflow-hidden hero_container">
       <div className="items-center grid grid-cols-12 m-auto py-8 md:py-16 lg:py-20 w-11/12 md:w-10/12 min-h-[80vh] md:min-h-[70vh]">
@@ -65,8 +74,8 @@ export default function Hero() {
               </p>
             </div>
             <div className="hero_left_bottom flex flex-wrap gap-4 mt-8 md:mt-10">
-              <Button text={"Get Started"} />
-              <Button text={"Learn More"} />
+              <Button onClick={() => navigateTo("/auth/login")} text={"Get Started"} />
+              <Button text={"Learn More"} onClick={() => navigateTo("/about")} />
               <div className="ml-2 w-16 md:w-20">
                 <svg
                   viewBox="0 0 24 24"

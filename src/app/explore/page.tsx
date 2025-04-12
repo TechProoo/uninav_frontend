@@ -3,8 +3,7 @@ import React, { useEffect, useState, KeyboardEvent } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SelectType } from "@/components/search/select";
-import { SelectCourse } from "@/components/search/selectCourse";
+import { SelectCourse } from "../../components/search/selectCourse";
 import {
   searchMaterialsLoggedIn,
   searchMaterialsNotLoggedIn,

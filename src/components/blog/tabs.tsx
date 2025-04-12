@@ -1,12 +1,12 @@
 "use client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Blog } from "@/lib/types/response.type";
+import { Blog, Pagination } from "@/lib/types/response.type";
 import { useEffect, useState } from "react";
 import { searchBlogs } from "@/api/blog.api";
 import BlogCard from "./blogCard";
 
 export function TabsDemo() {
-  const [blogs, setBlogs] = useState<Blog[] | null>(null);
+  const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -14,8 +14,7 @@ export function TabsDemo() {
       setIsLoading(true);
       try {
         const blogs = await searchBlogs();
-        console.log(blogs);
-        if (blogs) {
+        if (blogs.status === "success") {
           setBlogs(blogs.data);
         }
       } catch (err) {

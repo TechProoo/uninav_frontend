@@ -18,10 +18,7 @@ import ProtectedRoute from "@/auth/ProtectedRoute";
 import { BadgeDemo } from "@/components/ui/BadgeUi";
 import { useAuth } from "@/contexts/authContext";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/blog/app-sidebar";
-import { Modal } from "@/components/search/modal";
 import { DashboardSidebar } from "@/components/blog/dashboard-sidebar";
-import { TooltipDemo } from "@/components/ui/TooltipUi";
 
 const getMenuItems = (role?: string) => {
   const items = [
@@ -46,11 +43,7 @@ const getMenuItems = (role?: string) => {
   }
 
   items.push({ icon: User, label: "Profile", path: "/dashboard/profile" });
-  items.push({
-    icon: Settings,
-    label: "Settings",
-    path: "/dashboard/settings",
-  });
+
 
   return items;
 };

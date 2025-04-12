@@ -490,6 +490,20 @@ body {
   font-family: "Georgia", serif;
 }
 
+/* SERVICES */
+@keyframes bounce-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.animate-bounce-slow {
+  animation: bounce-slow 2s infinite;
+}
+
 @media (max-width: 768px) {
   .ql-editor h1 {
     font-size: 1.75rem;
