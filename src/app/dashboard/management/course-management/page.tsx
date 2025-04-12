@@ -56,6 +56,7 @@ const CourseManagementPage = () => {
       const response = await getCourses({
         page: currentPage,
         limit: 10,
+        allowDuplicates: true,
       });
 
       if (response?.status === "success") {
