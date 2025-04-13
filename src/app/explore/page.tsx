@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState, KeyboardEvent } from "react";
+
+import React, { useEffect, useState, KeyboardEvent, Suspense } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -85,6 +86,20 @@ const restrictionOptions = [
 // npm
 
 const ExplorePage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
+        </div>
+      }
+    >
+      <ExploreContent />
+    </Suspense>
+  );
+};
+
+const ExploreContent = () => {
   const router = useRouter();
   const { user } = useAuth();
   const searchMaterialsApi = user

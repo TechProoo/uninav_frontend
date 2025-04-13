@@ -1,84 +1,50 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { Book, Users, DollarSign, Shield } from "lucide-react";
+import React, { useEffect } from "react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Services from "./Services";
 import Image from "next/image";
 import Logo from "../../public/Image/uninav-logo-image.png";
 import Button from "./ui/Button-styled";
 import { useRouter } from "next/navigation";
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "lord-icon": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+    }
+  }
+}
+
 const About = () => {
+  useEffect(() => {
+    const initializeLottie = async () => {
+      const lottie = (await import("lottie-web")).default;
+      const { defineElement } = await import("@lordicon/element");
+      defineElement(lottie.loadAnimation);
+    };
+
+    initializeLottie();
+  }, []);
+
   const router = useRouter();
 
   const navigateTo = (path: string) => {
     router.push(path);
   };
-
-  const iconVariants = {
-    hover: {
-      scale: 1.2,
-      rotate: 5,
-      transition: { duration: 0.3 },
-    },
-    initial: {
-      scale: 1,
-      rotate: 0,
-    },
-  };
-
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  };
-
   return (
     <div className="about_bg">
       <div className="m-auto py-1 md:py-10 w-10/12">
         <div className="items-center gap-5 grid grid-cols-12">
-          <motion.div
-            className="col-span-12 md:col-span-6"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeInUp}
-          >
-            <motion.div
-              className="flex justify-center items-center bg-gradient-to-r from-purple-50 dark:from-slate-800 to-blue-50 dark:to-slate-700 rounded-lg h-48 md:h-60"
-              animate={{
-                boxShadow: [
-                  "0px 0px 0px rgba(0,0,0,0)",
-                  "0px 10px 30px rgba(0,0,0,0.1)",
-                  "0px 0px 0px rgba(0,0,0,0)",
-                ],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            >
-              <motion.div
-                animate={{
-                  y: [0, -10, 0],
-                  scale: [1, 1.05, 1],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <Image
-                  src={Logo}
-                  alt="UniNav Logo"
-                  width={120}
-                  height={120}
-                  className="opacity-80"
-                />
-              </motion.div>
-            </motion.div>
+          <div className="col-span-12 md:col-span-6">
+            <DotLottieReact
+              src="https://lottie.host/77c6b78c-2671-41a6-9206-2870569a2fcb/xhS9lOc3bC.lottie"
+              loop
+              autoplay
+            />
             <div className="about_left py-5 md:py-10 border_c md:w-full fst">
               <div className="m-auto w-11/12">
                 <h1 className="font-bold text-2xl sm:text-2xl md:text-3xl lg:text-4xl md:text-left text-center">
@@ -90,29 +56,22 @@ const About = () => {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           <div className="col-span-12 md:col-span-6">
             <div className="gap-5 grid grid-cols-12">
-              <motion.div
-                className="col-span-12 md:col-span-6"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeInUp}
-                custom={1}
-                transition={{ delay: 0.1 }}
-              >
+              <div className="col-span-12 md:col-span-6">
                 <div className="about_right py-4 md:py-6 border_c mdw-full about_first fst">
                   <div className="m-auto w-11/12">
-                    <motion.div
-                      whileHover="hover"
-                      initial="initial"
-                      variants={iconVariants}
-                      className="inline-flex justify-center items-center bg-blue-100 dark:bg-blue-900 rounded-full w-10 h-10"
-                    >
-                      <Book className="w-5 h-5 text-blue-600 dark:text-blue-300" />
-                    </motion.div>
+                    <div>
+                      {/* @ts-ignore */}
+                      <lord-icon
+                        src="https://cdn.lordicon.com/xmaezqzk.json"
+                        trigger="loop"
+                        style={{ width: "32px", height: "32px" }}
+                        /* @ts-ignore */
+                      ></lord-icon>
+                    </div>
                     <h2 className="mb-3 font-semibold md:text-xl text-2xl">
                       Study Material Repository
                     </h2>
@@ -122,27 +81,20 @@ const About = () => {
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                className="col-span-12 md:col-span-6"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeInUp}
-                custom={2}
-                transition={{ delay: 0.2 }}
-              >
+              <div className="col-span-12 md:col-span-6">
                 <div className="about_right py-4 md:py-6 border_c md:w-full fst">
                   <div className="m-auto w-11/12">
-                    <motion.div
-                      whileHover="hover"
-                      initial="initial"
-                      variants={iconVariants}
-                      className="inline-flex justify-center items-center bg-green-100 dark:bg-green-900 rounded-full w-10 h-10"
-                    >
-                      <Users className="w-5 h-5 text-green-600 dark:text-green-300" />
-                    </motion.div>
+                    <div>
+                      {/* @ts-ignore */}
+                      <lord-icon
+                        src="https://cdn.lordicon.com/jdgfsfzr.json"
+                        trigger="hover"
+                        style={{ width: "32px", height: "32px" }}
+                        /* @ts-ignore */
+                      ></lord-icon>
+                    </div>
                     <h2 className="mb-3 font-semibold md:text-xl text-2xl">
                       Study Group Recommendations
                     </h2>
@@ -152,27 +104,20 @@ const About = () => {
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                className="col-span-12 md:col-span-6"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeInUp}
-                custom={3}
-                transition={{ delay: 0.3 }}
-              >
+              <div className="col-span-12 md:col-span-6">
                 <div className="about_right py-4 md:py-6 border_c md:w-full fst">
                   <div className="m-auto w-11/12">
-                    <motion.div
-                      whileHover="hover"
-                      initial="initial"
-                      variants={iconVariants}
-                      className="inline-flex justify-center items-center bg-purple-100 dark:bg-purple-900 rounded-full w-10 h-10"
-                    >
-                      <DollarSign className="w-5 h-5 text-purple-600 dark:text-purple-300" />
-                    </motion.div>
+                    <div>
+                      {/* @ts-ignore */}
+                      <lord-icon
+                        src="https://cdn.lordicon.com/eaegfqtv.json"
+                        trigger="hover"
+                        style={{ width: "32px", height: "32px" }}
+                        /* @ts-ignore */
+                      ></lord-icon>
+                    </div>
                     <h2 className="mb-3 font-semibold md:text-xl text-2xl">
                       Monetize Your Notes
                     </h2>
@@ -182,27 +127,20 @@ const About = () => {
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
 
-              <motion.div
-                className="col-span-12 md:col-span-6"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={fadeInUp}
-                custom={4}
-                transition={{ delay: 0.4 }}
-              >
+              <div className="col-span-12 md:col-span-6">
                 <div className="about_right py-4 md:py-6 border_c md:w-full fst">
                   <div className="m-auto w-11/12">
-                    <motion.div
-                      whileHover="hover"
-                      initial="initial"
-                      variants={iconVariants}
-                      className="inline-flex justify-center items-center bg-amber-100 dark:bg-amber-900 rounded-full w-10 h-10"
-                    >
-                      <Shield className="w-5 h-5 text-amber-600 dark:text-amber-300" />
-                    </motion.div>
+                    <div>
+                      {/* @ts-ignore */}
+                      <lord-icon
+                        src="https://cdn.lordicon.com/sclmgjsa.json"
+                        trigger="hover"
+                        style={{ width: "32px", height: "32px" }}
+                        /* @ts-ignore */
+                      ></lord-icon>
+                    </div>
                     <h2 className="mb-3 font-semibold md:text-xl text-2xl">
                       Role-Based Access
                     </h2>
@@ -212,18 +150,12 @@ const About = () => {
                     </p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
         <Services />
-        <motion.div
-          className="relative shadow-md mt-10 rounded-lg w-full h-auto md:h-[600px] overflow-hidden"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
+        <div className="relative shadow-md mt-10 rounded-lg w-full h-auto md:h-[600px] overflow-hidden">
           {/* Overlay content */}
           <div className="z-10 relative flex flex-col justify-center items-center px-4 md:px-10 py-10 md:py-0 h-full text-center">
             <h1 className="drop-shadow-sm mb-4 md:mb-6 font-extrabold text-[var(--bg-dark)] text-3xl md:text-5xl">
@@ -233,12 +165,10 @@ const About = () => {
               Seamless access to academic resources, study groups, and tools
               that help you grow.
             </p>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                onClick={() => navigateTo("/auth/login")}
-                text={"Get Started"}
-              />
-            </motion.div>
+            <Button
+              onClick={() => navigateTo("/auth/login")}
+              text={"Get Started"}
+            />
           </div>
 
           {/* Optional illustration on larger screens */}
@@ -251,7 +181,7 @@ const About = () => {
               height={280}
             />
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
