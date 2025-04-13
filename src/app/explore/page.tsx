@@ -28,7 +28,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  SlidersHorizontal,
+  // SlidersHorizontal,
   BookOpen,
   FileText,
   Tag,
