@@ -101,12 +101,10 @@ const Navigation = () => {
                 <Button
                   onClick={() => handleNavigation("/auth/login")}
                   text={"Login"}
-                  className="py-1.5 text-sm"
                 />
                 <Button
                   onClick={() => handleNavigation("/auth/signup")}
                   text="SignUp"
-                  className="py-1.5 text-sm"
                 />
               </div>
             )}
