@@ -2,8 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import lottie from "lottie-web";
-import { defineElement } from "@lordicon/element";
 import Button from "@/components/ui/Button-styled";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
@@ -17,9 +15,17 @@ import toast from "react-hot-toast";
 import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
 import { getDepartments } from "@/api/department.api";
 
-defineElement(lottie.loadAnimation);
-
 const Page = () => {
+  useEffect(() => {
+    const initializeLottie = async () => {
+      const lottie = (await import("lottie-web")).default;
+      const { defineElement } = await import("@lordicon/element");
+      defineElement(lottie.loadAnimation);
+    };
+
+    initializeLottie();
+  }, []);
+
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);

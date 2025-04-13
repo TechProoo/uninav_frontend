@@ -85,6 +85,16 @@ const VerifyEmailPage = () => {
     return () => clearTimeout(timer);
   }, [countdown]);
 
+  useEffect(() => {
+    const initializeLottie = async () => {
+      const lottie = (await import("lottie-web")).default;
+      const { defineElement } = await import("@lordicon/element");
+      defineElement(lottie.loadAnimation);
+    };
+
+    initializeLottie();
+  }, []);
+
   const handleVerifyEmail = async (e: React.FormEvent) => {
     e.preventDefault();
 

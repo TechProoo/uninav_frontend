@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import lottie from "lottie-web";
-import { defineElement } from "@lordicon/element";
 import Button from "@/components/ui/Button-styled";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,9 +11,17 @@ import Loader from "./loading";
 import { useAuth } from "@/contexts/authContext";
 import { fetchUserProfile } from "@/api/user.api";
 
-defineElement(lottie.loadAnimation);
-
 const page = () => {
+  useEffect(() => {
+    const initializeLottie = async () => {
+      const lottie = (await import("lottie-web")).default;
+      const { defineElement } = await import("@lordicon/element");
+      defineElement(lottie.loadAnimation);
+    };
+
+    initializeLottie();
+  }, []);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "/dashboard";
