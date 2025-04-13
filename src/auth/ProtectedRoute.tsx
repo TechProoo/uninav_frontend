@@ -19,7 +19,7 @@ export default function ProtectedRoute({
       if (!loading && !isAuthenticated) {
         router.push("/auth/login");
       }
-    }, 10000);
+    }, 5000);
     return () => clearTimeout(timeout);
   }, [isAuthenticated, loading, router]);
 

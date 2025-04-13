@@ -59,11 +59,6 @@ const items = [
     url: "/dashboard/profile",
     icon: User,
   },
-  {
-    title: "Settings",
-    url: "/dashboard/settings",
-    icon: Settings,
-  },
 ];
 
 export function DashboardSidebar() {

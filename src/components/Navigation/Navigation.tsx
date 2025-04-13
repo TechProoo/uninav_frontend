@@ -163,7 +163,7 @@ const Navigation = () => {
               </button>
             ))}
 
-            {!isAuthenticated && (
+            {/* {!isAuthenticated && (
               <div className="flex flex-row gap-4 mt-4">
                 <Button
                   onClick={() => handleNavigation("/auth/login")}
@@ -175,7 +175,7 @@ const Navigation = () => {
                   text="Signup"
                 />
               </div>
-            )}
+            )} */}
           </div>
         </SheetContent>
       </Sheet>

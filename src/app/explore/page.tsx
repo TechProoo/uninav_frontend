@@ -4,7 +4,7 @@ import React, { useEffect, useState, KeyboardEvent, Suspense } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/search/selectCourse";
 import {
   searchMaterialsLoggedIn,
   searchMaterialsNotLoggedIn,
@@ -448,7 +448,7 @@ const ExploreContent = () => {
                   </div>
                   <button
                     onClick={handleSearch}
-                    className="bg-primary hover:bg-blue-700 px-6 py-3 rounded-lg font-medium text-white transition-colors"
+                    className="bg-primary hover:bg-[#333333] px-6 py-3 rounded-lg font-medium text-white transition-colors"
                   >
                     Search
                   </button>
@@ -605,7 +605,7 @@ const ExploreContent = () => {
 
                     <button
                       onClick={() => fetchMaterials(1)}
-                      className="bg-blue-600 hover:bg-blue-700 mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
+                      className="bg-primary hover:bg-[#333333] mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
                     >
                       Apply Filters
                     </button>
@@ -727,7 +727,7 @@ const ExploreContent = () => {
                   </div>
                   <button
                     onClick={handleSearch}
-                    className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium text-white transition-colors"
+                    className="bg-primary hover:bg-[#333333] px-6 py-3 rounded-lg font-medium text-white transition-colors"
                   >
                     Search
                   </button>
@@ -831,7 +831,7 @@ const ExploreContent = () => {
 
                     <button
                       onClick={() => fetchBlogs(1)}
-                      className="bg-blue-600 hover:bg-blue-700 mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
+                      className="bg-primary hover:bg-[#333333] mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
                     >
                       Apply Filters
                     </button>

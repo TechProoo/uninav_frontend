@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
 import { Loader2, Search, Plus, X } from "lucide-react";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/search/selectCourse";
 import { createCourse, linkCourseToDepartment } from "@/api/course.api";
 import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";

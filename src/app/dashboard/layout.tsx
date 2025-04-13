@@ -60,11 +60,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const [searchValue, setSearchValue] = useState("");
   const [scrollPosition, setScrollPosition] = useState(0);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthenticated, router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,7 +106,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                 </div>
               </div>
             </header>
-            <div className="flex-1 p-10 w-full overflow-y-auto">
+            <div className="flex-1 md:p-10 p-5 w-full overflow-y-auto">
               <div className="w-full">{children}</div>
             </div>
           </main>

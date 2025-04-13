@@ -152,8 +152,8 @@ const ManageAdsPage = () => {
 
   return (
     <div className="mx-auto container">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold text-3xl">Manage Advertisements</h1>
+      <div className="flex justify-between gap-2 items-center mb-6">
+        <h1 className="font-bold md:text-3xl text-md">Manage Advertisements</h1>
         <Button onClick={() => router.push("/dashboard/materials")}>
           <Plus className="mr-2 w-4 h-4" />
           Create New Ad
