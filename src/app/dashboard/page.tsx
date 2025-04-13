@@ -80,7 +80,7 @@ export default function Dashboard() {
   };
 
   const handleMaterialClick = (material: Material) => {
-    router.push(`/dashboard/materials/${material.id}`);
+    router.push(`/material/${material.id}`);
   };
 
   if (loading || !user) {

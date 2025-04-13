@@ -104,10 +104,16 @@ export default function BlogPage() {
   return (
     <div className="mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8">
-        <Button variant="ghost" asChild>
-          <Link href="/" className="flex items-center gap-2">
-            <span>← Back to Home</span>
-          </Link>
+        <Button
+          variant="ghost"
+          asChild
+          onClick={() => {
+            router.back();
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span>← Back </span>
+          </div>
         </Button>
       </div>
       {isEditing ? (

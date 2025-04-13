@@ -98,9 +98,14 @@ export default function MaterialPage() {
     <div className="mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8">
         <Button variant="ghost" asChild>
-          <Link href="/" className="flex items-center gap-2">
-            <span>← Back to Home</span>
-          </Link>
+          <div
+            onClick={() => {
+              router.back();
+            }}
+            className="flex items-center gap-2"
+          >
+            <span>← Back</span>
+          </div>
         </Button>
       </div>
 

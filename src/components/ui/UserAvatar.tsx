@@ -87,7 +87,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ showName = false }) => {
 
         <DropdownMenuItem
           className="cursor-pointer"
-          onClick={() => handleNavigation("/dashboard/bookmark")}
+          onClick={() => handleNavigation("/dashboard/bookmarks")}
         >
           <Bookmark className="mr-2 w-4 h-4" />
           <span>Bookmarks</span>
