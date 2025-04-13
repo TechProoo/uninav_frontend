@@ -97,7 +97,7 @@ const Navigation = () => {
             ) : isAuthenticated ? (
               <UserAvatar showName={true} />
             ) : (
-              <div className="hidden md:flex gap-4 nav_btn">
+              <div className="flex gap-4 nav_btn">
                 <Button
                   onClick={() => handleNavigation("/auth/login")}
                   text={"Login"}
@@ -139,14 +139,14 @@ const Navigation = () => {
                   UniNav
                 </SheetTitle>
               </div>
-              <SheetClose asChild>
+              {/* <SheetClose asChild>
                 <button
                   className="hover:bg-gray-100 p-1 rounded-full"
                   aria-label="Close mobile menu"
                 >
                   <X size={20} />
                 </button>
-              </SheetClose>
+              </SheetClose> */}
             </div>
           </SheetHeader>
 
@@ -166,19 +166,16 @@ const Navigation = () => {
             ))}
 
             {!isAuthenticated && (
-              <div className="flex flex-col gap-2 mt-4">
-                <button
+              <div className="flex flex-row gap-4 mt-4">
+                <Button
                   onClick={() => handleNavigation("/auth/login")}
-                  className="py-3 border border-blue-600 rounded-md font-medium text-blue-600 text-center"
-                >
-                  Login
-                </button>
-                <button
+                  text="Login"
+                />
+
+                <Button
                   onClick={() => handleNavigation("/auth/signup")}
-                  className="bg-blue-600 py-3 rounded-md font-medium text-white text-center"
-                >
-                  Sign Up
-                </button>
+                  text="Signup"
+                />
               </div>
             )}
           </div>
