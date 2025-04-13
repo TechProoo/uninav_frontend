@@ -73,5 +73,6 @@
     "tailwindcss": "^4",
     "turbo": "^2.5.0",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "npm@11.0.0"
 }
