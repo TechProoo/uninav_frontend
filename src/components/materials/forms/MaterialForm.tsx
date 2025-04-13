@@ -19,7 +19,7 @@ import {
 import { CreateFreeAdvertDto, createFreeAdvert } from "@/api/advert.api";
 import { getCourses } from "@/api/course.api";
 import { useDropzone } from "react-dropzone";
-import { SelectCourse } from "@/components/search/selectCourse";
+import { SelectCourse } from "@/components/search/SelectCourse";
 import toast from "react-hot-toast";
 
 interface MaterialFormProps {
