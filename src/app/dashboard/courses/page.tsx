@@ -132,7 +132,7 @@ const CoursesPage = () => {
   return (
     <div className="mx-auto container">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold text-3xl">Manage Courses</h1>
+        <h1 className="font-bold text-2xl">Manage Courses</h1>
         <Button onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="mr-2 w-4 h-4" />
           Add Courses

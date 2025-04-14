@@ -39,7 +39,7 @@ const NoblogPage: React.FC = () => {
         <Image src={Empty} alt="No blog icon" className="rounded-full w-100" />
       </div>
       <div ref={messageRef}>
-        <h1 className="font-bold text-gray-800 text-4xl">
+        <h1 className="font-bold text-gray-800 md:text-4xl text-3xl">
           Oops, no blogs published yet!
         </h1>
         <p className="mt-4 text-gray-600 text-xl">
@@ -47,7 +47,7 @@ const NoblogPage: React.FC = () => {
           exciting content!
         </p>
       </div>
-      <div className="md:flex gap-10 md:space-y-5 mt-3 md:mt-5">
+      <div className="md:flex gap-5 space-y-5 mt-3 mt-5">
         <Button
           text="All Blogs"
           onClick={() => handleNavigation("/explore?defaultTab=blogs")}

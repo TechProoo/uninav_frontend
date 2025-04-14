@@ -60,12 +60,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth/login");
-    }
-  }, [isAuthenticated, router]);
-
-  useEffect(() => {
     const handleScroll = () => {
       const position = window.scrollY;
       setScrollPosition(position);

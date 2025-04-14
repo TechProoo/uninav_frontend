@@ -906,8 +906,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             {isSubmitting
               ? "Saving..."
               : initialData
-              ? "Update Material"
-              : "Create Material"}
+                ? "Update Material"
+                : "Create Material"}
           </Button>
         </div>
       </form>
