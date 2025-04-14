@@ -24,7 +24,7 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
 
   if (viewMode === "list") {
     return (
-      <div className="space-y-4">
+      <div className="space-y-2 sm:space-y-3 md:space-y-4">
         {materials.map((material) => (
           <MaterialCard
             key={material.id}
@@ -39,7 +39,7 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
   }
 
   return (
-    <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="gap-2 sm:gap-3 md:gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {materials.map((material) => (
         <MaterialCard
           key={material.id}

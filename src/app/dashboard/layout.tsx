@@ -44,7 +44,6 @@ const getMenuItems = (role?: string) => {
 
   items.push({ icon: User, label: "Profile", path: "/dashboard/profile" });
 
-
   return items;
 };
 
@@ -59,7 +58,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const [modal, setModal] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [scrollPosition, setScrollPosition] = useState(0);
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -106,7 +104,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                 </div>
               </div>
             </header>
-            <div className="flex-1 md:p-10 p-5 w-full overflow-y-auto">
+            <div className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 w-full overflow-y-auto">
               <div className="w-full">{children}</div>
             </div>
           </main>

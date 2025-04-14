@@ -394,7 +394,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       <Card className="bg-white/80 backdrop-blur-sm mx-auto p-6 max-w-4xl">
         <div className="flex justify-between items-start mb-6">
           <div className="flex items-center gap-4">
-            {!onClose && (
+            {/* {!onClose && (
               <Button
                 variant="ghost"
                 onClick={() => router.back()}
@@ -403,7 +403,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
                 <ChevronLeft className="mr-1 w-5 h-5" />
                 Back
               </Button>
-            )}
+            )} */}
             {getFileIcon(material.type)}
             <div>
               <h1 className="font-bold text-gray-900 text-2xl">

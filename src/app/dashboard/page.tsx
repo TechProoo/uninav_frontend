@@ -110,7 +110,7 @@ export default function Dashboard() {
               support.
             </p>
 
-            {/* Search Bar */}
+            {/* Search Bar - Improved for mobile */}
             <div className="flex mx-auto md:mx-0 mt-4 w-full max-w-md">
               <div className="relative flex-1">
                 <Search className="top-1/2 left-3 absolute w-5 h-5 text-slate-600 -translate-y-1/2 transform" />
@@ -123,11 +123,14 @@ export default function Dashboard() {
                   className="bg-white px-10 py-2 rounded-l-full focus:outline-none focus:ring-2 focus:ring-blue-200 w-full text-slate-800"
                 />
               </div>
+              {/* Show button on all screen sizes with responsive styling */}
               <button
                 onClick={handleSearch}
-                className="bg-blue-100 hover:bg-blue-200 px-6 py-2 rounded-r-full text-slate-600 transition"
+                className="flex justify-center items-center bg-blue-100 hover:bg-blue-200 px-3 sm:px-6 py-2 rounded-r-full min-w-[40px] text-slate-600 transition"
+                aria-label="Search"
               >
-                Search
+                <Search className="sm:hidden w-4 h-4" />
+                <span className="hidden sm:inline">Search</span>
               </button>
             </div>
           </div>

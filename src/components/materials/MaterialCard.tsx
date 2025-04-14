@@ -95,29 +95,29 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
     return (
       <Card
         className={cn(
-          "group bg-white/80 hover:bg-white shadow-md hover:shadow-xl border border-gray-100 rounded-2xl p-5 transition-all duration-200 cursor-pointer",
+          "group bg-white/80 hover:bg-white shadow-md hover:shadow-xl border border-gray-100 rounded-2xl p-3 sm:p-5 transition-all duration-200 cursor-pointer",
           className
         )}
         onClick={() => onClick?.(material)}
       >
-        <div className="flex md:flex-row flex-col gap-4">
+        <div className="flex md:flex-row flex-col gap-3 md:gap-4">
           {/* Left side with icon and basic info */}
-          <div className="flex flex-row md:flex-col items-start gap-4 md:w-1/4">
+          <div className="flex flex-row md:flex-col items-start gap-3 md:gap-4 md:w-1/4">
             <div className="bg-gray-100 p-3 rounded-xl">
               {getFileIcon(material.type)}
             </div>
-            <div className="flex flex-col items-start md:mt-3">
+            <div className="flex flex-wrap items-start gap-2 md:mt-3">
               {material.targetCourse && (
                 <Badge
                   variant="secondary"
-                  className="flex items-center gap-1 rounded-md"
+                  className="flex items-center gap-1 rounded-md text-xs"
                 >
                   <BookOpen className="w-3 h-3" />
                   {material.targetCourse.courseCode}
                 </Badge>
               )}
               {hasAdvert && (
-                <Badge className="flex items-center gap-1 bg-blue-100 mt-2 rounded-md text-blue-700">
+                <Badge className="flex items-center gap-1 bg-blue-100 mt-0 md:mt-2 rounded-md text-blue-700 text-xs">
                   <Megaphone className="w-3 h-3" />
                   Ad
                 </Badge>
@@ -127,14 +127,14 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
 
           {/* Middle section with title and details */}
           <div className="md:w-2/4">
-            <h3 className="font-semibold text-gray-900 text-lg">
+            <h3 className="font-semibold text-gray-900 text-base md:text-lg line-clamp-2">
               {material.label}
             </h3>
-            <div className="flex items-center gap-2 mt-1">
-              <p className="text-gray-500 text-sm">
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <p className="text-gray-500 text-xs sm:text-sm">
                 by @{material.creator.username}
               </p>
-              <span className="text-gray-400 text-xs">•</span>
+              <span className="hidden sm:inline text-gray-400 text-xs">•</span>
               <p className="flex items-center gap-1 text-gray-400 text-xs">
                 <CalendarIcon className="w-3 h-3" />
                 {formatDate(material.createdAt)}
@@ -142,17 +142,17 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
             </div>
 
             {material.targetCourse && (
-              <p className="mt-2 text-gray-600 text-sm">
+              <p className="mt-2 text-gray-600 text-xs sm:text-sm truncate">
                 <span className="font-medium">Course:</span>{" "}
                 {material.targetCourse.courseName}
               </p>
             )}
 
-            <p className="mt-2 text-gray-600 text-sm line-clamp-2">
+            <p className="mt-2 text-gray-600 text-xs sm:text-sm line-clamp-2">
               {material.description}
             </p>
 
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex flex-wrap items-center gap-2 mt-2">
               <div className="flex items-center gap-1 text-gray-600 text-xs">
                 <Globe className="w-3 h-3" />
                 {material.visibility === VisibilityEnum.PUBLIC
@@ -168,33 +168,38 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
             </div>
 
             <div className="flex flex-wrap gap-2 mt-3">
-              {material.tags?.map((tag) => (
+              {material.tags?.slice(0, 2).map((tag) => (
                 <Badge
                   key={tag}
                   variant="outline"
-                  className="flex items-center gap-1 bg-white border-gray-300 rounded-md"
+                  className="flex items-center gap-1 bg-white border-gray-300 rounded-md text-xs"
                 >
                   <Tag className="w-3 h-3" />
                   {tag}
                 </Badge>
               ))}
+              {material.tags?.length > 2 && (
+                <Badge variant="outline" className="rounded-md text-xs">
+                  +{material.tags.length - 2}
+                </Badge>
+              )}
             </div>
           </div>
 
           {/* Right side with stats and actions */}
-          <div className="flex flex-row md:flex-col justify-between md:items-end md:w-1/4">
-            <div className="flex md:flex-col md:items-end gap-4 md:mb-auto">
+          <div className="flex flex-row md:flex-col justify-between items-center md:items-end mt-3 md:mt-0 md:w-1/4">
+            <div className="flex md:flex-col md:items-end gap-3 md:gap-4 md:mb-auto">
               <InfoStat icon={Eye} value={material.views} />
               <InfoStat icon={Download} value={material.downloads} />
               <InfoStat icon={ThumbsUp} value={material.likes} />
             </div>
 
-            <div className="flex items-center gap-2 mt-4 md:mt-0">
+            <div className="flex items-center gap-2 md:mt-4">
               <Button
                 variant="ghost"
                 size="icon"
                 className={cn(
-                  "transition-colors",
+                  "transition-colors p-1 h-auto w-auto sm:p-2",
                   isCurrentlyBookmarked && "text-blue-600"
                 )}
                 onClick={handleBookmarkClick}
@@ -208,7 +213,11 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="p-0 w-8 h-8">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="p-1 sm:p-2 w-auto h-auto"
+                  >
                     <MoreHorizontal className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -225,104 +234,135 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
     );
   }
 
-  // Grid view remains mostly the same
+  // Grid view with improved mobile responsiveness
   return (
     <Card
       className={cn(
-        "group bg-white/80 hover:bg-white shadow-md hover:shadow-xl border border-gray-100 rounded-2xl p-5 transition-all duration-200 cursor-pointer",
+        "group bg-white/80 hover:bg-white shadow-sm hover:shadow-md border border-gray-100 rounded-xl p-3 sm:p-4 transition-all duration-200 cursor-pointer",
         className
       )}
       onClick={() => onClick?.(material)}
     >
-      <div className="flex justify-between items-start gap-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-gray-100 p-2 rounded-xl">
-            {getFileIcon(material.type)}
+      {/* Reorganizing the card layout for better mobile display */}
+      <div className="flex sm:flex-row flex-col gap-2">
+        <div className="flex-grow min-w-0">
+          <div className="flex items-start gap-2">
+            <div className="flex-shrink-0 bg-gray-100 p-1.5 sm:p-2 rounded-lg">
+              {getFileIcon(material.type, "w-4 h-4 sm:w-5 sm:h-5")}
+            </div>
+            <div className="flex-grow min-w-0">
+              {/* Improved text handling for mobile */}
+              <h3 className="font-medium text-gray-900 text-sm sm:text-base line-clamp-2">
+                {material.label}
+              </h3>
+              <p className="text-gray-500 text-xs sm:text-sm truncate">
+                by @{material.creator.username}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-gray-900 text-base line-clamp-1">
-              {material.label}
-            </h3>
-            <p className="text-gray-500 text-xs">
-              by @{material.creator.username}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "transition-colors",
-              isCurrentlyBookmarked && "text-blue-600"
+
+          <div className="flex items-center gap-1 sm:gap-2 mt-2">
+            <Badge
+              variant="secondary"
+              className="px-1.5 sm:px-2 py-0 sm:py-0.5 text-xs"
+            >
+              {material.type}
+            </Badge>
+
+            {/* Display visibility and restriction status in a more compact way */}
+            <div className="flex items-center gap-1 ml-auto text-gray-400">
+              {material.visibility === VisibilityEnum.PUBLIC ? (
+                <Globe className="w-3 sm:w-4 h-3 sm:h-4" />
+              ) : (
+                <Lock className="w-3 sm:w-4 h-3 sm:h-4" />
+              )}
+            </div>
+
+            {/* Show the advertisement indicator if needed */}
+            {hasAdvert && (
+              <Badge
+                variant="outline"
+                className="flex items-center bg-amber-50 px-1.5 py-0 border-amber-200 text-amber-700 text-xs"
+              >
+                <Megaphone className="mr-0.5 w-2.5 sm:w-3 h-2.5 sm:h-3" />
+                <span className="hidden xs:inline">Ad</span>
+              </Badge>
             )}
-            onClick={handleBookmarkClick}
-          >
-            <Bookmark
-              className={cn("w-4 h-4", isCurrentlyBookmarked && "fill-current")}
-            />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="p-0 w-8 h-8">
-                <MoreHorizontal className="w-4 h-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>View Details</DropdownMenuItem>
-              <DropdownMenuItem>Download</DropdownMenuItem>
-              <DropdownMenuItem>Add to Collection</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          </div>
+
+          <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-2">
+            {material.tags.slice(0, 2).map((tag) => (
+              <Badge
+                key={tag}
+                variant="outline"
+                className="px-1 sm:px-1.5 py-0 h-4 sm:h-5 text-[0.65rem] sm:text-xs"
+              >
+                <Tag className="mr-0.5 w-2 sm:w-3 h-2 sm:h-3" />
+                {tag}
+              </Badge>
+            ))}
+            {material.tags.length > 2 && (
+              <Badge
+                variant="outline"
+                className="px-1 sm:px-1.5 py-0 h-4 sm:h-5 text-[0.65rem] sm:text-xs"
+              >
+                +{material.tags.length - 2}
+              </Badge>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className="flex flex-wrap gap-2 mt-3">
-        {material.targetCourse && (
-          <Badge
-            variant="secondary"
-            className="flex items-center gap-1 rounded-md"
-          >
-            <BookOpen className="w-3 h-3" />
-            {material.targetCourse.courseCode}
-          </Badge>
-        )}
+        {/* Compact stats row */}
+        <div className="flex sm:flex-col justify-between sm:justify-center sm:items-end mt-2 sm:mt-0 sm:ml-2">
+          <div className="flex gap-2 sm:gap-1.5 text-gray-500 text-xs sm:text-sm">
+            <div className="flex items-center">
+              <Eye className="mr-1 w-3 sm:w-3.5 h-3 sm:h-3.5" />
+              {material.views}
+            </div>
+            <div className="flex items-center">
+              <Download className="mr-1 w-3 sm:w-3.5 h-3 sm:h-3.5" />
+              {material.downloads}
+            </div>
+            <div className="flex items-center">
+              <ThumbsUp className="mr-1 w-3 sm:w-3.5 h-3 sm:h-3.5" />
+              {material.likes}
+            </div>
+          </div>
 
-        {hasAdvert && (
-          <Badge className="flex items-center gap-1 bg-blue-100 rounded-md text-blue-700">
-            <Megaphone className="w-3 h-3" />
-            Ad
-          </Badge>
-        )}
-      </div>
-
-      <p className="mt-2 text-gray-600 text-sm line-clamp-2">
-        {material.description}
-      </p>
-
-      <div className="flex flex-wrap gap-2 mt-3">
-        {material.tags?.slice(0, 3).map((tag) => (
-          <Badge
-            key={tag}
-            variant="outline"
-            className="flex items-center gap-1 bg-white border-gray-300 rounded-md"
-          >
-            <Tag className="w-3 h-3" />
-            {tag}
-          </Badge>
-        ))}
-        {material.tags?.length > 3 && (
-          <Badge variant="outline" className="rounded-md">
-            +{material.tags.length - 3}
-          </Badge>
-        )}
-      </div>
-
-      <div className="flex justify-between items-center mt-4 text-gray-500 text-xs">
-        <div className="flex items-center gap-4">
-          <InfoStat icon={Eye} value={material.views} />
-          <InfoStat icon={Download} value={material.downloads} />
-          <InfoStat icon={ThumbsUp} value={material.likes} />
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "p-1 h-6 w-6 sm:h-7 sm:w-7",
+                isCurrentlyBookmarked && "text-blue-600"
+              )}
+              onClick={handleBookmarkClick}
+            >
+              <Bookmark
+                className={cn(
+                  "w-3 h-3 sm:w-3.5 sm:h-3.5",
+                  isCurrentlyBookmarked && "fill-current"
+                )}
+              />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="p-1 w-6 sm:w-7 h-6 sm:h-7"
+                >
+                  <MoreHorizontal className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>View Details</DropdownMenuItem>
+                <DropdownMenuItem>Download</DropdownMenuItem>
+                <DropdownMenuItem>Add to Collection</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </Card>

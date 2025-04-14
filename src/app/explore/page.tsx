@@ -4,7 +4,7 @@ import React, { useEffect, useState, KeyboardEvent, Suspense } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SelectCourse } from "../../components/search/SelectCourse";
+import { SelectCourse } from "@/components/search/SelectCourse";
 import {
   searchMaterialsLoggedIn,
   searchMaterialsNotLoggedIn,
@@ -343,7 +343,7 @@ const ExploreContent = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-4 py-6 min-h-screen text-gray-900">
+    <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
       <Toaster />
 
       {/* Advanced Search Information Dialog */}
@@ -383,8 +383,10 @@ const ExploreContent = () => {
       </Dialog>
 
       <div className="mx-auto max-w-7xl">
-        <div className="bg-white shadow-md mb-6 p-6 rounded-xl">
-          <h1 className="mb-4 font-bold text-2xl">Explore UniNav</h1>
+        <div className="bg-white shadow-md mb-2 sm:mb-4 md:mb-6 p-2 sm:p-4 md:p-6 rounded-lg sm:rounded-xl">
+          <h1 className="mb-2 sm:mb-4 font-bold text-xl sm:text-2xl">
+            Explore UniNav
+          </h1>
 
           {/* Main Tabs - Fixed container width */}
           <div className="w-full overflow-hidden">
@@ -394,30 +396,39 @@ const ExploreContent = () => {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-2 mb-6 w-full h-max">
-                <TabsTrigger value="materials" className="py-3">
-                  <BookOpen className="mr-2 w-4 h-4" />
-                  Study Materials
+              <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 md:mb-6 w-full h-max">
+                <TabsTrigger
+                  value="materials"
+                  className="py-1.5 sm:py-2 md:py-3 text-xs sm:text-sm md:text-base"
+                >
+                  <BookOpen className="mr-1 sm:mr-2 w-3 sm:w-4 h-3 sm:h-4" />
+                  <span>Study Materials</span>
                 </TabsTrigger>
-                <TabsTrigger value="blogs" className="py-3">
-                  <FileText className="mr-2 w-4 h-4" />
-                  Blogs
+                <TabsTrigger
+                  value="blogs"
+                  className="py-1.5 sm:py-2 md:py-3 text-xs sm:text-sm md:text-base"
+                >
+                  <FileText className="mr-1 sm:mr-2 w-3 sm:w-4 h-3 sm:h-4" />
+                  <span>Blogs</span>
                 </TabsTrigger>
               </TabsList>
 
               {/* Materials Tab Content */}
-              <TabsContent value="materials" className="space-y-6">
+              <TabsContent
+                value="materials"
+                className="space-y-2 sm:space-y-3 md:space-y-6"
+              >
                 {/* Materials Search Bar */}
-                <div className="flex md:flex-row flex-col gap-4">
+                <div className="flex md:flex-row flex-col gap-2 md:gap-4">
                   <div className="relative flex-1">
-                    <Search className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2 transform" />
+                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-5 text-gray-400 -translate-y-1/2 transform" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Search for study materials, courses..."
-                      className="py-3 pr-14 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                      placeholder="Search for study materials..."
+                      className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full text-xs sm:text-sm md:text-base"
                     />
 
                     {/* Advanced Search Toggle */}
@@ -425,7 +436,7 @@ const ExploreContent = () => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                            className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
                               advancedSearch
                                 ? "text-blue-600"
                                 : "text-gray-400 hover:text-gray-600"
@@ -434,7 +445,7 @@ const ExploreContent = () => {
                               toggleAdvancedSearch(!advancedSearch)
                             }
                           >
-                            <Wand2 className="w-5 h-5" />
+                            <Wand2 className="w-4 sm:w-5 h-4 sm:h-5" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -446,34 +457,39 @@ const ExploreContent = () => {
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-                  <button
-                    onClick={handleSearch}
-                    className="bg-primary hover:bg-[#333333] px-6 py-3 rounded-lg font-medium text-white transition-colors"
-                  >
-                    Search
-                  </button>
-                  <button
-                    onClick={() => setShowMaterialFilters(!showMaterialFilters)}
-                    className="relative flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
-                  >
-                    <Filter className="w-5 h-5" />
-                    <span>Filters</span>
-                    {getActiveMaterialFiltersCount() > 0 && (
-                      <span className="-top-2 -right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-5 h-5 text-white text-xs">
-                        {getActiveMaterialFiltersCount()}
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    onClick={toggleViewMode}
-                    className="hidden md:flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
-                  >
-                    {viewMode === "grid" ? (
-                      <List className="w-5 h-5" />
-                    ) : (
-                      <Grid className="w-5 h-5" />
-                    )}
-                  </button>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSearch}
+                      className="bg-primary hover:bg-blue-700 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg font-medium text-white text-xs sm:text-sm md:text-base transition-colors"
+                    >
+                      Search
+                    </button>
+                    <button
+                      onClick={() =>
+                        setShowMaterialFilters(!showMaterialFilters)
+                      }
+                      className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
+                    >
+                      <Filter className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                      <span className="hidden xs:inline">Filters</span>
+                      {getActiveMaterialFiltersCount() > 0 && (
+                        <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
+                          {getActiveMaterialFiltersCount()}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={toggleViewMode}
+                      className="flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg transition-colors"
+                    >
+                      {viewMode === "grid" ? (
+                        <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                      ) : (
+                        <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Advanced Search Option */}
@@ -485,42 +501,45 @@ const ExploreContent = () => {
                   />
                   <Label
                     htmlFor="advanced-search-toggle"
-                    className="flex items-center"
+                    className="flex items-center text-xs sm:text-sm"
                   >
-                    <Wand2 className="mr-1 w-4 h-4 text-blue-600" />
+                    <Wand2 className="mr-1 w-3 sm:w-4 h-3 sm:h-4 text-blue-600" />
                     Advanced Search
                     <button
                       onClick={() => setShowAdvancedSearchInfo(true)}
                       className="ml-1 text-gray-400 hover:text-gray-600"
                     >
-                      <Info className="w-4 h-4" />
+                      <Info className="w-3 sm:w-4 h-3 sm:h-4" />
                     </button>
                   </Label>
                 </div>
 
                 {/* Materials Filters */}
                 {showMaterialFilters && (
-                  <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="font-medium">Filter Materials</h3>
+                  <div className="bg-gray-50 p-2 sm:p-3 md:p-4 border border-gray-200 rounded-lg">
+                    <div className="flex justify-between items-center mb-2 sm:mb-4">
+                      <h3 className="font-medium text-xs sm:text-sm md:text-base">
+                        Filter Materials
+                      </h3>
                       <button
                         onClick={clearMaterialFilters}
-                        className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                        className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-xs sm:text-sm"
                       >
-                        <X className="w-4 h-4" /> Clear all filters
+                        <X className="w-3 sm:w-4 h-3 sm:h-4" /> Clear all
+                        filters
                       </button>
                     </div>
 
-                    <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="gap-2 sm:gap-3 md:gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                       {/* Material Type Filter */}
-                      <div className="space-y-2">
-                        <label className="font-medium text-sm">
+                      <div className="space-y-1 sm:space-y-2">
+                        <label className="font-medium text-xs sm:text-sm">
                           Material Type
                         </label>
                         <select
                           value={materialType}
                           onChange={(e) => setMaterialType(e.target.value)}
-                          className="p-2 border border-gray-300 rounded-md w-full"
+                          className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                         >
                           <option value="">All Types</option>
                           {materialTypeOptions.map((option) => (
@@ -531,38 +550,39 @@ const ExploreContent = () => {
                         </select>
                       </div>
 
-                      {/* Course Filter */}
-                      <div className="space-y-2">
-                        <label className="font-medium text-sm">Course</label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <label className="font-medium text-xs sm:text-sm">
+                          Course
+                        </label>
                         <SelectCourse
                           onChange={setMaterialCourse}
                           currentValue={materialCourse}
                         />
                       </div>
 
-                      {/* Tags Filter */}
-                      <div className="space-y-2">
-                        <label className="font-medium text-sm">Tags</label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <label className="font-medium text-xs sm:text-sm">
+                          Tags
+                        </label>
                         <div className="flex gap-2">
                           <input
                             type="text"
                             value={materialTag}
                             onChange={(e) => setMaterialTag(e.target.value)}
                             placeholder="Enter tag"
-                            className="flex-1 p-2 border border-gray-300 rounded-md"
+                            className="flex-1 p-1.5 sm:p-2 border border-gray-300 rounded-md text-xs sm:text-sm"
                           />
                           <button
                             onClick={() => fetchMaterials()}
-                            className="bg-gray-200 hover:bg-gray-300 p-2 rounded-md"
+                            className="bg-gray-200 hover:bg-gray-300 p-1.5 sm:p-2 rounded-md"
                           >
-                            <Tag className="w-5 h-5" />
+                            <Tag className="w-4 sm:w-5 h-4 sm:h-5" />
                           </button>
                         </div>
                       </div>
 
-                      {/* Visibility Filter */}
-                      <div className="space-y-2">
-                        <label className="font-medium text-sm">
+                      <div className="space-y-1 sm:space-y-2">
+                        <label className="font-medium text-xs sm:text-sm">
                           Visibility
                         </label>
                         <select
@@ -570,7 +590,7 @@ const ExploreContent = () => {
                           onChange={(e) =>
                             setMaterialVisibility(e.target.value)
                           }
-                          className="p-2 border border-gray-300 rounded-md w-full"
+                          className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                         >
                           <option value="">All Visibilities</option>
                           {visibilityOptions.map((option) => (
@@ -581,9 +601,8 @@ const ExploreContent = () => {
                         </select>
                       </div>
 
-                      {/* Restriction Filter */}
-                      <div className="space-y-2">
-                        <label className="font-medium text-sm">
+                      <div className="space-y-1 sm:space-y-2">
+                        <label className="font-medium text-xs sm:text-sm">
                           Restriction
                         </label>
                         <select
@@ -591,7 +610,7 @@ const ExploreContent = () => {
                           onChange={(e) =>
                             setMaterialRestriction(e.target.value)
                           }
-                          className="p-2 border border-gray-300 rounded-md w-full"
+                          className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                         >
                           <option value="">All Restrictions</option>
                           {restrictionOptions.map((option) => (
@@ -605,7 +624,7 @@ const ExploreContent = () => {
 
                     <button
                       onClick={() => fetchMaterials(1)}
-                      className="bg-primary hover:bg-[#333333] mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
+                      className="bg-blue-600 hover:bg-blue-700 mt-2 sm:mt-3 md:mt-4 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg w-full md:w-auto font-medium text-white text-xs sm:text-sm transition-colors"
                     >
                       Apply Filters
                     </button>
@@ -615,13 +634,13 @@ const ExploreContent = () => {
                 {/* Materials Results */}
                 <div className="bg-white rounded-lg">
                   {isLoadingMaterials ? (
-                    <div className="flex justify-center items-center py-16">
-                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
+                    <div className="flex justify-center items-center py-8 sm:py-12 md:py-16">
+                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 sm:w-12 h-10 sm:h-12 animate-spin"></div>
                     </div>
                   ) : (
                     <>
                       {materials?.data && materials.data.length > 0 ? (
-                        <div className="space-y-6">
+                        <div className="space-y-3 sm:space-y-4 md:space-y-6">
                           <MaterialGrid
                             materials={materials.data}
                             onMaterialClick={handleMaterialClick}
@@ -630,11 +649,11 @@ const ExploreContent = () => {
 
                           {/* Materials Pagination */}
                           {materialTotalPages > 1 && (
-                            <div className="flex justify-between items-center pt-4 border-t">
-                              <p className="text-gray-500 text-sm">
+                            <div className="flex justify-between items-center pt-2 sm:pt-3 md:pt-4 border-t text-xs sm:text-sm">
+                              <p className="text-gray-500">
                                 Page {materialPage} of {materialTotalPages}
                               </p>
-                              <div className="flex gap-2">
+                              <div className="flex gap-1 sm:gap-2">
                                 <button
                                   onClick={() =>
                                     setMaterialPage((prev) =>
@@ -642,13 +661,14 @@ const ExploreContent = () => {
                                     )
                                   }
                                   disabled={materialPage === 1}
-                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
                                     materialPage === 1
                                       ? "text-gray-400 bg-gray-100 cursor-not-allowed"
                                       : "text-gray-700 border border-gray-300 hover:bg-gray-50"
                                   }`}
                                 >
-                                  <ChevronLeft className="w-4 h-4" /> Prev
+                                  <ChevronLeft className="w-3 sm:w-4 h-3 sm:h-4" />{" "}
+                                  Prev
                                 </button>
                                 <button
                                   onClick={() =>
@@ -657,24 +677,25 @@ const ExploreContent = () => {
                                     )
                                   }
                                   disabled={materialPage === materialTotalPages}
-                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
                                     materialPage === materialTotalPages
                                       ? "text-gray-400 bg-gray-100 cursor-not-allowed"
                                       : "text-gray-700 border border-gray-300 hover:bg-gray-50"
                                   }`}
                                 >
-                                  Next <ChevronRight className="w-4 h-4" />
+                                  Next{" "}
+                                  <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4" />
                                 </button>
                               </div>
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div className="py-16 text-center">
-                          <p className="text-gray-500 text-lg">
+                        <div className="py-8 sm:py-12 md:py-16 text-center">
+                          <p className="text-gray-500 text-sm sm:text-base md:text-lg">
                             No materials found
                           </p>
-                          <p className="text-gray-400">
+                          <p className="text-gray-400 text-xs sm:text-sm">
                             Try a different search term or adjust your filters
                           </p>
                         </div>
@@ -685,18 +706,21 @@ const ExploreContent = () => {
               </TabsContent>
 
               {/* Blogs Tab Content */}
-              <TabsContent value="blogs" className="space-y-6">
+              <TabsContent
+                value="blogs"
+                className="space-y-2 sm:space-y-3 md:space-y-6"
+              >
                 {/* Blogs Search Bar */}
-                <div className="flex md:flex-row flex-col gap-4">
+                <div className="flex md:flex-row flex-col gap-2 md:gap-4">
                   <div className="relative flex-1">
-                    <Search className="top-1/2 left-3 absolute w-5 h-5 text-gray-400 -translate-y-1/2 transform" />
+                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-5 text-gray-400 -translate-y-1/2 transform" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Search for blogs, articles, guides..."
-                      className="py-3 pr-14 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-xs sm:text-sm md:text-base"
                     />
 
                     {/* Advanced Search Toggle */}
@@ -704,7 +728,7 @@ const ExploreContent = () => {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                            className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
                               advancedSearch
                                 ? "text-blue-600"
                                 : "text-gray-400 hover:text-gray-600"
@@ -713,7 +737,7 @@ const ExploreContent = () => {
                               toggleAdvancedSearch(!advancedSearch)
                             }
                           >
-                            <Wand2 className="w-5 h-5" />
+                            <Wand2 className="w-4 sm:w-5 h-4 sm:h-5" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -725,34 +749,37 @@ const ExploreContent = () => {
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-                  <button
-                    onClick={handleSearch}
-                    className="bg-primary hover:bg-[#333333] px-6 py-3 rounded-lg font-medium text-white transition-colors"
-                  >
-                    Search
-                  </button>
-                  <button
-                    onClick={() => setShowBlogFilters(!showBlogFilters)}
-                    className="relative flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
-                  >
-                    <Filter className="w-5 h-5" />
-                    <span>Filters</span>
-                    {getActiveBlogFiltersCount() > 0 && (
-                      <span className="-top-2 -right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-5 h-5 text-white text-xs">
-                        {getActiveBlogFiltersCount()}
-                      </span>
-                    )}
-                  </button>
-                  <button
-                    onClick={toggleViewMode}
-                    className="hidden flex md:flex justify-center items-center gap-2 hover:bg-gray-50 px-4 py-3 border border-gray-300 rounded-lg transition-colors"
-                  >
-                    {viewMode === "grid" ? (
-                      <List className="w-5 h-5" />
-                    ) : (
-                      <Grid className="w-5 h-5" />
-                    )}
-                  </button>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSearch}
+                      className="bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg font-medium text-white text-xs sm:text-sm md:text-base transition-colors"
+                    >
+                      Search
+                    </button>
+                    <button
+                      onClick={() => setShowBlogFilters(!showBlogFilters)}
+                      className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
+                    >
+                      <Filter className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                      <span className="hidden xs:inline">Filters</span>
+                      {getActiveBlogFiltersCount() > 0 && (
+                        <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
+                          {getActiveBlogFiltersCount()}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={toggleViewMode}
+                      className="flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg transition-colors"
+                    >
+                      {viewMode === "grid" ? (
+                        <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                      ) : (
+                        <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Advanced Search Option */}
@@ -764,40 +791,44 @@ const ExploreContent = () => {
                   />
                   <Label
                     htmlFor="advanced-search-toggle-blog"
-                    className="flex items-center"
+                    className="flex items-center text-xs sm:text-sm"
                   >
-                    <Wand2 className="mr-1 w-4 h-4 text-blue-600" />
+                    <Wand2 className="mr-1 w-3 sm:w-4 h-3 sm:h-4 text-blue-600" />
                     Advanced Search
                     <button
                       onClick={() => setShowAdvancedSearchInfo(true)}
                       className="ml-1 text-gray-400 hover:text-gray-600"
                     >
-                      <Info className="w-4 h-4" />
+                      <Info className="w-3 sm:w-4 h-3 sm:h-4" />
                     </button>
                   </Label>
                 </div>
 
                 {/* Blogs Filters */}
                 {showBlogFilters && (
-                  <div className="bg-gray-50 p-4 border border-gray-200 rounded-lg">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="font-medium">Filter Blogs</h3>
+                  <div className="bg-gray-50 p-2 sm:p-3 md:p-4 border border-gray-200 rounded-lg">
+                    <div className="flex justify-between items-center mb-2 sm:mb-4">
+                      <h3 className="font-medium text-xs sm:text-sm md:text-base">
+                        Filter Blogs
+                      </h3>
                       <button
                         onClick={clearBlogFilters}
-                        className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                        className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-xs sm:text-sm"
                       >
-                        <X className="w-4 h-4" /> Clear all filters
+                        <X className="w-3 sm:w-4 h-3 sm:h-4" /> Clear all
+                        filters
                       </button>
                     </div>
 
-                    <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
-                      {/* Blog Type Filter */}
-                      <div className="space-y-2">
-                        <label className="font-medium text-sm">Blog Type</label>
+                    <div className="gap-2 sm:gap-3 md:gap-4 grid grid-cols-1 md:grid-cols-2">
+                      <div className="space-y-1 sm:space-y-2">
+                        <label className="font-medium text-xs sm:text-sm">
+                          Blog Type
+                        </label>
                         <select
                           value={blogType}
                           onChange={(e) => setBlogType(e.target.value)}
-                          className="p-2 border border-gray-300 rounded-md w-full"
+                          className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                         >
                           <option value="">All Types</option>
                           {blogTypeOptions.map((option) => (
@@ -808,22 +839,23 @@ const ExploreContent = () => {
                         </select>
                       </div>
 
-                      {/* Tags Filter */}
-                      <div className="space-y-2">
-                        <label className="font-medium text-sm">Tags</label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <label className="font-medium text-xs sm:text-sm">
+                          Tags
+                        </label>
                         <div className="flex gap-2">
                           <input
                             type="text"
                             value={blogTag}
                             onChange={(e) => setBlogTag(e.target.value)}
                             placeholder="Enter tag"
-                            className="flex-1 p-2 border border-gray-300 rounded-md"
+                            className="flex-1 p-1.5 sm:p-2 border border-gray-300 rounded-md text-xs sm:text-sm"
                           />
                           <button
                             onClick={() => fetchBlogs()}
-                            className="bg-gray-200 hover:bg-gray-300 p-2 rounded-md"
+                            className="bg-gray-200 hover:bg-gray-300 p-1.5 sm:p-2 rounded-md"
                           >
-                            <Tag className="w-5 h-5" />
+                            <Tag className="w-4 sm:w-5 h-4 sm:h-5" />
                           </button>
                         </div>
                       </div>
@@ -831,7 +863,7 @@ const ExploreContent = () => {
 
                     <button
                       onClick={() => fetchBlogs(1)}
-                      className="bg-primary hover:bg-[#333333] mt-4 px-6 py-2 rounded-lg w-full md:w-auto font-medium text-white transition-colors"
+                      className="bg-blue-600 hover:bg-blue-700 mt-2 sm:mt-3 md:mt-4 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-lg w-full md:w-auto font-medium text-white text-xs sm:text-sm transition-colors"
                     >
                       Apply Filters
                     </button>
@@ -841,13 +873,13 @@ const ExploreContent = () => {
                 {/* Blogs Results */}
                 <div className="bg-white rounded-lg">
                   {isLoadingBlogs ? (
-                    <div className="flex justify-center items-center py-16">
-                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
+                    <div className="flex justify-center items-center py-8 sm:py-12 md:py-16">
+                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 sm:w-12 h-10 sm:h-12 animate-spin"></div>
                     </div>
                   ) : (
                     <>
                       {blogs?.data && blogs.data.length > 0 ? (
-                        <div className="space-y-6">
+                        <div className="space-y-3 sm:space-y-4 md:space-y-6">
                           <BlogGrid
                             blogs={blogs.data}
                             onBlogClick={handleBlogClick}
@@ -856,23 +888,24 @@ const ExploreContent = () => {
 
                           {/* Blogs Pagination */}
                           {blogTotalPages > 1 && (
-                            <div className="flex justify-between items-center pt-4 border-t">
-                              <p className="text-gray-500 text-sm">
+                            <div className="flex justify-between items-center pt-2 sm:pt-3 md:pt-4 border-t text-xs sm:text-sm">
+                              <p className="text-gray-500">
                                 Page {blogPage} of {blogTotalPages}
                               </p>
-                              <div className="flex gap-2">
+                              <div className="flex gap-1 sm:gap-2">
                                 <button
                                   onClick={() =>
                                     setBlogPage((prev) => Math.max(prev - 1, 1))
                                   }
                                   disabled={blogPage === 1}
-                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
                                     blogPage === 1
                                       ? "text-gray-400 bg-gray-100 cursor-not-allowed"
                                       : "text-gray-700 border border-gray-300 hover:bg-gray-50"
                                   }`}
                                 >
-                                  <ChevronLeft className="w-4 h-4" /> Prev
+                                  <ChevronLeft className="w-3 sm:w-4 h-3 sm:h-4" />{" "}
+                                  Prev
                                 </button>
                                 <button
                                   onClick={() =>
@@ -881,24 +914,25 @@ const ExploreContent = () => {
                                     )
                                   }
                                   disabled={blogPage === blogTotalPages}
-                                  className={`flex items-center gap-1 px-4 py-2 rounded-md transition ${
+                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
                                     blogPage === blogTotalPages
                                       ? "text-gray-400 bg-gray-100 cursor-not-allowed"
                                       : "text-gray-700 border border-gray-300 hover:bg-gray-50"
                                   }`}
                                 >
-                                  Next <ChevronRight className="w-4 h-4" />
+                                  Next{" "}
+                                  <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4" />
                                 </button>
                               </div>
                             </div>
                           )}
                         </div>
                       ) : (
-                        <div className="py-16 text-center">
-                          <p className="text-gray-500 text-lg">
+                        <div className="py-8 sm:py-12 md:py-16 text-center">
+                          <p className="text-gray-500 text-sm sm:text-base md:text-lg">
                             No blogs found
                           </p>
-                          <p className="text-gray-400">
+                          <p className="text-gray-400 text-xs sm:text-sm">
                             Try a different search term or adjust your filters
                           </p>
                         </div>

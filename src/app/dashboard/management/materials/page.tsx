@@ -222,28 +222,24 @@ const MaterialsReviewPage = () => {
   };
 
   return (
-    <div className="mx-auto px-4 container">
-      <div className="flex items-center mb-6">
-        <Button variant="ghost" size="sm" className="mr-2" asChild>
-          <Link href="/dashboard/management">
-            <ChevronLeft className="w-5 h-5" />
-            <span>Back</span>
-          </Link>
-        </Button>
-        <h1 className="font-bold text-3xl">Materials Review</h1>
+    <div className="mx-auto max-w-full">
+      <div className="flex justify-between items-center mb-3 sm:mb-6">
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
+          Materials Review
+        </h1>
       </div>
 
-      <div className="mb-6">
-        <form onSubmit={handleSearch} className="flex gap-2">
+      <div className="mb-4">
+        <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
           <Input
-            type="search"
+            type="text"
             placeholder="Search materials..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
+            className="flex-1 max-w-full md:max-w-md"
           />
-          <Button type="submit">
-            <Search className="mr-2 w-4 h-4" />
+          <Button type="submit" size="sm" className="whitespace-nowrap">
+            <Search className="mr-1 w-4 h-4" />
             Search
           </Button>
         </form>
@@ -256,112 +252,110 @@ const MaterialsReviewPage = () => {
         approvedCount={counts.approved}
         rejectedCount={counts.rejected}
       >
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            <div className="flex justify-center items-center py-10 sm:py-20">
+              <Loader2 className="w-6 sm:w-8 h-6 sm:h-8 text-blue-500 animate-spin" />
             </div>
           ) : error ? (
-            <div className="bg-red-50 p-4 rounded-md text-red-500">
+            <div className="bg-red-50 p-3 sm:p-4 rounded-md text-red-500">
               <p>{error}</p>
             </div>
           ) : materials.length === 0 ? (
-            <div className="bg-gray-50 p-8 rounded-md text-center">
-              <BookOpen className="mx-auto mb-4 w-12 h-12 text-gray-400" />
-              <h3 className="mb-2 font-medium text-xl">No materials found</h3>
-              <p className="text-gray-500">
+            <div className="bg-gray-50 p-4 sm:p-8 rounded-md text-center">
+              <div className="flex justify-center mb-3">
+                <BookOpen className="w-12 h-12 text-gray-400" />
+              </div>
+              <h3 className="font-medium text-gray-700 text-lg">
+                No materials found
+              </h3>
+              <p className="mt-1 text-gray-500 text-sm">
                 {activeTab === ApprovalStatusEnum.PENDING
                   ? "There are no materials waiting for review."
                   : activeTab === ApprovalStatusEnum.APPROVED
-                  ? "There are no approved materials."
+                  ? "There are no approved materials yet."
                   : "There are no rejected materials."}
               </p>
             </div>
           ) : (
-            <div>
-              <div className="gap-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <>
+              <div className="gap-3 sm:gap-4 grid grid-cols-1">
                 {materials.map((material) => (
                   <div
                     key={material.id}
-                    className="bg-white hover:shadow-md border rounded-lg overflow-hidden transition-shadow"
+                    className="bg-white shadow-sm hover:shadow-md p-3 sm:p-4 border rounded-lg transition-shadow"
                   >
-                    <div className="p-4">
-                      <div className="flex flex-col justify-between h-full">
-                        <div>
-                          <h3 className="font-medium text-lg line-clamp-1">
-                            {material.label}
-                          </h3>
-                          <p className="mb-2 text-gray-500 text-sm">
-                            by {material.creator.firstName}{" "}
-                            {material.creator.lastName} (
-                            {material.creator.username})
-                          </p>
-                          <p className="mb-2 text-gray-700 line-clamp-2">
-                            {material.description || "No description provided."}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <Badge variant="secondary">{material.type}</Badge>
-                            {material.tags.slice(0, 2).map((tag) => (
-                              <Badge key={tag} variant="outline">
-                                {tag}
-                              </Badge>
-                            ))}
-                            {material.tags.length > 2 && (
-                              <Badge variant="outline">
-                                +{material.tags.length - 2}
-                              </Badge>
-                            )}
-                            {material.targetCourse && (
-                              <Badge
-                                variant="secondary"
-                                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
-                              >
-                                {material.targetCourse.courseCode}
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-gray-500 text-sm">
-                            Created:{" "}
+                    <div className="flex sm:flex-row flex-col justify-between sm:items-start gap-3 sm:gap-4">
+                      {/* Material Info */}
+                      <div className="flex-grow">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <Badge
+                            variant={
+                              material.reviewStatus ===
+                              ApprovalStatusEnum.PENDING
+                                ? "outline"
+                                : material.reviewStatus ===
+                                  ApprovalStatusEnum.APPROVED
+                                ? "default"
+                                : "destructive"
+                            }
+                            className="text-xs capitalize"
+                          >
+                            {material.reviewStatus}
+                          </Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            {material.type}
+                          </Badge>
+                          <Badge
+                            variant="outline"
+                            className="bg-white border-gray-200 text-gray-600 text-xs"
+                          >
                             {new Date(material.createdAt).toLocaleDateString()}
-                          </p>
+                          </Badge>
                         </div>
-
-                        {/* Additional material details for reviewed items */}
-                        {activeTab !== ApprovalStatusEnum.PENDING &&
-                          material.reviewedBy && (
-                            <div className="bg-gray-50 mt-4 p-3 rounded-md">
-                              <p className="font-medium text-sm">
-                                {activeTab === ApprovalStatusEnum.APPROVED ? (
-                                  <span className="text-green-600">
-                                    Approved by:{" "}
-                                  </span>
-                                ) : (
-                                  <span className="text-red-600">
-                                    Rejected by:{" "}
-                                  </span>
-                                )}
-
-                                {"@" + material.reviewedBy.username}
-                              </p>
-                              {material.reviewStatus ===
-                                ApprovalStatusEnum.REJECTED && (
-                                <p className="mt-1 text-sm line-clamp-2">
-                                  <span className="font-medium">Reason: </span>
-                                  {
-                                    "Comment not available in current data structure"
-                                  }
-                                </p>
-                              )}
-                            </div>
+                        <h3 className="mb-1 font-semibold text-sm sm:text-base">
+                          {material.label}
+                        </h3>
+                        <p className="mb-1 sm:mb-2 text-gray-500 text-xs sm:text-sm">
+                          by {material.creator.firstName}{" "}
+                          {material.creator.lastName} (
+                          {material.creator.username})
+                        </p>
+                        <p className="mb-1 sm:mb-2 text-gray-700 text-xs sm:text-sm line-clamp-2">
+                          {material.description || "No description provided."}
+                        </p>
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2">
+                          {material.tags.slice(0, 2).map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                          {material.tags.length > 2 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{material.tags.length - 2}
+                            </Badge>
                           )}
-
-                        <div className="flex flex-wrap gap-2 mt-4">
+                          {material.targetCourse && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs"
+                            >
+                              {material.targetCourse.courseCode}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-1 sm:gap-2 mt-3">
                           <Button
                             variant="outline"
                             size="sm"
+                            className="h-7 sm:h-8 text-xs sm:text-sm"
                             onClick={() => handleMaterialClick(material)}
                           >
-                            <Eye className="mr-2 w-4 h-4" />
+                            <Eye className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
                             View
                           </Button>
                           {activeTab === ApprovalStatusEnum.PENDING && (
@@ -369,7 +363,7 @@ const MaterialsReviewPage = () => {
                               <Button
                                 variant="default"
                                 size="sm"
-                                className="bg-green-600 hover:bg-green-700"
+                                className="bg-green-600 hover:bg-green-700 h-7 sm:h-8 text-xs sm:text-sm"
                                 onClick={() =>
                                   handleReviewAction(
                                     material,
@@ -377,12 +371,13 @@ const MaterialsReviewPage = () => {
                                   )
                                 }
                               >
-                                <CheckCircle className="mr-2 w-4 h-4" />
+                                <CheckCircle className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
                                 Approve
                               </Button>
                               <Button
                                 variant="destructive"
                                 size="sm"
+                                className="h-7 sm:h-8 text-xs sm:text-sm"
                                 onClick={() =>
                                   handleReviewAction(
                                     material,
@@ -390,7 +385,7 @@ const MaterialsReviewPage = () => {
                                   )
                                 }
                               >
-                                <XCircle className="mr-2 w-4 h-4" />
+                                <XCircle className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
                                 Reject
                               </Button>
                             </>
@@ -399,9 +394,10 @@ const MaterialsReviewPage = () => {
                             <Button
                               variant="destructive"
                               size="sm"
+                              className="h-7 sm:h-8 text-xs sm:text-sm"
                               onClick={() => handleDeleteAction(material)}
                             >
-                              <Trash2 className="mr-2 w-4 h-4" />
+                              <Trash2 className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
                               Delete
                             </Button>
                           )}
@@ -413,30 +409,33 @@ const MaterialsReviewPage = () => {
               </div>
 
               {/* Pagination controls */}
-              <div className="flex justify-between items-center mt-6 pt-4">
-                <p className="text-gray-600">
+              <div className="flex xs:flex-row flex-col justify-between items-center gap-2 mt-4 pt-2 sm:pt-4">
+                <p className="text-gray-600 text-xs sm:text-sm">
                   Page {currentPage} of {totalPages}
                 </p>
-                <div className="space-x-2">
+                <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
+                    className="px-2 sm:px-3 h-7 sm:h-8 text-xs sm:text-sm"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage <= 1}
                   >
-                    <ChevronLeft className="mr-1 w-4 h-4" /> Previous
+                    <ChevronLeft className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />{" "}
+                    Previous
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
+                    className="px-2 sm:px-3 h-7 sm:h-8 text-xs sm:text-sm"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages}
                   >
-                    Next <ChevronRight className="ml-1 w-4 h-4" />
+                    Next <ChevronRight className="ml-1 w-3 sm:w-4 h-3 sm:h-4" />
                   </Button>
                 </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </ReviewTabs>
