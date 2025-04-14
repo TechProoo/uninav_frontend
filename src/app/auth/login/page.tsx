@@ -31,6 +31,8 @@ const page = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const[showPassword, setShowPassword] = useState(false)
+
 
   const {
     isAuthenticated,
@@ -159,15 +161,24 @@ const page = () => {
                 >
                   Password
                 </label>
+              <div className="flex flex-start items-center gap-4">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="p-3 rounded-md w-full"
+                  className="p-3 rounded-md w-[85%]"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-[#003666]"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+                </div>
               </div>
               <div className="mt-2">
                 <p className="forgot_password fst">Forgot Password?</p>
