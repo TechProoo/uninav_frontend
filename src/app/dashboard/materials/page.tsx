@@ -125,54 +125,59 @@ const MaterialsPage = () => {
   };
 
   return (
-    <div className="mx-auto container">
-      <div className="flex justify-between items-center mb-6">
+    <div className="mx-auto px-2 sm:px-4 container">
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-3 sm:mb-6">
         {showAddForm || showEditForm || selectedMaterial ? (
           <Button
             variant="ghost"
-            className="gap-2"
+            className="gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 h-auto text-xs sm:text-sm"
             onClick={handleBackNavigation}
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
             Back
           </Button>
         ) : null}
-        <h1 className="font-bold text-2xl md:text-3xl">Manage My Materials</h1>
-        <Button onClick={handleAddMaterial}>
-          <PlusCircle className="mr-2 w-4 h-4" />
+        <h1 className="font-bold text-lg sm:text-xl md:text-2xl">
+          Manage My Materials
+        </h1>
+        <Button
+          onClick={handleAddMaterial}
+          className="px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-10 text-xs sm:text-sm"
+        >
+          <PlusCircle className="mr-1 sm:mr-2 w-3.5 sm:w-4 h-3.5 sm:h-4" />
           Add Material
         </Button>
       </div>
 
       {!showAddForm && !showEditForm && !selectedMaterial && (
-        <div className="flex md:flex-row flex-col gap-3 mb-6">
+        <div className="flex md:flex-row flex-col gap-2 sm:gap-3 mb-4 sm:mb-6">
           <form onSubmit={handleSearch} className="flex flex-grow md:max-w-md">
             <div className="relative w-full">
-              <div className="left-0 absolute inset-y-0 flex items-center pl-3 pointer-events-none">
-                <Search className="w-4 h-4 text-gray-500" />
+              <div className="left-0 absolute inset-y-0 flex items-center pl-2 sm:pl-3 pointer-events-none">
+                <Search className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-500" />
               </div>
               <input
                 type="search"
-                className="block p-2 pl-10 border border-gray-300 rounded-lg w-full text-sm"
+                className="block px-2 sm:px-3 py-1.5 sm:py-2 pl-7 sm:pl-9 border border-gray-300 rounded-lg w-full text-xs sm:text-sm"
                 placeholder="Search materials..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <button
                 type="submit"
-                className="top-1 right-1 bottom-1 absolute bg-blue-600 px-3 rounded text-white text-sm"
+                className="top-1 right-1 bottom-1 absolute bg-blue-600 px-2 sm:px-3 rounded text-white text-xs sm:text-sm"
               >
                 Search
               </button>
             </div>
           </form>
 
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-gray-500" />
+          <div className="flex items-center gap-1 sm:gap-2 mt-2 md:mt-0">
+            <Filter className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-500" />
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="p-2 border border-gray-300 rounded-lg text-sm"
+              className="px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg w-full md:w-auto text-xs sm:text-sm"
             >
               <option value="">All Types</option>
               {Object.values(MaterialTypeEnum).map((type) => (
@@ -185,10 +190,12 @@ const MaterialsPage = () => {
         </div>
       )}
 
-      <div className="bg-white shadow-md p-8 rounded-lg min-h-[500px]">
+      <div className="bg-white shadow-md p-3 sm:p-6 rounded-lg min-h-[400px] sm:min-h-[500px]">
         {showAddForm && (
-          <div className="mb-6">
-            <h2 className="mb-4 font-medium text-2xl">Add New Material</h2>
+          <div className="mb-4 sm:mb-6">
+            <h2 className="mb-3 sm:mb-4 font-medium text-lg sm:text-xl">
+              Add New Material
+            </h2>
             <MaterialForm
               onSuccess={handleFormSuccess}
               onCancel={handleFormCancel}
@@ -197,8 +204,10 @@ const MaterialsPage = () => {
         )}
 
         {showEditForm && selectedMaterial && (
-          <div className="mb-6">
-            <h2 className="mb-4 font-medium text-2xl">Edit Material</h2>
+          <div className="mb-4 sm:mb-6">
+            <h2 className="mb-3 sm:mb-4 font-medium text-lg sm:text-xl">
+              Edit Material
+            </h2>
             <MaterialForm
               initialData={selectedMaterial}
               onSuccess={handleFormSuccess}
@@ -219,23 +228,30 @@ const MaterialsPage = () => {
         {!showAddForm && !showEditForm && !selectedMaterial && (
           <>
             {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-pulse">Loading materials...</div>
+              <div className="flex justify-center py-6 sm:py-8">
+                <div className="text-sm sm:text-base animate-pulse">
+                  Loading materials...
+                </div>
               </div>
             ) : error ? (
-              <div className="bg-red-50 p-4 rounded text-red-600">{error}</div>
+              <div className="bg-red-50 p-3 sm:p-4 rounded text-red-600 text-xs sm:text-sm">
+                {error}
+              </div>
             ) : materials.length === 0 ? (
-              <div className="py-8 text-center">
-                <BookOpen className="mx-auto w-12 h-12 text-gray-400" />
-                <h3 className="mt-2 font-medium text-gray-900 text-lg">
+              <div className="py-6 sm:py-8 text-center">
+                <BookOpen className="mx-auto w-10 sm:w-12 h-10 sm:h-12 text-gray-400" />
+                <h3 className="mt-2 font-medium text-gray-900 text-sm sm:text-lg">
                   No materials yet
                 </h3>
-                <p className="mt-1 text-gray-500">
+                <p className="mt-1 text-gray-500 text-xs sm:text-sm">
                   Get started by adding your first material.
                 </p>
-                <div className="mt-6">
-                  <Button onClick={handleAddMaterial}>
-                    <PlusCircle className="mr-2 w-4 h-4" />
+                <div className="mt-4 sm:mt-6">
+                  <Button
+                    onClick={handleAddMaterial}
+                    className="px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-10 text-xs sm:text-sm"
+                  >
+                    <PlusCircle className="mr-1 sm:mr-2 w-3.5 sm:w-4 h-3.5 sm:h-4" />
                     Add Material
                   </Button>
                 </div>
@@ -249,16 +265,17 @@ const MaterialsPage = () => {
                 />
 
                 {totalPages > 1 && (
-                  <div className="flex justify-center gap-1 mt-6">
+                  <div className="flex justify-center gap-1 sm:gap-2 mt-4 sm:mt-6">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPage((p) => Math.max(p - 1, 1))}
                       disabled={page === 1}
+                      className="h-7 sm:h-8 text-xs sm:text-sm"
                     >
                       Previous
                     </Button>
-                    <span className="px-3 py-1.5 text-sm">
+                    <span className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm">
                       Page {page} of {totalPages}
                     </span>
                     <Button
@@ -268,6 +285,7 @@ const MaterialsPage = () => {
                         setPage((p) => Math.min(p + 1, totalPages))
                       }
                       disabled={page === totalPages}
+                      className="h-7 sm:h-8 text-xs sm:text-sm"
                     >
                       Next
                     </Button>

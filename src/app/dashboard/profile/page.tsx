@@ -134,13 +134,15 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-4xl container">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="font-bold md:text-3xl text-2xl">Your Profile</h1>
+    <div className="mx-auto px-2 sm:px-4 max-w-4xl container">
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
+          Your Profile
+        </h1>
         <button
           onClick={toggleEdit}
           disabled={isSubmitting}
-          className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+          className={`flex items-center gap-1 sm:gap-2 px-2 py-1 sm:px-4 sm:py-2 rounded-md transition-colors text-xs sm:text-sm ${
             isEditing
               ? "bg-gray-200 hover:bg-gray-300 text-gray-800"
               : "bg-[#003666] hover:bg-[#002a52] text-white"
@@ -150,7 +152,7 @@ const ProfilePage = () => {
             "Cancel"
           ) : (
             <>
-              <Edit2 size={16} />
+              <Edit2 size={14} className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
               <span>Edit Profile</span>
             </>
           )}
@@ -159,29 +161,31 @@ const ProfilePage = () => {
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         {/* Profile Header */}
-        <div className="bg-gradient-to-r from-[#003666] to-[#75bfff] px-6 py-8 text-white">
-          <div className="flex items-center gap-6">
-            <div className="flex justify-center items-center bg-white/20 backdrop-blur-sm border-2 border-white/50 rounded-full w-24 h-24 font-medium text-white text-3xl">
+        <div className="bg-gradient-to-r from-[#003666] to-[#75bfff] px-4 sm:px-6 py-6 sm:py-8 text-white">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="flex justify-center items-center bg-white/20 backdrop-blur-sm border-2 border-white/50 rounded-full w-16 sm:w-24 h-16 sm:h-24 font-medium text-white text-xl sm:text-3xl">
               {user?.firstName?.[0]}
               {user?.lastName?.[0]}
             </div>
             <div>
-              <h2 className="font-semibold text-2xl">
+              <h2 className="font-semibold text-xl sm:text-2xl">
                 {user?.firstName} {user?.lastName}
               </h2>
-              <p className="text-blue-100">@{user?.username}</p>
+              <p className="text-blue-100 text-sm sm:text-base">
+                @{user?.username}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Profile Form */}
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="gap-6 grid grid-cols-1 md:grid-cols-2">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6">
+          <div className="gap-4 sm:gap-6 grid grid-cols-1 md:grid-cols-2">
             {/* First Name */}
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <label
                 htmlFor="firstName"
-                className="font-medium text-gray-700 text-sm"
+                className="font-medium text-gray-700 text-xs sm:text-sm"
               >
                 First Name
               </label>
@@ -193,18 +197,20 @@ const ProfilePage = () => {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  className="p-1.5 sm:p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full text-xs sm:text-sm"
                 />
               ) : (
-                <p className="bg-gray-50 p-2 rounded-md">{user?.firstName}</p>
+                <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm">
+                  {user?.firstName}
+                </p>
               )}
             </div>
 
             {/* Last Name */}
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <label
                 htmlFor="lastName"
-                className="font-medium text-gray-700 text-sm"
+                className="font-medium text-gray-700 text-xs sm:text-sm"
               >
                 Last Name
               </label>
@@ -216,18 +222,20 @@ const ProfilePage = () => {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  className="p-1.5 sm:p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full text-xs sm:text-sm"
                 />
               ) : (
-                <p className="bg-gray-50 p-2 rounded-md">{user?.lastName}</p>
+                <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm">
+                  {user?.lastName}
+                </p>
               )}
             </div>
 
             {/* Username */}
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <label
                 htmlFor="username"
-                className="font-medium text-gray-700 text-sm"
+                className="font-medium text-gray-700 text-xs sm:text-sm"
               >
                 Username
               </label>
@@ -239,18 +247,20 @@ const ProfilePage = () => {
                   value={formData.username}
                   onChange={handleChange}
                   required
-                  className="p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  className="p-1.5 sm:p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full text-xs sm:text-sm"
                 />
               ) : (
-                <p className="bg-gray-50 p-2 rounded-md">@{user?.username}</p>
+                <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm">
+                  @{user?.username}
+                </p>
               )}
             </div>
 
             {/* Level */}
-            <div className="space-y-2">
+            <div className="space-y-1 sm:space-y-2">
               <label
                 htmlFor="level"
-                className="font-medium text-gray-700 text-sm"
+                className="font-medium text-gray-700 text-xs sm:text-sm"
               >
                 Level
               </label>
@@ -260,7 +270,7 @@ const ProfilePage = () => {
                   name="level"
                   value={formData.level}
                   onChange={handleChange}
-                  className="p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                  className="p-1.5 sm:p-2 border border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 w-full text-xs sm:text-sm"
                 >
                   <option value={100}>100</option>
                   <option value={200}>200</option>
@@ -270,13 +280,15 @@ const ProfilePage = () => {
                   <option value={600}>600</option>
                 </select>
               ) : (
-                <p className="bg-gray-50 p-2 rounded-md">{user?.level}</p>
+                <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm">
+                  {user?.level}
+                </p>
               )}
             </div>
 
             {/* Department Selection */}
-            <div className="space-y-2">
-              <label className="font-medium text-gray-700 text-sm">
+            <div className="space-y-1 sm:space-y-2">
+              <label className="font-medium text-gray-700 text-xs sm:text-sm">
                 Department
               </label>
               {isEditing ? (
@@ -285,7 +297,7 @@ const ProfilePage = () => {
                   defaultDepartmentId={formData.departmentId}
                 />
               ) : (
-                <p className="bg-gray-50 p-2 rounded-md">
+                <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm">
                   {user?.department?.name || "Not specified"}
                 </p>
               )}
@@ -293,23 +305,29 @@ const ProfilePage = () => {
           </div>
 
           {/* Non-editable information */}
-          <div className="gap-6 grid grid-cols-1 md:grid-cols-2 mt-6">
-            <div className="space-y-2">
-              <label className="font-medium text-gray-700 text-sm">Email</label>
-              <p className="bg-gray-50 p-2 rounded-md">{user?.email}</p>
+          <div className="gap-4 sm:gap-6 grid grid-cols-1 md:grid-cols-2 mt-4 sm:mt-6">
+            <div className="space-y-1 sm:space-y-2">
+              <label className="font-medium text-gray-700 text-xs sm:text-sm">
+                Email
+              </label>
+              <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm">
+                {user?.email}
+              </p>
             </div>
 
-            <div className="space-y-2">
-              <label className="font-medium text-gray-700 text-sm">Role</label>
-              <p className="bg-gray-50 p-2 rounded-md capitalize">
+            <div className="space-y-1 sm:space-y-2">
+              <label className="font-medium text-gray-700 text-xs sm:text-sm">
+                Role
+              </label>
+              <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm capitalize">
                 {user?.role}
               </p>
             </div>
-            <div className="space-y-2">
-              <label className="font-medium text-gray-700 text-sm">
+            <div className="space-y-1 sm:space-y-2">
+              <label className="font-medium text-gray-700 text-xs sm:text-sm">
                 Account Created
               </label>
-              <p className="bg-gray-50 p-2 rounded-md">
+              <p className="bg-gray-50 p-1.5 sm:p-2 rounded-md text-xs sm:text-sm">
                 {user?.createdAt
                   ? new Date(user.createdAt).toLocaleDateString()
                   : "Unknown"}
@@ -319,23 +337,24 @@ const ProfilePage = () => {
 
           {/* Level Change Warning Dialog */}
           <Dialog open={showLevelWarning} onOpenChange={setShowLevelWarning}>
-            <DialogContent>
+            <DialogContent className="max-w-sm">
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-amber-600">
-                  <AlertCircle className="w-5 h-5" />
+                <DialogTitle className="flex items-center gap-2 text-amber-600 text-sm sm:text-base">
+                  <AlertCircle className="w-4 sm:w-5 h-4 sm:h-5" />
                   Change Level Warning
                 </DialogTitle>
-                <DialogDescription className="pt-4">
+                <DialogDescription className="pt-3 sm:pt-4 text-xs sm:text-sm">
                   All your courses will be reset to courses for level{" "}
                   {tempLevel} in the department of {user?.department?.name}. Are
                   you sure you want to continue?
                 </DialogDescription>
               </DialogHeader>
-              <DialogFooter className="sm:justify-start">
+              <DialogFooter className="sm:justify-start space-x-2">
                 <Button
                   type="button"
                   variant="destructive"
                   onClick={handleLevelChangeConfirm}
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 h-8 sm:h-9 text-xs sm:text-sm"
                 >
                   Yes, Change Level
                 </Button>
@@ -343,6 +362,7 @@ const ProfilePage = () => {
                   type="button"
                   variant="outline"
                   onClick={handleLevelChangeCancel}
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 h-8 sm:h-9 text-xs sm:text-sm"
                 >
                   Cancel
                 </Button>
@@ -355,23 +375,23 @@ const ProfilePage = () => {
             open={showDepartmentWarning}
             onOpenChange={setShowDepartmentWarning}
           >
-            <DialogContent>
+            <DialogContent className="max-w-sm">
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-amber-600">
-                  <AlertCircle className="w-5 h-5" />
+                <DialogTitle className="flex items-center gap-2 text-amber-600 text-sm sm:text-base">
+                  <AlertCircle className="w-4 sm:w-5 h-4 sm:h-5" />
                   Change Department Warning
                 </DialogTitle>
-                <DialogDescription className="pt-4">
-                  Changing your department will reset all your courses to match
-                  your new department&apos;s curriculum for level{" "}
-                  {formData.level}. Are you sure you want to continue?
+                <DialogDescription className="pt-3 sm:pt-4 text-xs sm:text-sm">
+                  Changing your department will reset your courses and materials
+                  recommendations. Are you sure you want to continue?
                 </DialogDescription>
               </DialogHeader>
-              <DialogFooter className="sm:justify-start">
+              <DialogFooter className="sm:justify-start space-x-2">
                 <Button
                   type="button"
                   variant="destructive"
                   onClick={handleDepartmentChangeConfirm}
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 h-8 sm:h-9 text-xs sm:text-sm"
                 >
                   Yes, Change Department
                 </Button>
@@ -379,6 +399,7 @@ const ProfilePage = () => {
                   type="button"
                   variant="outline"
                   onClick={handleDepartmentChangeCancel}
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 h-8 sm:h-9 text-xs sm:text-sm"
                 >
                   Cancel
                 </Button>
@@ -386,26 +407,25 @@ const ProfilePage = () => {
             </DialogContent>
           </Dialog>
 
-          {/* Submit Button */}
           {isEditing && (
-            <div className="flex justify-end mt-8">
-              <button
+            <div className="flex justify-end mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
+              <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-70 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 text-white"
+                className="flex items-center gap-1 sm:gap-2 bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 py-1 sm:py-2 rounded-md h-8 sm:h-10 text-white text-xs sm:text-sm"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 size={16} className="animate-spin" />
-                    <span>Updating...</span>
+                    <Loader2 className="mr-1 w-3 sm:w-4 h-3 sm:h-4 animate-spin" />
+                    <span>Saving...</span>
                   </>
                 ) : (
                   <>
-                    <Check size={16} />
+                    <Check className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
                     <span>Save Changes</span>
                   </>
                 )}
-              </button>
+              </Button>
             </div>
           )}
         </form>
