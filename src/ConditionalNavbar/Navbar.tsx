@@ -50,12 +50,11 @@ const Navbar = () => {
             ) : isAuthenticated ? (
               <UserAvatar showName={true} />
             ) : (
-              <div className="hidden md:flex gap-4 nav_btn">
-                <Button
-                  onClick={() => handleNavigation("/auth/login")}
-                  text={"Login"}
-                  className="py-1.5 text-sm"
-                />
+              <div className="hidden md:flex justify-center items-center gap-8 nav_btn">
+                <Link className="py-1.5 text-[17px] text-[#003666]" href="/auth/login">
+                  LOGIN
+                </Link>
+
                 <Button
                   onClick={() => handleNavigation("/auth/signup")}
                   text="SignUp"

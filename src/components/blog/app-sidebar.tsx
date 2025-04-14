@@ -38,14 +38,14 @@ const items = [
     icon: BookOpen,
   },
   {
-    title: "Courses",
-    url: "/dashboard/courses",
-    icon: GraduationCap,
-  },
-  {
     title: "Blogs",
     url: "/dashboard/blogs",
     icon: AreaChartIcon,
+  },
+  {
+    title: "Courses",
+    url: "/dashboard/courses",
+    icon: GraduationCap,
   },
   {
     title: "Advertise",

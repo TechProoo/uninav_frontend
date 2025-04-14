@@ -6,14 +6,11 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ text, ...rest }) => {
+const Button: React.FC<ButtonProps> = ({ text }) => {
   return (
-    <StyledWrapper>
-      <button className="button" data-text={text} {...rest}>
+    <StyledWrapper> 
+      <button className="button" data-text={text}>
         <span className="actual-text">&nbsp;{text}&nbsp;</span>
-        <span aria-hidden="true" className="hover-text">
-          &nbsp;{text}&nbsp;
-        </span>
       </button>
     </StyledWrapper>
   );
@@ -23,40 +20,25 @@ const StyledWrapper = styled.div`
   .button {
     margin: 0;
     height: auto;
-    background: transparent;
-    padding: 0;
+    background: #003666;
+    padding: 10px 20px;
     border: none;
+    border-radius: 8px;
     cursor: pointer;
-    --border-right: 6px;
-    --text-stroke-color: hsl(0, 0%, 0%);
-    --animation-color: hsl(208, 100%, 73%);
     --fs-size: 17px;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-decoration: none;
     font-size: var(--fs-size);
-    font-family: "Arial";
+    font-family: "Arial", sans-serif;
     position: relative;
     text-transform: uppercase;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--text-stroke-color);
-  }
+    color: white;
+    transition: transform 0.2s ease, background 0.2s ease;
 
-  .hover-text {
-    position: absolute;
-    box-sizing: border-box;
-    color: var(--animation-color);
-    width: 0%;
-    white-space: nowrap;
-    inset: 0;
-    border-right: var(--border-right) solid var(--animation-color);
-    overflow: hidden;
-    transition: 0.5s;
-    -webkit-text-stroke: 1px var(--animation-color);
-  }
-
-  .button:hover .hover-text {
-    width: 100%;
-    filter: drop-shadow(0 0 23px var(--animation-color));
+    &:hover {
+      transform: scale(1.05);
+      background: #005599;
+    }
   }
 `;
 

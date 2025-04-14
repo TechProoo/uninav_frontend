@@ -29,6 +29,8 @@ const Page = () => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const[showPassword, setShowPassword] = useState(false)
+
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
@@ -361,14 +363,23 @@ const Page = () => {
                         >
                           Password
                         </label>
+                        <div className="flex flex-start items-center gap-4">
                         <input
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           id="password"
                           value={formData.password}
                           onChange={handleInputChange}
                           placeholder="******"
-                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[85%]"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="text-[#003666]"
+                        >
+                          {showPassword ? "Hide" : "Show"}
+                        </button>
+                        </div>
                         {errors.password && (
                           <p className="mt-1 text-red-500 text-xs">
                             {errors.password}
