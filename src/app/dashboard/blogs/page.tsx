@@ -87,24 +87,30 @@ const BlogsPage = () => {
   if (!blogs || blogs.length === 0) return <NoBlog />;
 
   return (
-    <div className="w-full">
-      <div className="md:flex justify-between items-center mb-5 md:mb-1 w-full">
-        <h1 className="mb-6 font-bold text-3xl fst">Manage Blogs</h1>
-        <div className="flex items-center gap-4">
+    <div className="px-2 sm:px-4 w-full">
+      <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6 w-full">
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl fst">
+          Manage Blogs
+        </h1>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <Button
             text="All Blogs"
             onClick={() => handleNavigation("/explore?defaultTab=blogs")}
+            className="px-3 sm:px-4 py-1.5 sm:py-2 h-auto text-xs sm:text-sm"
           />
           <Button
             text="Create Blog"
             onClick={() => handleNavigation("/dashboard/blogs/createblog")}
+            className="px-3 sm:px-4 py-1.5 sm:py-2 h-auto text-xs sm:text-sm"
           />
         </div>
       </div>
 
-      <div className="mt-10 font-bold text-2xl fst">
-        <h1>Your Blogs</h1>
-        <div className="mt-6">
+      <div className="mt-4 sm:mt-6 md:mt-10">
+        <h2 className="font-bold text-lg sm:text-xl md:text-2xl fst">
+          Your Blogs
+        </h2>
+        <div className="mt-4 sm:mt-6">
           <BlogGrid
             blogs={blogs}
             onBlogClick={handleBlogClick}
@@ -113,12 +119,12 @@ const BlogsPage = () => {
 
           {/* Pagination Controls */}
           {paginationData.totalPages > 1 && (
-            <div className="flex justify-center mt-8">
-              <div className="flex items-center gap-2">
+            <div className="flex justify-center mt-6 sm:mt-8">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={!paginationData.hasPrev}
-                  className={`px-3 py-1 rounded-md ${
+                  className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm ${
                     paginationData.hasPrev
                       ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -127,7 +133,7 @@ const BlogsPage = () => {
                   Previous
                 </button>
 
-                {/* Page Numbers */}
+                {/* Page Numbers - Simplified for Mobile */}
                 <div className="flex items-center gap-1">
                   {Array.from(
                     { length: paginationData.totalPages },
@@ -137,16 +143,21 @@ const BlogsPage = () => {
                       (page) =>
                         page === 1 ||
                         page === paginationData.totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1)
+                        (page >=
+                          currentPage - (window.innerWidth < 640 ? 0 : 1) &&
+                          page <=
+                            currentPage + (window.innerWidth < 640 ? 0 : 1))
                     )
                     .map((page, index, array) => (
                       <React.Fragment key={page}>
                         {index > 0 && array[index - 1] !== page - 1 && (
-                          <span className="px-2">...</span>
+                          <span className="px-1 sm:px-2 text-xs sm:text-sm">
+                            ...
+                          </span>
                         )}
                         <button
                           onClick={() => handlePageChange(page)}
-                          className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                          className={`w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md text-xs sm:text-sm ${
                             currentPage === page
                               ? "bg-blue-600 text-white"
                               : "bg-blue-100 text-blue-700 hover:bg-blue-200"
@@ -161,7 +172,7 @@ const BlogsPage = () => {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={!paginationData.hasMore}
-                  className={`px-3 py-1 rounded-md ${
+                  className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm ${
                     paginationData.hasMore
                       ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"

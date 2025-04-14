@@ -373,19 +373,21 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   };
 
   return (
-    <div className="bg-white shadow-sm p-6 rounded-lg">
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="bg-white shadow-sm p-3 sm:p-6 rounded-lg">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         {error && (
-          <div className="bg-red-50 p-4 rounded text-red-600">{error}</div>
+          <div className="bg-red-50 p-3 sm:p-4 rounded text-red-600 text-xs sm:text-sm">
+            {error}
+          </div>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* Title and Description */}
-          <div className="gap-4 grid md:grid-cols-2">
+          <div className="gap-3 sm:gap-4 grid md:grid-cols-2">
             <div>
               <label
                 htmlFor="label"
-                className="block mb-1 font-medium text-gray-700 text-sm"
+                className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
               >
                 Title *
               </label>
@@ -396,14 +398,14 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 required
                 value={formData.label}
                 onChange={handleChange}
-                className="p-2 border border-gray-300 rounded-md w-full"
+                className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                 placeholder="Material Title"
               />
             </div>
 
             {/* Course Selection using SelectCourse component */}
             <div>
-              <label className="block mb-1 font-medium text-gray-700 text-sm">
+              <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
                 Target Course
               </label>
               <SelectCourse
@@ -424,7 +426,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           <div>
             <label
               htmlFor="description"
-              className="block mb-1 font-medium text-gray-700 text-sm"
+              className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
             >
               Description
             </label>
@@ -434,17 +436,17 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
               rows={3}
               value={formData.description}
               onChange={handleChange}
-              className="p-2 border border-gray-300 rounded-md w-full"
+              className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
               placeholder="Describe your material..."
             />
           </div>
 
           {/* Type, Visibility, and Restriction Selection */}
-          <div className="gap-4 grid md:grid-cols-3">
+          <div className="gap-2 sm:gap-4 grid grid-cols-1 sm:grid-cols-3">
             <div>
               <label
                 htmlFor="type"
-                className="block mb-1 font-medium text-gray-700 text-sm"
+                className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
               >
                 Type *
               </label>
@@ -454,7 +456,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 required
                 value={formData.type}
                 onChange={handleChange}
-                className="p-2 border border-gray-300 rounded-md w-full"
+                className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
               >
                 {Object.values(MaterialTypeEnum).map((type) => (
                   <option key={type} value={type}>
@@ -467,7 +469,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             <div>
               <label
                 htmlFor="visibility"
-                className="block mb-1 font-medium text-gray-700 text-sm"
+                className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
               >
                 Visibility
               </label>
@@ -476,7 +478,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 name="visibility"
                 value={formData.visibility}
                 onChange={handleChange}
-                className="p-2 border border-gray-300 rounded-md w-full"
+                className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
               >
                 {Object.values(VisibilityEnum).map((visibility) => (
                   <option key={visibility} value={visibility}>
@@ -489,7 +491,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             <div>
               <label
                 htmlFor="restriction"
-                className="block mb-1 font-medium text-gray-700 text-sm"
+                className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
               >
                 Access Restriction
               </label>
@@ -498,7 +500,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 name="restriction"
                 value={formData.restriction}
                 onChange={handleChange}
-                className="p-2 border border-gray-300 rounded-md w-full"
+                className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
               >
                 {Object.values(RestrictionEnum).map((restriction) => (
                   <option key={restriction} value={restriction}>
@@ -511,31 +513,31 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
           {/* File Upload Zone */}
           <div>
-            <label className="block mb-1 font-medium text-gray-700 text-sm">
+            <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
               Upload File or Provide URL
             </label>
-            <div className="gap-4 grid md:grid-cols-2">
+            <div className="gap-3 sm:gap-4 grid md:grid-cols-2">
               <div
                 {...getRootProps()}
                 className={cn(
-                  "border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors",
+                  "border-2 border-dashed rounded-lg p-3 sm:p-6 text-center cursor-pointer transition-colors",
                   isDragActive
                     ? "border-blue-500 bg-blue-50"
                     : "border-gray-300 hover:border-gray-400"
                 )}
               >
                 <input {...getInputProps()} />
-                <div className="flex flex-col items-center space-y-2">
-                  <Upload className="w-8 h-8 text-gray-400" />
+                <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+                  <Upload className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
                   {isDragActive ? (
-                    <p>Drop the file here...</p>
+                    <p className="text-xs sm:text-sm">Drop the file here...</p>
                   ) : (
                     <>
-                      <p className="text-gray-600 text-sm">
+                      <p className="text-gray-600 text-xs sm:text-sm">
                         Drag & drop a file here, or click to select
                       </p>
                       {file && (
-                        <p className="font-medium text-blue-600 text-sm">
+                        <p className="font-medium text-blue-600 text-xs sm:text-sm">
                           Selected: {file.name}
                         </p>
                       )}
@@ -551,10 +553,10 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   type="url"
                   value={formData.resourceAddress}
                   onChange={handleChange}
-                  className="p-2 border border-gray-300 rounded-md w-full"
+                  className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                   placeholder="https://example.com/resource"
                 />
-                <p className="mt-1 text-gray-500 text-xs">
+                <p className="mt-1 text-[10px] text-gray-500 sm:text-xs">
                   You can either upload a file or provide a URL
                 </p>
               </div>
@@ -562,11 +564,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
             {/* File Preview */}
             {filePreview && (
-              <div className="mt-4">
-                <p className="mb-2 font-medium text-gray-700 text-sm">
+              <div className="mt-3 sm:mt-4">
+                <p className="mb-1 sm:mb-2 font-medium text-gray-700 text-xs sm:text-sm">
                   Preview:
                 </p>
-                <div className="relative w-32 h-32">
+                <div className="relative w-24 sm:w-32 h-24 sm:h-32">
                   <img
                     src={filePreview}
                     alt="File preview"
@@ -591,7 +593,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           <div>
             <label
               htmlFor="tags"
-              className="block mb-1 font-medium text-gray-700 text-sm"
+              className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
             >
               Tags
             </label>
@@ -601,7 +603,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 type="text"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
-                className="flex-grow p-2 border border-gray-300 rounded-md"
+                className="flex-grow p-1.5 sm:p-2 border border-gray-300 rounded-md text-xs sm:text-sm"
                 placeholder="Add a tag (press Enter or click Add)"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -610,15 +612,20 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   }
                 }}
               />
-              <Button type="button" onClick={handleAddTag} size="sm">
+              <Button
+                type="button"
+                onClick={handleAddTag}
+                size="sm"
+                className="text-xs sm:text-sm"
+              >
                 Add
               </Button>
             </div>
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2 mt-2">
               {formData.tags?.map((tag) => (
                 <span
                   key={tag}
-                  className="flex items-center gap-1 bg-blue-100 px-2.5 py-0.5 rounded text-blue-800 text-sm"
+                  className="flex items-center gap-1 bg-blue-100 px-1.5 sm:px-2.5 py-0.5 rounded text-[10px] text-blue-800 sm:text-xs"
                 >
                   {tag}
                   <button
@@ -634,8 +641,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           </div>
 
           {/* Advert Option */}
-          <div className="mt-8 pt-4 border-t">
-            <div className="flex items-center gap-2 mb-4">
+          <div className="mt-4 sm:mt-8 pt-3 sm:pt-4 border-t">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
               <input
                 type="checkbox"
                 id="includeAdvert"
@@ -657,7 +664,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   existingAdverts.length >= MAX_FREE_ADVERTS && !includeAdvert
                 }
                 className={cn(
-                  "rounded w-4 h-4 text-blue-600",
+                  "rounded w-3 h-3 sm:w-4 sm:h-4 text-blue-600",
                   existingAdverts.length >= MAX_FREE_ADVERTS &&
                     !includeAdvert &&
                     "opacity-50 cursor-not-allowed"
@@ -666,17 +673,17 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
               <label
                 htmlFor="includeAdvert"
                 className={cn(
-                  "flex items-center font-medium text-gray-800",
+                  "flex items-center font-medium text-gray-800 text-xs sm:text-sm",
                   existingAdverts.length >= MAX_FREE_ADVERTS &&
                     !includeAdvert &&
                     "opacity-50 cursor-not-allowed"
                 )}
               >
-                <Megaphone className="mr-1.5 w-4 h-4 text-blue-600" />
+                <Megaphone className="mr-1 sm:mr-1.5 w-3 sm:w-4 h-3 sm:h-4 text-blue-600" />
                 Advertisements for this Material
                 {existingAdverts.length >= MAX_FREE_ADVERTS &&
                   !includeAdvert && (
-                    <span className="ml-2 text-red-500 text-xs">
+                    <span className="ml-1 sm:ml-2 text-[10px] text-red-500 sm:text-xs">
                       (Maximum {MAX_FREE_ADVERTS} advertisements reached)
                     </span>
                   )}
@@ -684,32 +691,34 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             </div>
 
             {includeAdvert && (
-              <div className="space-y-4 bg-blue-50 mt-2 p-4 rounded-lg animate-fadeIn">
-                <h3 className="font-medium text-blue-800 text-lg">
+              <div className="space-y-3 sm:space-y-4 bg-blue-50 mt-2 p-3 sm:p-4 rounded-lg animate-fadeIn">
+                <h3 className="font-medium text-blue-800 text-sm sm:text-lg">
                   Advertisement Details
                 </h3>
 
                 {/* Display existing adverts if any */}
                 {existingAdverts.length > 0 && (
-                  <div className="mb-6">
-                    <h4 className="mb-2 font-medium text-blue-700">
+                  <div className="mb-4 sm:mb-6">
+                    <h4 className="mb-2 font-medium text-blue-700 text-xs sm:text-sm">
                       Existing Advertisements
                     </h4>
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {existingAdverts.map((advert, index) => (
                         <div
                           key={advert.id}
-                          className="bg-white p-4 border border-blue-200 rounded-lg"
+                          className="bg-white p-3 sm:p-4 border border-blue-200 rounded-lg"
                         >
                           <div className="flex justify-between items-start">
                             <div>
-                              <h5 className="font-medium">{advert.label}</h5>
-                              <p className="text-gray-600 text-sm">
+                              <h5 className="font-medium text-xs sm:text-sm">
+                                {advert.label}
+                              </h5>
+                              <p className="text-[10px] text-gray-600 sm:text-xs">
                                 {advert.description}
                               </p>
                             </div>
                             {advert.imageUrl && (
-                              <div className="w-20 h-20">
+                              <div className="w-16 sm:w-20 h-16 sm:h-20">
                                 <img
                                   src={advert.imageUrl}
                                   alt={advert.label}
@@ -721,9 +730,9 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                         </div>
                       ))}
                     </div>
-                    <div className="flex items-center gap-2 bg-amber-50 mt-3 p-2 rounded-md text-amber-600">
-                      <AlertCircle className="w-4 h-4" />
-                      <p className="text-sm">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-amber-50 mt-3 p-2 rounded-md text-[10px] text-amber-600 sm:text-xs">
+                      <AlertCircle className="w-3 sm:w-4 h-3 sm:h-4" />
+                      <p>
                         Existing advertisements cannot be removed or modified
                       </p>
                     </div>
@@ -731,32 +740,32 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 )}
 
                 {/* Add new adverts */}
-                <div className="mt-4">
-                  <h4 className="mb-2 font-medium text-blue-700">
+                <div className="mt-3 sm:mt-4">
+                  <h4 className="mb-2 font-medium text-blue-700 text-xs sm:text-sm">
                     {existingAdverts.length > 0
                       ? "Add New Advertisements"
                       : "Create Advertisements"}
                   </h4>
 
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     {newAdverts.map((advert, index) => (
                       <div
                         key={index}
-                        className="relative p-4 border border-blue-300 rounded-lg"
+                        className="relative p-3 sm:p-4 border border-blue-300 rounded-lg"
                       >
                         <button
                           type="button"
                           onClick={() => handleRemoveNewAdvert(index)}
-                          className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                          className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white text-xs sm:text-sm"
                         >
                           ×
                         </button>
 
-                        <div className="gap-4 grid md:grid-cols-2">
+                        <div className="gap-3 sm:gap-4 grid md:grid-cols-2">
                           <div>
                             <label
                               htmlFor={`advert-label-${index}`}
-                              className="block mb-1 font-medium text-gray-700 text-sm"
+                              className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
                             >
                               Ad Title *
                             </label>
@@ -767,7 +776,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                               required={includeAdvert}
                               value={advert.label}
                               onChange={(e) => handleAdvertChange(e, index)}
-                              className="p-2 border border-gray-300 rounded-md w-full"
+                              className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                               placeholder="Enter a catchy title for your advertisement"
                             />
                           </div>
@@ -775,7 +784,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                           <div>
                             <label
                               htmlFor={`advert-description-${index}`}
-                              className="block mb-1 font-medium text-gray-700 text-sm"
+                              className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
                             >
                               Ad Description
                             </label>
@@ -785,7 +794,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                               rows={2}
                               value={advert.description}
                               onChange={(e) => handleAdvertChange(e, index)}
-                              className="p-2 border border-gray-300 rounded-md w-full"
+                              className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                               placeholder="Briefly describe your advertisement"
                             />
                           </div>
@@ -794,7 +803,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                         <div className="mt-3">
                           <label
                             htmlFor={`advert-image-${index}`}
-                            className="block mb-1 font-medium text-gray-700 text-sm"
+                            className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
                           >
                             Ad Image (Recommended)
                           </label>
@@ -804,14 +813,14 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                             <input
                               {...getAdvertDropzoneProps(index).getInputProps()}
                             />
-                            <div className="flex flex-col items-center space-y-2">
-                              <Megaphone className="w-8 h-8 text-blue-500" />
-                              <p className="text-gray-600 text-sm">
+                            <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+                              <Megaphone className="w-6 sm:w-8 h-6 sm:h-8 text-blue-500" />
+                              <p className="text-[10px] text-gray-600 sm:text-xs">
                                 Drag & drop an image for your ad, or click to
                                 select
                               </p>
                               {advert.image && (
-                                <p className="font-medium text-blue-600 text-sm">
+                                <p className="font-medium text-[10px] text-blue-600 sm:text-xs">
                                   Selected: {advert.image.name}
                                 </p>
                               )}
@@ -820,8 +829,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
                           {/* Ad Image Preview */}
                           {advert.imagePreview && (
-                            <div className="mt-3">
-                              <p className="mb-1 font-medium text-gray-700 text-sm">
+                            <div className="mt-2 sm:mt-3">
+                              <p className="mb-1 font-medium text-gray-700 text-xs sm:text-sm">
                                 Ad Preview:
                               </p>
                               <div className="relative w-full max-w-xs">
@@ -863,25 +872,25 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                         MAX_FREE_ADVERTS
                       }
                       className={cn(
-                        "flex items-center gap-2 border-dashed border-blue-500 text-blue-600",
+                        "flex items-center gap-1 sm:gap-2 border-dashed border-blue-500 text-blue-600 text-xs sm:text-sm h-8 sm:h-10",
                         existingAdverts.length + newAdverts.length >=
                           MAX_FREE_ADVERTS && "opacity-50 cursor-not-allowed"
                       )}
                     >
-                      <PlusCircle className="w-4 h-4" />
+                      <PlusCircle className="w-3 sm:w-4 h-3 sm:h-4" />
                       Add Another Advertisement
                     </Button>
 
-                    <div className="flex items-center gap-2 bg-blue-50 mt-3 p-2 rounded-md text-blue-600">
-                      <AlertCircle className="w-4 h-4" />
-                      <p className="text-sm">
+                    <div className="flex items-center gap-1 sm:gap-2 bg-blue-50 mt-2 sm:mt-3 p-2 rounded-md text-[10px] text-blue-600 sm:text-xs">
+                      <AlertCircle className="w-3 sm:w-4 h-3 sm:h-4" />
+                      <p>
                         You can add up to {MAX_FREE_ADVERTS} advertisements per
                         material ({existingAdverts.length + newAdverts.length}/
                         {MAX_FREE_ADVERTS} used)
                       </p>
                     </div>
 
-                    <p className="mt-3 text-blue-600 text-xs">
+                    <p className="mt-2 sm:mt-3 text-[10px] text-blue-600 sm:text-xs">
                       Your advertisements will be shown to users browsing
                       materials, helping to promote your content and increase
                       visibility.
@@ -893,21 +902,26 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end items-center gap-3 pt-4 border-t">
+        <div className="flex justify-end items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t">
           <Button
             type="button"
             onClick={onCancel}
             variant="outline"
             disabled={isSubmitting}
+            className="h-8 sm:h-10 text-xs sm:text-sm"
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="h-8 sm:h-10 text-xs sm:text-sm"
+          >
             {isSubmitting
               ? "Saving..."
               : initialData
-                ? "Update Material"
-                : "Create Material"}
+              ? "Update Material"
+              : "Create Material"}
           </Button>
         </div>
       </form>

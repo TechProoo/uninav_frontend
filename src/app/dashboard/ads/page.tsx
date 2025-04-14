@@ -151,43 +151,51 @@ const ManageAdsPage = () => {
   };
 
   return (
-    <div className="mx-auto container">
-      <div className="flex justify-between gap-2 items-center mb-6">
-        <h1 className="font-bold md:text-3xl text-md">Manage Advertisements</h1>
-        <Button onClick={() => router.push("/dashboard/materials")}>
-          <Plus className="mr-2 w-4 h-4" />
+    <div className="mx-auto px-2 sm:px-4 container">
+      <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-3 sm:mb-6">
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
+          Manage Advertisements
+        </h1>
+        <Button
+          onClick={() => router.push("/dashboard/materials")}
+          className="px-3 sm:px-4 py-1.5 sm:py-2 w-full sm:w-auto h-8 sm:h-10 text-xs sm:text-sm"
+        >
+          <Plus className="mr-1 sm:mr-2 w-3 sm:w-4 h-3 sm:h-4" />
           Create New Ad
         </Button>
       </div>
 
-      <div className="flex md:flex-row flex-col gap-3 mb-6">
-        <form onSubmit={handleSearch} className="flex flex-grow md:max-w-md">
+      <div className="flex md:flex-row flex-col gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-grow w-full md:max-w-md"
+        >
           <div className="relative w-full">
-            <div className="left-0 absolute inset-y-0 flex items-center pl-3 pointer-events-none">
-              <Search className="w-4 h-4 text-gray-500" />
+            <div className="left-0 absolute inset-y-0 flex items-center pl-2 sm:pl-3 pointer-events-none">
+              <Search className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-500" />
             </div>
             <input
               type="search"
-              className="block p-2 pl-10 border border-gray-300 rounded-lg w-full text-sm"
+              className="block px-2 sm:px-3 py-1.5 sm:py-2 pl-7 sm:pl-10 border border-gray-300 rounded-lg w-full text-xs sm:text-sm"
               placeholder="Search advertisements..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <button
               type="submit"
-              className="top-1 right-1 bottom-1 absolute bg-blue-600 px-3 rounded text-white text-sm"
+              className="top-1 right-1 bottom-1 absolute bg-blue-600 px-2 sm:px-3 rounded text-white text-xs sm:text-sm"
             >
               Search
             </button>
           </div>
         </form>
 
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-gray-500" />
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Filter className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-500" />
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="p-2 border border-gray-300 rounded-lg text-sm"
+            className="px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg w-full text-xs sm:text-sm"
           >
             <option value="">All Types</option>
             {Object.values(AdvertTypeEnum).map((type) => (
@@ -199,43 +207,50 @@ const ManageAdsPage = () => {
         </div>
       </div>
 
-      <div className="gap-6 grid md:grid-cols-3">
+      <div className="gap-4 sm:gap-6 grid grid-cols-1 md:grid-cols-3">
         {/* Adverts List */}
         <div className="md:col-span-1">
-          <div className="bg-white shadow-md p-4 rounded-lg">
-            <h2 className="flex items-center mb-4 font-semibold text-xl">
-              <Megaphone className="mr-2 w-5 h-5 text-blue-600" />
+          <div className="bg-white shadow-md p-3 sm:p-4 rounded-lg">
+            <h2 className="flex items-center mb-3 sm:mb-4 font-semibold text-base sm:text-lg md:text-xl">
+              <Megaphone className="mr-1.5 sm:mr-2 w-4 sm:w-5 h-4 sm:h-5 text-blue-600" />
               Your Advertisements
             </h2>
 
             {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-pulse">Loading advertisements...</div>
+              <div className="flex justify-center py-4 sm:py-8">
+                <div className="text-xs sm:text-sm animate-pulse">
+                  Loading advertisements...
+                </div>
               </div>
             ) : error ? (
-              <div className="bg-red-50 p-4 rounded text-red-600">{error}</div>
+              <div className="bg-red-50 p-3 sm:p-4 rounded text-red-600 text-xs sm:text-sm">
+                {error}
+              </div>
             ) : displayedAdverts.length === 0 ? (
-              <div className="py-8 text-center">
-                <Megaphone className="mx-auto w-12 h-12 text-gray-400" />
-                <h3 className="mt-2 font-medium text-gray-900 text-lg">
+              <div className="py-4 sm:py-8 text-center">
+                <Megaphone className="mx-auto w-8 sm:w-12 h-8 sm:h-12 text-gray-400" />
+                <h3 className="mt-2 font-medium text-gray-900 text-sm sm:text-base md:text-lg">
                   No advertisements yet
                 </h3>
-                <p className="mt-1 text-gray-500">
+                <p className="mt-1 text-gray-500 text-xs sm:text-sm">
                   Create an advertisement to promote your materials.
                 </p>
-                <div className="mt-6">
-                  <Button onClick={() => router.push("/dashboard/materials")}>
-                    <Plus className="mr-2 w-4 h-4" />
+                <div className="mt-4 sm:mt-6">
+                  <Button
+                    onClick={() => router.push("/dashboard/materials")}
+                    className="px-2 sm:px-3 py-1 sm:py-1.5 h-7 sm:h-9 text-xs sm:text-sm"
+                  >
+                    <Plus className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
                     Create New Ad
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[600px] overflow-y-auto">
                 {displayedAdverts.map((advert) => (
                   <div
                     key={advert.id}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                    className={`p-2 sm:p-3 border rounded-lg cursor-pointer transition-colors ${
                       selectedAdvert?.id === advert.id
                         ? "border-blue-500 bg-blue-50"
                         : "border-gray-200 hover:bg-gray-50"
@@ -243,30 +258,31 @@ const ManageAdsPage = () => {
                     onClick={() => handleAdvertClick(advert)}
                   >
                     <div className="flex justify-between items-start">
-                      <h3 className="mb-1 font-medium text-gray-900 line-clamp-1">
+                      <h3 className="mb-0.5 sm:mb-1 font-medium text-gray-900 text-xs sm:text-sm line-clamp-1">
                         {advert.label}
                       </h3>
                       <Badge
                         variant={
                           advert.type === "free" ? "default" : "destructive"
                         }
+                        className="px-1 sm:px-1.5 h-4 sm:h-5 text-[10px] sm:text-xs"
                       >
                         {advert.type}
                       </Badge>
                     </div>
-                    <p className="mb-2 text-gray-600 text-sm line-clamp-2">
+                    <p className="mb-1 sm:mb-2 text-[10px] text-gray-600 sm:text-xs line-clamp-2">
                       {advert.description || "No description provided"}
                     </p>
-                    <div className="flex items-center text-gray-500 text-xs">
-                      <div className="flex items-center mr-3">
-                        <Eye className="mr-1 w-3 h-3" />
+                    <div className="flex items-center text-[10px] text-gray-500 sm:text-xs">
+                      <div className="flex items-center mr-2 sm:mr-3">
+                        <Eye className="mr-0.5 sm:mr-1 w-2.5 sm:w-3 h-2.5 sm:h-3" />
                         {advert.views}
                       </div>
                       <div className="flex items-center">
-                        <MousePointer className="mr-1 w-3 h-3" />
+                        <MousePointer className="mr-0.5 sm:mr-1 w-2.5 sm:w-3 h-2.5 sm:h-3" />
                         {advert.clicks}
                       </div>
-                      <div className="ml-auto text-xs">
+                      <div className="ml-auto text-[10px] sm:text-xs">
                         {new Date(advert.createdAt).toLocaleDateString()}
                       </div>
                     </div>
@@ -280,9 +296,9 @@ const ManageAdsPage = () => {
         {/* Advert Detail */}
         <div className="md:col-span-2">
           {selectedAdvert ? (
-            <div className="bg-white shadow-md p-6 rounded-lg">
-              <div className="flex justify-between items-start mb-4">
-                <h2 className="font-semibold text-2xl">
+            <div className="bg-white shadow-md p-3 sm:p-6 rounded-lg">
+              <div className="flex justify-between items-start mb-3 sm:mb-4">
+                <h2 className="font-semibold text-lg sm:text-xl md:text-2xl">
                   {selectedAdvert.label}
                 </h2>
                 <div className="flex gap-2">
@@ -290,20 +306,22 @@ const ManageAdsPage = () => {
                     variant="destructive"
                     size="sm"
                     onClick={() => confirmDelete(selectedAdvert.id)}
+                    className="p-0 w-7 sm:w-8 h-7 sm:h-8"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                   </Button>
                 </div>
               </div>
 
               {/* Ad Status */}
-              <div className="mb-4">
+              <div className="mb-3 sm:mb-4">
                 <Badge
                   variant={
                     selectedAdvert.reviewStatus === "pending"
                       ? "outline"
                       : "default"
                   }
+                  className="px-1.5 sm:px-2 h-5 sm:h-6 text-[10px] sm:text-xs"
                 >
                   {selectedAdvert.reviewStatus}
                 </Badge>
@@ -311,7 +329,7 @@ const ManageAdsPage = () => {
 
               {/* Ad Image */}
               {selectedAdvert.imageUrl && (
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   <div className="relative rounded-lg aspect-video overflow-hidden">
                     <img
                       src={selectedAdvert.imageUrl}
@@ -323,63 +341,79 @@ const ManageAdsPage = () => {
               )}
 
               {/* Ad Details */}
-              <div className="mb-6">
-                <h3 className="mb-2 font-medium text-lg">
+              <div className="mb-4 sm:mb-6">
+                <h3 className="mb-1.5 sm:mb-2 font-medium text-base sm:text-lg">
                   Advertisement Details
                 </h3>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="gap-4 grid grid-cols-2">
+                <div className="bg-gray-50 p-2.5 sm:p-4 rounded-lg">
+                  <div className="gap-3 sm:gap-4 grid grid-cols-2">
                     <div>
-                      <p className="text-gray-500 text-sm">Type</p>
-                      <p className="font-medium">{selectedAdvert.type}</p>
+                      <p className="text-[10px] text-gray-500 sm:text-xs">
+                        Type
+                      </p>
+                      <p className="font-medium text-xs sm:text-sm">
+                        {selectedAdvert.type}
+                      </p>
                     </div>
                     <div>
-                      k<p className="text-gray-500 text-sm">Created At</p>
-                      <p className="font-medium">
+                      <p className="text-[10px] text-gray-500 sm:text-xs">
+                        Created At
+                      </p>
+                      <p className="font-medium text-xs sm:text-sm">
                         {new Date(selectedAdvert.createdAt).toLocaleString()}
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-500 text-sm">Views</p>
-                      <p className="font-medium">{selectedAdvert.views}</p>
+                      <p className="text-[10px] text-gray-500 sm:text-xs">
+                        Views
+                      </p>
+                      <p className="font-medium text-xs sm:text-sm">
+                        {selectedAdvert.views}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-gray-500 text-sm">Clicks</p>
-                      <p className="font-medium">{selectedAdvert.clicks}</p>
+                      <p className="text-[10px] text-gray-500 sm:text-xs">
+                        Clicks
+                      </p>
+                      <p className="font-medium text-xs sm:text-sm">
+                        {selectedAdvert.clicks}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="mb-6">
-                <h3 className="mb-2 font-medium text-lg">Description</h3>
-                <p className="text-gray-700">
+              <div className="mb-4 sm:mb-6">
+                <h3 className="mb-1.5 sm:mb-2 font-medium text-base sm:text-lg">
+                  Description
+                </h3>
+                <p className="text-gray-700 text-xs sm:text-sm">
                   {selectedAdvert.description || "No description provided."}
                 </p>
               </div>
 
               {/* Associated Material */}
               {selectedAdvert.material && (
-                <div className="mb-6">
-                  <h3 className="mb-2 font-medium text-lg">
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="mb-1.5 sm:mb-2 font-medium text-base sm:text-lg">
                     Associated Material
                   </h3>
                   <div
-                    className="hover:bg-gray-50 p-4 border border-gray-200 rounded-lg cursor-pointer"
+                    className="hover:bg-gray-50 p-2.5 sm:p-4 border border-gray-200 rounded-lg cursor-pointer"
                     onClick={() =>
                       goToMaterial(selectedAdvert.material?.id || "")
                     }
                   >
-                    <div className="flex items-center gap-3">
-                      <div className="flex justify-center items-center bg-blue-100 rounded w-10 h-10 text-blue-600">
-                        <BookOpen className="w-5 h-5" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="flex justify-center items-center bg-blue-100 rounded w-8 sm:w-10 h-8 sm:h-10 text-blue-600">
+                        <BookOpen className="w-4 sm:w-5 h-4 sm:h-5" />
                       </div>
                       <div>
-                        <h4 className="font-medium">
+                        <h4 className="font-medium text-xs sm:text-sm">
                           {selectedAdvert.material.label}
                         </h4>
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-[10px] text-gray-500 sm:text-xs">
                           {selectedAdvert.material.type}
                         </p>
                       </div>
@@ -390,14 +424,18 @@ const ManageAdsPage = () => {
 
               {/* Performance Data */}
               <div>
-                <div className="flex items-center mb-2">
-                  <h3 className="font-medium text-lg">Performance</h3>
-                  <Info className="ml-2 w-4 h-4 text-gray-400" />
+                <div className="flex items-center mb-1.5 sm:mb-2">
+                  <h3 className="font-medium text-base sm:text-lg">
+                    Performance
+                  </h3>
+                  <Info className="ml-1.5 sm:ml-2 w-3.5 sm:w-4 h-3.5 sm:h-4 text-gray-400" />
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="bg-gray-50 p-2.5 sm:p-4 rounded-lg">
                   <div className="text-center">
-                    <p className="mb-1 text-gray-500">Engagement Rate</p>
-                    <p className="font-bold text-xl">
+                    <p className="mb-0.5 sm:mb-1 text-[10px] text-gray-500 sm:text-xs">
+                      Engagement Rate
+                    </p>
+                    <p className="font-bold text-base sm:text-xl">
                       {selectedAdvert.views > 0
                         ? `${(
                             (selectedAdvert.clicks / selectedAdvert.views) *
@@ -405,7 +443,7 @@ const ManageAdsPage = () => {
                           ).toFixed(1)}%`
                         : "0%"}
                     </p>
-                    <p className="mt-1 text-gray-500 text-xs">
+                    <p className="mt-0.5 sm:mt-1 text-[10px] text-gray-500 sm:text-xs">
                       Based on {selectedAdvert.views} views and{" "}
                       {selectedAdvert.clicks} clicks
                     </p>
@@ -414,13 +452,13 @@ const ManageAdsPage = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center bg-white shadow-md p-8 rounded-lg h-full">
+            <div className="flex justify-center items-center bg-white shadow-md p-4 sm:p-8 rounded-lg h-full">
               <div className="text-center">
-                <Megaphone className="mx-auto mb-3 w-16 h-16 text-gray-300" />
-                <h3 className="mb-2 font-medium text-gray-700 text-xl">
+                <Megaphone className="mx-auto mb-2 sm:mb-3 w-10 sm:w-16 h-10 sm:h-16 text-gray-300" />
+                <h3 className="mb-1.5 sm:mb-2 font-medium text-gray-700 text-base sm:text-xl">
                   Select an advertisement
                 </h3>
-                <p className="max-w-md text-gray-500">
+                <p className="max-w-md text-gray-500 text-xs sm:text-sm">
                   Click on an advertisement from the list to view details,
                   analytics, and manage your promotion.
                 </p>
@@ -432,19 +470,22 @@ const ManageAdsPage = () => {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-sm sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Delete Advertisement</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-base sm:text-lg">
+              Delete Advertisement
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-xs sm:text-sm">
               Are you sure you want to delete this advertisement? This action
               cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="sm:flex-row flex-col gap-2 sm:gap-0">
             <Button
               variant="outline"
               onClick={() => setIsDeleteDialogOpen(false)}
               disabled={isLoading}
+              className="order-2 sm:order-1 w-full sm:w-auto h-8 sm:h-10 text-xs sm:text-sm"
             >
               Cancel
             </Button>
@@ -452,6 +493,7 @@ const ManageAdsPage = () => {
               variant="destructive"
               onClick={handleDeleteAdvert}
               disabled={isLoading}
+              className="order-1 sm:order-2 w-full sm:w-auto h-8 sm:h-10 text-xs sm:text-sm"
             >
               {isLoading ? "Deleting..." : "Delete"}
             </Button>

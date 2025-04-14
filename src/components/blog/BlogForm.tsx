@@ -142,16 +142,16 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
 
   return (
     <div className="mx-auto w-full max-w-7xl">
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-8">
         {/* Cover Image Section */}
         <div className="w-full">
-          <label className="block mb-2 font-medium text-gray-700 text-lg">
+          <label className="block mb-1 sm:mb-2 font-medium text-gray-700 text-sm sm:text-base md:text-lg">
             Blog Cover Image:
           </label>
-          <div className="gap-8 grid grid-cols-1 md:grid-cols-2">
+          <div className="gap-4 sm:gap-8 grid grid-cols-1 md:grid-cols-2">
             <div
               {...getRootProps()}
-              className={`w-full p-4 border-2 border-dashed rounded-lg ${
+              className={`w-full p-3 sm:p-4 border-2 border-dashed rounded-lg ${
                 isDragActive
                   ? "border-indigo-500 bg-indigo-50"
                   : "border-gray-300"
@@ -159,11 +159,11 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
             >
               <input {...getInputProps()} />
               {isDragActive ? (
-                <p className="flex justify-center items-center h-[120px] text-indigo-500 text-center">
+                <p className="flex justify-center items-center h-[80px] sm:h-[120px] text-indigo-500 text-xs sm:text-sm md:text-base text-center">
                   Drop the image here...
                 </p>
               ) : (
-                <p className="flex justify-center items-center h-[120px] text-gray-500 text-center">
+                <p className="flex justify-center items-center h-[80px] sm:h-[120px] text-gray-500 text-xs sm:text-sm md:text-base text-center">
                   Drag & drop an image here, or click to select one
                 </p>
               )}
@@ -173,7 +173,7 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
                 <img
                   src={imagePreview}
                   alt="Blog Cover Preview"
-                  className="shadow-md rounded-lg max-h-[120px] object-contain"
+                  className="shadow-md rounded-lg max-h-[80px] sm:max-h-[120px] object-contain"
                 />
               </div>
             )}
@@ -181,9 +181,9 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
         </div>
 
         {/* Title and Description */}
-        <div className="space-y-6">
+        <div className="space-y-3 sm:space-y-6">
           <div>
-            <label className="block mb-2 font-medium text-gray-700 text-lg">
+            <label className="block mb-1 sm:mb-2 font-medium text-gray-700 text-sm sm:text-base md:text-lg">
               Title:
             </label>
             <input
@@ -193,13 +193,13 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-lg"
+              className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-sm sm:text-base"
               placeholder="Enter your post title"
             />
           </div>
 
           <div>
-            <label className="block mb-2 font-medium text-gray-700 text-lg">
+            <label className="block mb-1 sm:mb-2 font-medium text-gray-700 text-sm sm:text-base md:text-lg">
               Description:
             </label>
             <textarea
@@ -208,7 +208,7 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full h-24 text-lg resize-none"
+              className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full h-20 sm:h-24 text-sm sm:text-base resize-none"
               placeholder="Enter a short description"
             />
           </div>
@@ -216,7 +216,7 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
 
         {/* Editor Section */}
         <div className="w-full">
-          <label className="block mb-2 font-medium text-gray-700 text-lg">
+          <label className="block mb-1 sm:mb-2 font-medium text-gray-700 text-sm sm:text-base md:text-lg">
             Content:
           </label>
           <div className="w-full">
@@ -228,9 +228,9 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
         </div>
 
         {/* Category and Tags */}
-        <div className="gap-8 grid grid-cols-1 md:grid-cols-2 pt-6 border-gray-200 border-t">
+        <div className="gap-4 sm:gap-8 grid grid-cols-1 md:grid-cols-2 pt-4 sm:pt-6 border-gray-200 border-t">
           <div>
-            <label className="block mb-2 font-medium text-gray-700 text-lg">
+            <label className="block mb-1 sm:mb-2 font-medium text-gray-700 text-sm sm:text-base md:text-lg">
               Category:
             </label>
             <select
@@ -238,7 +238,7 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
               onChange={(e) =>
                 setFormData({ ...formData, category: e.target.value })
               }
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-lg"
+              className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-sm sm:text-base"
             >
               <option value="">Select Category</option>
               <option value="article">Article</option>
@@ -249,7 +249,7 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
           </div>
 
           <div>
-            <label className="block mb-2 font-medium text-gray-700 text-lg">
+            <label className="block mb-1 sm:mb-2 font-medium text-gray-700 text-sm sm:text-base md:text-lg">
               Tags:
             </label>
             <div className="flex">
@@ -259,23 +259,23 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagKeyDown}
                 placeholder="Add tag and press Enter"
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-lg"
+                className="px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] w-full text-sm sm:text-base"
               />
               <button
                 type="button"
                 onClick={addTag}
-                className="bg-gray-200 hover:bg-gray-300 ml-2 px-4 py-3 rounded-lg transition"
+                className="bg-gray-200 hover:bg-gray-300 ml-2 px-2 sm:px-4 py-2 sm:py-3 rounded-lg transition"
               >
-                <Plus size={20} />
+                <Plus size={16} className="w-4 sm:w-5 h-4 sm:h-5" />
               </button>
             </div>
 
             {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
+              <div className="flex flex-wrap gap-2 mt-2 sm:mt-3">
                 {formData.tags.map((tag) => (
                   <div
                     key={tag}
-                    className="inline-flex items-center gap-1 bg-blue-100 px-3 py-1.5 rounded-full text-blue-800 text-sm"
+                    className="inline-flex items-center gap-1 bg-blue-100 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-blue-800 text-xs sm:text-sm"
                   >
                     {tag}
                     <button
@@ -283,7 +283,7 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
                       onClick={() => removeTag(tag)}
                       className="hover:text-red-500"
                     >
-                      <X size={14} />
+                      <X size={12} className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                     </button>
                   </div>
                 ))}
@@ -293,19 +293,20 @@ const BlogForm = ({ data, onSuccess, onCancel }: BlogFormProps) => {
         </div>
 
         {/* Submit Button */}
-        <div className="flex justify-end gap-3 pt-6 border-gray-200 border-t">
+        <div className="flex justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-gray-200 border-t">
           <Button
             type="button"
             variant="outline"
             disabled={isSubmitting}
             onClick={handleCancel}
+            className="px-3 sm:px-4 py-1.5 sm:py-2 h-8 sm:h-10 text-xs sm:text-sm"
           >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-[#003666] hover:bg-blue-900 shadow-md px-8 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] font-medium text-white text-lg transition-all duration-300 ease-in-out"
+            className="bg-[#003666] hover:bg-blue-900 shadow-md px-4 sm:px-8 py-1.5 sm:py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#003666] h-8 sm:h-auto font-medium text-white text-xs sm:text-base transition-all duration-300 ease-in-out"
           >
             {isSubmitting
               ? "Submitting..."
