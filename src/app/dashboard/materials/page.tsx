@@ -9,6 +9,7 @@ import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 import { Material, MaterialTypeEnum } from "@/lib/types/response.type";
 import { searchMaterialsLoggedIn, getMyMaterials } from "@/api/material.api";
+import { useRouter } from "next/navigation";
 
 type ViewMode = "grid" | "list";
 
@@ -28,6 +29,7 @@ const MaterialsPage = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [filterType, setFilterType] = useState<string>("");
 
+  const router = useRouter();
   useEffect(() => {
     fetchMaterials();
   }, [page, filterType]);
@@ -75,7 +77,7 @@ const MaterialsPage = () => {
   };
 
   const handleMaterialClick = (material: Material) => {
-    setSelectedMaterial(material);
+    router.push(`/material/${material.id}`);
   };
 
   const handleAddMaterial = () => {
@@ -135,7 +137,7 @@ const MaterialsPage = () => {
             Back
           </Button>
         ) : null}
-        <h1 className="font-bold md:text-3xl text-2xl">Manage My Materials</h1>
+        <h1 className="font-bold text-2xl md:text-3xl">Manage My Materials</h1>
         <Button onClick={handleAddMaterial}>
           <PlusCircle className="mr-2 w-4 h-4" />
           Add Material
