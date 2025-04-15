@@ -98,12 +98,10 @@ const Navigation = () => {
               <UserAvatar showName={true} />
             ) : (
               <div className="flex justify-center items-center gap-8 nav_btn">
-                <Link
-                  className="py-1.5 text-[#003666] text-[17px]"
-                  href="/auth/login"
-                >
-                  LOGIN
-                </Link>
+                <ButtonSlider
+                  onClick={() => handleNavigation("/auth/login")}
+                  text="Login"
+                />
                 <ButtonSlider
                   onClick={() => handleNavigation("/auth/signup")}
                   text="SignUp"
