@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useAuth } from "@/contexts/authContext";
 import { useRouter, useSearchParams } from "next/navigation";
-import ButtonSlider from "@/components/ui/ButtonSlider";
+import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import {
   verifyEmailByCode,
   verifyEmailByToken,
@@ -117,9 +117,8 @@ const VerifyEmailPage = () => {
       toast.loading("Redirecting...", {
         duration: 2000,
       });
-      // Update user profile to get the latest verification status
-      await refreshUserProfile();
-      router.push("/dashboard");
+      // user needs to be loggedin to get session from server
+      router.push("/auth/login");
     } catch (error: any) {
       console.error("Error verifying email:", error);
       toast.error(error.message || "Verification failed. Please try again.");
@@ -207,10 +206,14 @@ const VerifyEmailPage = () => {
   }
 
   return (
-    <div className="login_container">
-      <div className="grid grid-cols-12">
-        <div className="hidden md:block md:col-span-6">
-          <div className="h-screen">
+    // Use flexbox to center the content vertically and horizontally
+    <div className="flex justify-center items-center bg-gray-100 dark:bg-gray-900 p-2 min-h-screen login_container">
+      {/* Adjust grid for responsiveness and centering - REMOVE background, shadow, rounded */}
+      <div className="gap-8 grid grid-cols-1 md:grid-cols-12 w-full max-w-6xl overflow-hidden">
+        {/* Animation Column - REMOVE background */}
+        <div className="hidden md:flex justify-center items-center md:col-span-6 p-8">
+          {/* Optional: Constrain animation size if needed */}
+          <div className="w-full h-auto">
             <DotLottieReact
               src="https://lottie.host/9e4bbcc1-7395-44bd-95a9-bb65892fcadc/EFETH2vZML.lottie"
               loop
@@ -219,24 +222,30 @@ const VerifyEmailPage = () => {
           </div>
         </div>
 
-        <div className="flex justify-center items-center col-span-12 md:col-span-6 m-3 md:m-0 h-screen md:h-auto">
-          <div className="p-2 md:p-5 md:px-10 rounded-lg w-10/12 form_cover">
-            <div className="text-center form_head">
-              <h1 className="flex justify-center items-center gap-5 text-3xl md:text-4xl fst">
+        {/* Form Column - Ensure it centers content */}
+        <div className="flex justify-center items-center col-span-1 md:col-span-6 p-6 md:p-10">
+          {/* Form Card - ADD background, shadow, rounded */}
+          <div className="bg-white dark:bg-gray-800 shadow-lg p-6 rounded-lg w-full max-w-md form_cover">
+            <div className="mb-8 text-center form_head">
+              {" "}
+              {/* Added margin-bottom */}
+              <h1 className="flex justify-center items-center gap-3 font-semibold text-gray-800 dark:text-white text-2xl md:text-3xl fst">
                 Verify Your Email
                 {/* @ts-ignore */}
                 <lord-icon
                   src="https://cdn.lordicon.com/rhvddzym.json"
                   trigger="loop"
-                  colors="primary:#121331,secondary:#66d7ee"
-                  style={{ width: "55px", height: "55px" }}
+                  colors="primary:#121331,secondary:#66d7ee" // Adjust colors if needed for dark mode
+                  style={{ width: "45px", height: "45px" }}
                   /* @ts-ignore */
                 ></lord-icon>
               </h1>
               {token ? (
-                <p className="mt-2">Verifying your email address...</p>
+                <p className="mt-2 text-gray-600 dark:text-gray-300">
+                  Verifying your email address...
+                </p>
               ) : (
-                <p className="mt-2">
+                <p className="mt-2 text-gray-600 dark:text-gray-300">
                   A verification code has been sent to your email address.
                   Please enter it below to verify your email.
                 </p>
@@ -244,65 +253,80 @@ const VerifyEmailPage = () => {
             </div>
 
             {!token && (
-              <form onSubmit={handleVerifyEmail} className="mt-8">
-                <div className="flex flex-col items-center">
-                  {/* Email input field */}
-                  <div className="mb-6 w-full">
-                    <label
-                      htmlFor="email"
-                      className="block mb-1 font-medium text-gray-700 text-sm fst"
-                    >
-                      Email Address
-                    </label>
+              <form onSubmit={handleVerifyEmail} className="space-y-6">
+                {" "}
+                {/* Use space-y for spacing */}
+                {/* Email input field */}
+                <div className="w-full">
+                  <label
+                    htmlFor="email"
+                    className="block mb-1 font-medium text-gray-700 dark:text-gray-200 text-sm fst"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    placeholder="your@email.com"
+                    className="bg-gray-50 dark:bg-gray-700 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full dark:text-white"
+                    required
+                  />
+                </div>
+                {/* Verification Code Inputs */}
+                <div className="flex justify-center gap-2 md:gap-3">
+                  {" "}
+                  {/* Reduced gap slightly */}
+                  {codeInputs.map((value, index) => (
                     <input
-                      type="email"
-                      id="email"
-                      value={emailInput}
-                      onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="your@email.com"
-                      className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      key={index}
+                      id={`code-${index}`}
+                      type="text" // Consider type="tel" for numeric keyboard on mobile
+                      inputMode="numeric" // Helps mobile keyboards
+                      pattern="[0-9]*" // Basic pattern for numbers
+                      value={value}
+                      onChange={
+                        (e) =>
+                          handleCodeChange(
+                            index,
+                            e.target.value.replace(/[^0-9]/g, "")
+                          ) // Ensure only numbers
+                      }
+                      onKeyDown={(e) => handleKeyDown(index, e)}
+                      maxLength={1}
+                      className="bg-gray-50 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 focus:border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-10 md:w-12 h-12 md:h-14 font-medium dark:text-white text-xl md:text-2xl text-center"
                       required
+                      autoComplete="one-time-code" // Helps with autofill
                     />
-                  </div>
-
-                  <div className="flex justify-center gap-2 md:gap-4 mb-8">
-                    {codeInputs.map((value, index) => (
-                      <input
-                        key={index}
-                        id={`code-${index}`}
-                        type="text"
-                        value={value}
-                        onChange={(e) =>
-                          handleCodeChange(index, e.target.value)
-                        }
-                        onKeyDown={(e) => handleKeyDown(index, e)}
-                        maxLength={1}
-                        className="border-2 border-gray-300 focus:border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-10 md:w-12 h-14 md:h-16 font-medium text-xl md:text-2xl text-center"
-                        required
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex flex-col items-center gap-4 w-full">
-                    <ButtonSlider text="Verify Email" type="submit" />
-                    <p className="text-sm text-center">
-                      Didn't receive the code?{" "}
-                      {countdown > 0 ? (
-                        <span className="text-gray-400">
-                          Resend code in {countdown}s
-                        </span>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handleResendCode}
-                          disabled={resendLoading}
-                          className="font-medium text-blue-600 hover:text-blue-800"
-                        >
-                          {resendLoading ? "Sending..." : "Resend Code"}
-                        </button>
-                      )}
-                    </p>
-                  </div>
+                  ))}
+                </div>
+                {/* Actions */}
+                <div className="flex flex-col items-center gap-4 pt-4 w-full">
+                  {" "}
+                  {/* Added padding-top */}
+                  <ButtonSlider
+                    text="Verify Email"
+                    type="submit"
+                    loading={loading}
+                  />
+                  <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
+                    Didn't receive the code?{" "}
+                    {countdown > 0 ? (
+                      <span className="text-gray-400 dark:text-gray-500">
+                        Resend code in {countdown}s
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleResendCode}
+                        disabled={resendLoading}
+                        className="disabled:opacity-50 font-medium text-blue-600 hover:text-blue-800 dark:hover:text-blue-300 dark:text-blue-400"
+                      >
+                        {resendLoading ? "Sending..." : "Resend Code"}
+                      </button>
+                    )}
+                  </p>
                 </div>
               </form>
             )}
