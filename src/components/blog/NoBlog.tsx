@@ -2,7 +2,7 @@
 import React, { useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import Button from "./Button-styled";
+import { ThemeButton } from "../ui/ThemeButton";
 import Image from "next/image";
 import Empty from "../../../public/Image/empty.jpg";
 import { useRouter } from "next/navigation";
@@ -39,7 +39,7 @@ const NoblogPage: React.FC = () => {
         <Image src={Empty} alt="No blog icon" className="rounded-full w-100" />
       </div>
       <div ref={messageRef}>
-        <h1 className="font-bold text-gray-800 md:text-4xl text-3xl">
+        <h1 className="font-bold text-gray-800 text-3xl md:text-4xl">
           Oops, no blogs published yet!
         </h1>
         <p className="mt-4 text-gray-600 text-xl">
@@ -48,11 +48,11 @@ const NoblogPage: React.FC = () => {
         </p>
       </div>
       <div className="md:flex gap-5 space-y-5 mt-3 mt-5">
-        <Button
+        <ThemeButton
           text="All Blogs"
           onClick={() => handleNavigation("/explore?defaultTab=blogs")}
         />
-        <Button
+        <ThemeButton
           text="Create Blog"
           onClick={() => handleNavigation("/dashboard/blogs/createblog")}
         />

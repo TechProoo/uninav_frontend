@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "../components/ui/Button-styled";
+import ButtonSlider from "../components/ui/ButtonSlider";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -51,11 +51,14 @@ const Navbar = () => {
               <UserAvatar showName={true} />
             ) : (
               <div className="hidden md:flex justify-center items-center gap-8 nav_btn">
-                <Link className="py-1.5 text-[17px] text-[#003666]" href="/auth/login">
+                <Link
+                  className="py-1.5 text-[#003666] text-[17px]"
+                  href="/auth/login"
+                >
                   LOGIN
                 </Link>
 
-                <Button
+                <ButtonSlider
                   onClick={() => handleNavigation("/auth/signup")}
                   text="SignUp"
                   className="py-1.5 text-sm"

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import Button from "@/components/ui/Button-styled";
+import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { login } from "@/api/auth.api";
@@ -31,8 +31,7 @@ const page = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const[showPassword, setShowPassword] = useState(false)
-
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     isAuthenticated,
@@ -161,30 +160,30 @@ const page = () => {
                 >
                   Password
                 </label>
-              <div className="flex flex-start items-center gap-4">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="p-3 rounded-md w-[85%]"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-[#003666]"
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
+                <div className="flex flex-start items-center gap-4">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="p-3 rounded-md w-[85%]"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-[#003666]"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
                 </div>
               </div>
               <div className="mt-2">
                 <p className="forgot_password fst">Forgot Password?</p>
               </div>
               <div className="flex justify-center my-5">
-                <Button type="submit" text="Login" />
+                <ButtonSlider type="submit" text="Login" />
               </div>
               <div className="text-center">
                 <p>

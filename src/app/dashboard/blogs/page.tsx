@@ -2,7 +2,7 @@
 
 import BlogGrid from "@/components/blog/BlogGrid";
 import NoBlog from "@/components/blog/NoBlog";
-import Button from "@/components/blog/Button-styled";
+import { ThemeButton } from "@/components/ui/ThemeButton";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "../loading";
@@ -93,12 +93,12 @@ const BlogsPage = () => {
           Manage Blogs
         </h1>
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
-          <Button
+          <ThemeButton
             text="All Blogs"
             onClick={() => handleNavigation("/explore?defaultTab=blogs")}
             className="px-3 sm:px-4 py-1.5 sm:py-2 h-auto text-xs sm:text-sm"
           />
-          <Button
+          <ThemeButton
             text="Create Blog"
             onClick={() => handleNavigation("/dashboard/blogs/createblog")}
             className="px-3 sm:px-4 py-1.5 sm:py-2 h-auto text-xs sm:text-sm"

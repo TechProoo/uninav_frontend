@@ -5,7 +5,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Services from "./Services";
 import Image from "next/image";
 import Logo from "../../public/Image/uninav-logo-image.png";
-import Button from "./ui/Button-styled";
+import { ButtonSlider } from "./ui/ButtonSlider";
 import { useRouter } from "next/navigation";
 
 declare global {
@@ -165,8 +165,8 @@ const About = () => {
               Seamless access to academic resources, study groups, and tools
               that help you grow.
             </p>
-            <Button
-              onClick={() => navigateTo("/auth/login")}
+            <ButtonSlider
+              onClick={() => navigateTo("/auth/signup")}
               text={"Get Started"}
             />
           </div>

@@ -1,12 +1,14 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import Bag from "../../public/Image/landing-removebg-preview.png";
-import Button from "./ui/Button-styled";
+import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/authContext"; // Import useAuth
 
 export default function Hero() {
   const router = useRouter();
+  const { isAuthenticated, user } = useAuth(); // Get auth state and user data
 
   const navigateTo = (path: string) => {
     router.push(path);
@@ -69,13 +71,29 @@ export default function Hero() {
             </div>
             <div className="hero_left_md_two">
               <p className="mt-5 max-w-md text-base md:text-lg">
-                Access, Share & Discover Academic Resources – Organized by
-                Faculty, Department, and Course.
+                {isAuthenticated && user
+                  ? `Welcome back, ${user.firstName}! Ready to continue your learning journey?`
+                  : "Access, Share & Discover Academic Resources – Organized by Faculty, Department, and Course."}
               </p>
             </div>
             <div className="hero_left_bottom flex flex-wrap gap-4 mt-8 md:mt-10">
-              <Button onClick={() => navigateTo("/auth/login")} text={"Get Started"} />
-              <Button text={"Learn More"} onClick={() => navigateTo("/about")} />
+              {isAuthenticated && user ? (
+                <ButtonSlider
+                  onClick={() => navigateTo("/dashboard")}
+                  text={"Visit Dashboard"}
+                />
+              ) : (
+                <>
+                  <ButtonSlider
+                    onClick={() => navigateTo("/auth/login")}
+                    text={"Get Started"}
+                  />
+                  <ButtonSlider
+                    text={"Learn More"}
+                    onClick={() => navigateTo("/about")}
+                  />
+                </>
+              )}
               <div className="ml-2 w-16 md:w-20">
                 <svg
                   viewBox="0 0 24 24"

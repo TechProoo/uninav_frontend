@@ -6,10 +6,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ text }) => {
+export const ThemeButton: React.FC<ButtonProps> = ({ text, ...rest }) => {
   return (
-    <StyledWrapper> 
-      <button className="button" data-text={text}>
+    <StyledWrapper>
+      <button className="button" data-text={text} {...rest}>
         <span className="actual-text">&nbsp;{text}&nbsp;</span>
       </button>
     </StyledWrapper>
@@ -41,5 +41,3 @@ const StyledWrapper = styled.div`
     }
   }
 `;
-
-export default Button;

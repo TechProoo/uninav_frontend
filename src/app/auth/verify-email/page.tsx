@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { useAuth } from "@/contexts/authContext";
 import { useRouter, useSearchParams } from "next/navigation";
-import Button from "@/components/ui/Button-styled";
+import ButtonSlider from "@/components/ui/ButtonSlider";
 import {
   verifyEmailByCode,
   verifyEmailByToken,
@@ -284,7 +284,7 @@ const VerifyEmailPage = () => {
                   </div>
 
                   <div className="flex flex-col items-center gap-4 w-full">
-                    <Button text="Verify Email" type="submit" />
+                    <ButtonSlider text="Verify Email" type="submit" />
                     <p className="text-sm text-center">
                       Didn't receive the code?{" "}
                       {countdown > 0 ? (

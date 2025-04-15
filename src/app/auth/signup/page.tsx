@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import Button from "@/components/ui/Button-styled";
+import ButtonSlider from "@/components/ui/ButtonSlider";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "./loading";
@@ -29,8 +29,7 @@ const Page = () => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
-  const[showPassword, setShowPassword] = useState(false)
-
+  const [showPassword, setShowPassword] = useState(false);
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
@@ -287,7 +286,7 @@ const Page = () => {
                       <div className="flex justify-between">
                         <div></div>
                         <Button
-                          text="Next"
+                         ButtonStyled"Next"
                           onClick={handleNext}
                           type="button"
                         />
@@ -341,12 +340,12 @@ const Page = () => {
                       </div>
                       <div className="flex justify-between">
                         <Button
-                          text="Back"
+                         ButtonStyled"Back"
                           onClick={handleBack}
                           type="button"
                         />
                         <Button
-                          text="Next"
+                         ButtonStyled"Next"
                           onClick={handleNext}
                           type="button"
                         />
@@ -364,21 +363,21 @@ const Page = () => {
                           Password
                         </label>
                         <div className="flex flex-start items-center gap-4">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          id="password"
-                          value={formData.password}
-                          onChange={handleInputChange}
-                          placeholder="******"
-                          className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[85%]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="text-[#003666]"
-                        >
-                          {showPassword ? "Hide" : "Show"}
-                        </button>
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            id="password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            placeholder="******"
+                            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[85%]"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="text-[#003666]"
+                          >
+                            {showPassword ? "Hide" : "Show"}
+                          </button>
                         </div>
                         {errors.password && (
                           <p className="mt-1 text-red-500 text-xs">
@@ -433,12 +432,12 @@ const Page = () => {
 
                       <div className="flex justify-between">
                         <Button
-                          text="Back"
+                         ButtonStyled"Back"
                           onClick={handleBack}
                           type="button"
                         />
                         <Button text="Submit" type="submit" />
-                      </div>
+                      </dButtonStyled
                     </>
                   )}
                 </div>
