@@ -141,3 +141,41 @@ export const resendEmailVerification = async (email: string) => {
     throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
+
+// Request password reset
+export const requestPasswordReset = async (email: string) => {
+  try {
+    const requestData = JSON.stringify({ email });
+
+    const config = {
+      method: "POST",
+      url: "/auth/forgot-password",
+      data: requestData,
+    };
+
+    const response = await api<Response<any>>(config);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error requesting password reset:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
+};
+
+// Reset password with token
+export const resetPassword = async (token: string, newPassword: string) => {
+  try {
+    const requestData = JSON.stringify({ token, newPassword });
+
+    const config = {
+      method: "POST",
+      url: "/auth/reset-password",
+      data: requestData,
+    };
+
+    const response = await api<Response<any>>(config);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error resetting password:", error);
+    throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
+};

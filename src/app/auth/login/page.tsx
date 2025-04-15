@@ -180,7 +180,12 @@ const page = () => {
                 </div>
               </div>
               <div className="mt-2">
-                <p className="forgot_password fst">Forgot Password?</p>
+                <Link
+                  href="/auth/forgot-password"
+                  className="text-blue-600 hover:text-blue-800 dark:hover:text-blue-300 dark:text-blue-400 fst"
+                >
+                  Forgot Password?
+                </Link>
               </div>
               <div className="flex justify-center my-5">
                 <ButtonSlider type="submit" text="Login" />
