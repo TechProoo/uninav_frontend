@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import ButtonSlider from "@/components/ui/ButtonSlider";
+import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import gsap from "gsap";
 import { useQuery } from "@tanstack/react-query";
 import Loader from "./loading";
@@ -284,9 +284,8 @@ const Page = () => {
                         )}
                       </div>
                       <div className="flex justify-between">
-                        <div></div>
-                        <Button
-                         ButtonStyled"Next"
+                        <ButtonSlider
+                          text="Next"
                           onClick={handleNext}
                           type="button"
                         />
@@ -339,13 +338,13 @@ const Page = () => {
                         )}
                       </div>
                       <div className="flex justify-between">
-                        <Button
-                         ButtonStyled"Back"
+                        <ButtonSlider
+                          text="back"
                           onClick={handleBack}
                           type="button"
                         />
-                        <Button
-                         ButtonStyled"Next"
+                        <ButtonSlider
+                          text="Next"
                           onClick={handleNext}
                           type="button"
                         />
@@ -431,13 +430,13 @@ const Page = () => {
                       </div>
 
                       <div className="flex justify-between">
-                        <Button
-                         ButtonStyled"Back"
+                        <ButtonSlider
+                          text="Back"
                           onClick={handleBack}
                           type="button"
                         />
-                        <Button text="Submit" type="submit" />
-                      </dButtonStyled
+                        <ButtonSlider text="Submit" type="submit" />
+                      </div>
                     </>
                   )}
                 </div>
