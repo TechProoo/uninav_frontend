@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -8,7 +8,8 @@ import toast from "react-hot-toast";
 import { resetPassword } from "@/api/auth.api";
 import Loader from "../login/loading";
 
-const ResetPasswordPage = () => {
+// Component that uses useSearchParams
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -79,7 +80,7 @@ const ResetPasswordPage = () => {
                 Reset Password
                 {/* @ts-ignore */}
                 <lord-icon
-                  src="https://cdn.lordicon.com/bpqgkprintStackTrace.json"
+                  src="https://cdn.lordicon.com/bpqgkprn.json"
                   trigger="loop"
                   colors="primary:#121331,secondary:#75bfff"
                   style={{ width: "55px", height: "55px" }}
@@ -154,6 +155,13 @@ const ResetPasswordPage = () => {
       </div>
     </div>
   );
-};
+}
 
-export default ResetPasswordPage;
+// Main component with Suspense boundary for useSearchParams
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<Loader />}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}
