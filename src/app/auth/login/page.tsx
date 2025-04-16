@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import Loader from "./loading";
 import { useAuth } from "@/contexts/authContext";
 import { fetchUserProfile } from "@/api/user.api";
+import { Eye, EyeClosed } from "lucide-react";
 
 const page = () => {
   useEffect(() => {
@@ -160,22 +161,26 @@ const page = () => {
                 >
                   Password
                 </label>
-                <div className="flex flex-start items-center gap-4">
+                <div className="relative w-full">
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="p-3 rounded-md w-[85%]"
+                    placeholder="Enter your password"
+                    className="w-full p-3 pr-16 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-[#003666]"
+                    className="absolute top-1/2 right-4 -translate-y-1/2 text-blue-700 font-medium hover:underline focus:outline-none"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    {showPassword ? "Hide" : "Show"}
+                    {showPassword ? <Eye size={15} /> : <EyeClosed size={15} />}
                   </button>
                 </div>
               </div>

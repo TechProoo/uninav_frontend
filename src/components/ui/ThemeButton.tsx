@@ -9,7 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const ThemeButton: React.FC<ButtonProps> = ({ text, ...rest }) => {
   return (
     <StyledWrapper>
-      <button className="button" data-text={text} {...rest}>
+      <button className="button md:text-sm" data-text={text} {...rest}>
         <span className="actual-text">&nbsp;{text}&nbsp;</span>
       </button>
     </StyledWrapper>
@@ -25,7 +25,7 @@ const StyledWrapper = styled.div`
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    --fs-size: 17px;
+    --fs-size: 10px;
     letter-spacing: 2px;
     text-decoration: none;
     font-size: var(--fs-size);
@@ -33,7 +33,9 @@ const StyledWrapper = styled.div`
     position: relative;
     text-transform: uppercase;
     color: white;
-    transition: transform 0.2s ease, background 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease;
 
     &:hover {
       transform: scale(1.05);

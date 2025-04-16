@@ -111,7 +111,7 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
       .getType();
 
   const renderToolbar = () => (
-    <div className="toolbar" style={toolbarStyle}>
+    <div className="sticky top-0 z-10 flex flex-wrap gap-2 p-3 bg-white border-b border-gray-300">
       {[
         { type: "header-one", label: "H1" },
         { type: "header-two", label: "H2" },
@@ -197,29 +197,16 @@ const Editor: React.FC<EditorProps> = ({ onContentChange, value }) => {
         type="file"
         accept="image/*"
         onChange={handleImageUpload}
-        style={{ display: "none" }}
+        className="hidden"
       />
     </div>
   );
 
   return (
-    <div style={{ width: "100%" }}>
-      <div
-        className="border"
-        style={{ width: "100%", borderRadius: "4px", overflow: "hidden" }}
-      >
+    <div className="w-full max-w-full border rounded-md">
+      <div className="h-[600px] overflow-y-auto">
         {renderToolbar()}
-        <div
-          style={{
-            padding: "20px",
-            minHeight: "400px",
-            fontSize: "16px",
-            lineHeight: "1.6",
-            fontFamily: "Georgia, serif",
-            borderTop: "1px solid #ddd",
-          }}
-          className="w-full"
-        >
+        <div className="p-5 min-h-[400px] text-base leading-relaxed font-serif border-t border-gray-200">
           <DraftEditor
             editorState={editorState}
             onChange={handleChange}
@@ -255,15 +242,5 @@ const buttonStyle = (active: boolean): React.CSSProperties => ({
   color: active ? "#000" : "#555",
   borderBottom: active ? "2px solid #000" : "2px solid transparent",
 });
-
-const toolbarStyle: React.CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "8px",
-  padding: "10px 10px 0",
-  backgroundColor: "#fff",
-  borderBottom: "1px solid #ccc",
-  fontFamily: "sans-serif",
-};
 
 export default Editor;
