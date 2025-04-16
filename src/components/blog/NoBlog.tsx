@@ -34,28 +34,44 @@ const NoblogPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center relative text-center noblog-container">
-      <div className="flex gap-5 space-y-5 absolute right-0 md:top-[-5%] top-0 right-12">
-        <ThemeButton
-          text="All Blogs"
-          onClick={() => handleNavigation("/explore?defaultTab=blogs")}
-        />
-        <ThemeButton
-          text="Create Blog"
-          onClick={() => handleNavigation("/dashboard/blogs/createblog")}
+    <div className="flex flex-col items-center min-h-screen px-4 text-center">
+
+      {/* Image with animation */}
+      <div ref={imageRef} className="mb-6">
+        <Image
+          src={Empty}
+          alt="No blog icon"
+          className="w-32 md:w-40 rounded-full shadow-md"
         />
       </div>
-      <div ref={imageRef} className="mb-6 noblog-img md:mt-5 mt-20">
-        <Image src={Empty} alt="No blog icon" className="rounded-full w-100" />
-      </div>
-      <div ref={messageRef}>
-        <h1 className="font-bold text-gray-800 text-3xl md:text-4xl">
-          Oops, no blogs published yet!
+
+      {/* Message and CTA */}
+      <div ref={messageRef} className="max-w-xl">
+        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-800 dark:text-gray-100">
+          Oops! No blogs published yet.
         </h1>
-        <p className="mt-4 text-gray-600 text-xl">
-          It seems like you haven't written any blogs yet. Stay tuned for more
-          exciting content!
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-300">
+          It looks like you haven’t shared any blogs so far. Start creating and
+          inspire others!
         </p>
+
+        <div className="mt-6">
+          <ThemeButton
+            text="Create Blog"
+            onClick={() => handleNavigation("/dashboard/blogs/createblog")}
+          />
+        </div>
+
+        <p className="mt-6 text-base text-gray-600 dark:text-gray-400">
+          Meanwhile, feel free to explore blogs from other creators.
+        </p>
+
+        <div className="mt-4">
+          <ThemeButton
+            text="All Blogs"
+            onClick={() => handleNavigation("/explore?defaultTab=blogs")}
+          />
+        </div>
       </div>
     </div>
   );
