@@ -4,15 +4,44 @@ import styled from "styled-components";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
+  loading?: boolean;
 }
 
-export const ButtonSlider: React.FC<ButtonProps> = ({ text, ...rest }) => {
+export const ButtonSlider: React.FC<ButtonProps> = ({
+  text,
+  loading = false,
+  disabled,
+  ...rest
+}) => {
   return (
     <StyledWrapper>
-      <button className="button" data-text={text} {...rest}>
-        <span className="actual-text">&nbsp;{text}&nbsp;</span>
+      <button
+        className="button"
+        data-text={text}
+        disabled={disabled || loading}
+        {...rest}
+      >
+        <span className="actual-text">
+          &nbsp;
+          {loading ? (
+            <span className="loading-spinner">
+              <span className="spinner"></span>
+            </span>
+          ) : (
+            text
+          )}
+          &nbsp;
+        </span>
         <span aria-hidden="true" className="hover-text">
-          &nbsp;{text}&nbsp;
+          &nbsp;
+          {loading ? (
+            <span className="loading-spinner">
+              <span className="spinner"></span>
+            </span>
+          ) : (
+            text
+          )}
+          &nbsp;
         </span>
       </button>
     </StyledWrapper>
@@ -41,6 +70,11 @@ const StyledWrapper = styled.div`
     -webkit-text-stroke: 1px var(--text-stroke-color);
   }
 
+  .button:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
   .hover-text {
     position: absolute;
     box-sizing: border-box;
@@ -54,8 +88,34 @@ const StyledWrapper = styled.div`
     -webkit-text-stroke: 1px var(--animation-color);
   }
 
-  .button:hover .hover-text {
+  .button:hover:not(:disabled) .hover-text {
     width: 100%;
     filter: drop-shadow(0 0 23px var(--animation-color));
+  }
+
+  .loading-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: var(--animation-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
