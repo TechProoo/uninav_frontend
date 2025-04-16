@@ -51,7 +51,9 @@ const VerifyEmailPage = () => {
         setIsVerifying(true);
         setLoading(true);
         try {
-          const response = await verifyEmailByToken(token);
+          // since token is automatically decoded when using useSearchParams, we have to encode it back as that's what the server expects
+          let encodedToken = encodeURIComponent(token);
+          const response = await verifyEmailByToken(encodedToken);
           toast.success(response.message || "Email verified successfully!");
           toast.loading("Redirecting...", {
             duration: 2000,

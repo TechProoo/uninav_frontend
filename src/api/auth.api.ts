@@ -108,6 +108,7 @@ export const verifyEmailByCode = async (email: string, code: string) => {
 // Email verification by token
 export const verifyEmailByToken = async (token: string) => {
   try {
+    // No need to encode here since it's already encoded in the URL
     const config = {
       method: "GET",
       url: `/auth/verify-email/token?token=${token}`,
@@ -116,8 +117,10 @@ export const verifyEmailByToken = async (token: string) => {
     const response = await api<Response<any>>(config);
     return response.data;
   } catch (error: any) {
-    console.error("Error verifying email by code:", error);
-    throw new Error(error?.response?.data?.message || "Something went wrong");
+    console.error("Error verifying email by token:", error);
+    throw new Error(
+      error?.response?.data?.message || "Email Verification Failed"
+    );
   }
 };
 
