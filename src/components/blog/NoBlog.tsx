@@ -37,13 +37,13 @@ const NoblogPage: React.FC = () => {
     <div className="flex flex-col items-center min-h-screen px-4 text-center">
 
       {/* Image with animation */}
-      <div ref={imageRef} className="mb-6">
+      {/* <div ref={imageRef} className="mb-6">
         <Image
           src={Empty}
           alt="No blog icon"
           className="w-32 md:w-40 rounded-full shadow-md"
         />
-      </div>
+      </div> */}
 
       {/* Message and CTA */}
       <div ref={messageRef} className="max-w-xl">
