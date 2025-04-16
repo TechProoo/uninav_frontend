@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/authContext";
 import toast from "react-hot-toast";
 import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
 import { getDepartments } from "@/api/department.api";
+import { Eye, EyeClosed } from "lucide-react";
 
 const Page = () => {
   useEffect(() => {
@@ -361,23 +362,33 @@ const Page = () => {
                         >
                           Password
                         </label>
-                        <div className="flex flex-start items-center gap-4">
-                          <input
-                            type={showPassword ? "text" : "password"}
-                            id="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            placeholder="******"
-                            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-[85%]"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="text-[#003666]"
-                          >
-                            {showPassword ? "Hide" : "Show"}
-                          </button>
+                        <div className="flex items-center gap-3">
+                          <div className="relative w-full">
+                            <input
+                              type={showPassword ? "text" : "password"}
+                              id="password"
+                              value={formData.password}
+                              onChange={handleInputChange}
+                              placeholder="Enter your password"
+                              className="w-full p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-600 hover:text-blue-600 focus:outline-none"
+                              aria-label={
+                                showPassword ? "Hide password" : "Show password"
+                              }
+                            >
+                              {showPassword ? (
+                                <Eye size={15} />
+                              ) : (
+                                <EyeClosed size={15} />
+                              )}
+                            </button>
+                          </div>
                         </div>
+
                         {errors.password && (
                           <p className="mt-1 text-red-500 text-xs">
                             {errors.password}

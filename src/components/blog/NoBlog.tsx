@@ -34,8 +34,18 @@ const NoblogPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center p-8 min-h-screen text-center noblog-container">
-      <div ref={imageRef} className="mb-6 noblog-img">
+    <div className="flex flex-col justify-center items-center relative text-center noblog-container">
+      <div className="flex gap-5 space-y-5 absolute right-0 md:top-[-5%] top-0 right-12">
+        <ThemeButton
+          text="All Blogs"
+          onClick={() => handleNavigation("/explore?defaultTab=blogs")}
+        />
+        <ThemeButton
+          text="Create Blog"
+          onClick={() => handleNavigation("/dashboard/blogs/createblog")}
+        />
+      </div>
+      <div ref={imageRef} className="mb-6 noblog-img md:mt-5 mt-20">
         <Image src={Empty} alt="No blog icon" className="rounded-full w-100" />
       </div>
       <div ref={messageRef}>
@@ -46,16 +56,6 @@ const NoblogPage: React.FC = () => {
           It seems like you haven't written any blogs yet. Stay tuned for more
           exciting content!
         </p>
-      </div>
-      <div className="md:flex gap-5 space-y-5 mt-3 mt-5">
-        <ThemeButton
-          text="All Blogs"
-          onClick={() => handleNavigation("/explore?defaultTab=blogs")}
-        />
-        <ThemeButton
-          text="Create Blog"
-          onClick={() => handleNavigation("/dashboard/blogs/createblog")}
-        />
       </div>
     </div>
   );
