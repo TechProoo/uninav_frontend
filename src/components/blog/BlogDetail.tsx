@@ -86,6 +86,10 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
 
   // Handle like/unlike action with optimistic update
   const handleLikeToggle = async () => {
+    if (!user) {
+      toast.error("You must be logged in to like a blog");
+      return;
+    }
     if (isLiking || !localBlog) return;
 
     try {

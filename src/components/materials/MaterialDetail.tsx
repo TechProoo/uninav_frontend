@@ -127,6 +127,10 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   };
 
   const handleLikeToggle = async () => {
+    if (!user) {
+      toast.error("Please log in to like this material");
+      return;
+    }
     if (isLiking) return;
 
     try {
