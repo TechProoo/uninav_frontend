@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createCollection, updateCollection } from "@/api/collection.api";
+import { SelectCourse } from "@/components/search/SelectCourse";
 import toast from "react-hot-toast";
 
 interface CollectionFormProps {
@@ -33,6 +34,7 @@ export const CollectionForm = ({
     label: collection?.label || "",
     description: collection?.description || "",
     visibility: collection?.visibility || "public",
+    targetCourseId: collection?.targetCourseId || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,6 +85,16 @@ export const CollectionForm = ({
             setFormData((prev) => ({ ...prev, description: e.target.value }))
           }
           rows={4}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="block font-medium">Target Course (Optional)</label>
+        <SelectCourse
+          onChange={(courseId) => {
+            setFormData((prev) => ({ ...prev, targetCourseId: courseId }));
+          }}
+          currentValue={formData.targetCourseId}
         />
       </div>
 

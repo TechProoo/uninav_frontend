@@ -1,16 +1,12 @@
 import { api } from "./base.api";
-import {
-  Response,
-  Collection,
-  Material,
-  Pagination,
-} from "@/lib/types/response.type";
+import { Response, Collection, Material } from "@/lib/types/response.type";
 
 // Types for collection operations
 export interface CreateCollectionDto {
   label: string;
   description?: string;
   visibility?: "public" | "private";
+  targetCourseId?: string;
 }
 
 export interface UpdateCollectionDto extends Partial<CreateCollectionDto> {}
