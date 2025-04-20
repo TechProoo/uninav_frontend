@@ -32,11 +32,11 @@ export const SelectCollection = ({
   onChange,
   value: externalValue = "",
   excludeIds = [],
-  onCancel,
 }: SelectCollectionProps) => {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState(externalValue);
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -59,7 +59,7 @@ export const SelectCollection = ({
   }, []);
 
   const selectedCollection = collections.find(
-    (collection) => collection.id === externalValue
+    (collection) => collection.id === selectedId
   );
 
   return (
@@ -75,7 +75,7 @@ export const SelectCollection = ({
           >
             {loading
               ? "Loading collections..."
-              : externalValue && selectedCollection
+              : selectedCollection
                 ? selectedCollection.label
                 : "Select collection..."}
             <ChevronsUpDown className="opacity-50 ml-2 w-4 h-4 shrink-0" />
@@ -92,6 +92,8 @@ export const SelectCollection = ({
                     key={collection.id}
                     value={collection.label}
                     onSelect={() => {
+                      console.log("selected ", collection.id);
+                      setSelectedId(collection.id);
                       onChange(collection.id);
                       setOpen(false);
                     }}
@@ -99,19 +101,12 @@ export const SelectCollection = ({
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        externalValue === collection.id
+                        collection.id === selectedId
                           ? "opacity-100"
                           : "opacity-0"
                       )}
                     />
-                    <div className="flex flex-col">
-                      <span>{collection.label}</span>
-                      {collection.targetCourse && (
-                        <span className="text-muted-foreground text-xs">
-                          Course: {collection.targetCourse.courseName}
-                        </span>
-                      )}
-                    </div>
+                    <span>{collection.label}</span>
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -119,31 +114,6 @@ export const SelectCollection = ({
           </Command>
         </PopoverContent>
       </Popover>
-
-      {onCancel && (
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onCancel}
-            className="h-8"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            disabled={!externalValue}
-            onClick={() => {
-              if (externalValue) onChange(externalValue);
-            }}
-            className="h-8"
-          >
-            Add to Collection
-          </Button>
-        </div>
-      )}
     </div>
   );
 };

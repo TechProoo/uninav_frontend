@@ -44,7 +44,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   const [includeAdvert, setIncludeAdvert] = useState(false);
 
   // Define the maximum number of free adverts allowed per material
-  const MAX_FREE_ADVERTS = 3;
+  const MAX_FREE_ADVERTS = 1;
 
   // Track existing and new adverts separately
   const [existingAdverts, setExistingAdverts] = useState<Advert[]>([]);

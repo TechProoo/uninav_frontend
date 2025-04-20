@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { useBookmarks } from "@/contexts/bookmarksContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { AddToCollectionDialog } from "../collections/AddToCollectionDialog";
 
 interface MaterialCardProps {
   material: Material;
@@ -353,24 +354,12 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
           </div>
         </Card>
 
-        <Dialog
-          open={isCollectionDialogOpen}
+        <AddToCollectionDialog
+          isOpen={isCollectionDialogOpen}
           onOpenChange={setIsCollectionDialogOpen}
-        >
-          <DialogContent className="sm:max-w-md">
-            <div className="space-y-4">
-              <h2 className="font-medium text-lg">Add to Collection</h2>
-              <SelectCollection
-                onChange={(collectionId) => {
-                  handleAddToCollection(collectionId);
-                  setIsCollectionDialogOpen(false);
-                }}
-                value=""
-                onCancel={() => setIsCollectionDialogOpen(false)}
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
+          itemId={material.id}
+          itemType="material"
+        />
       </>
     );
   }
@@ -569,24 +558,12 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
         </div>
       </Card>
 
-      <Dialog
-        open={isCollectionDialogOpen}
+      <AddToCollectionDialog
+        isOpen={isCollectionDialogOpen}
         onOpenChange={setIsCollectionDialogOpen}
-      >
-        <DialogContent className="sm:max-w-md">
-          <div className="space-y-4">
-            <h2 className="font-medium text-lg">Add to Collection</h2>
-            <SelectCollection
-              onChange={(collectionId) => {
-                handleAddToCollection(collectionId);
-                setIsCollectionDialogOpen(false);
-              }}
-              value=""
-              onCancel={() => setIsCollectionDialogOpen(false)}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+        itemId={material.id}
+        itemType="material"
+      />
     </>
   );
 };

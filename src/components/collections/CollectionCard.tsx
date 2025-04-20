@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
 import { Collection, VisibilityEnum } from "@/lib/types/response.type";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,17 +24,12 @@ import {
   User,
 } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
-import {
-  deleteCollection,
-  addNestedCollection,
-  processCollectionContent,
-} from "@/api/collection.api";
+import { deleteCollection } from "@/api/collection.api";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { SelectCollection } from "./SelectCollection";
+import { AddToCollectionDialog } from "./AddToCollectionDialog";
 
 interface CollectionCardProps {
   collection: Collection;
@@ -58,7 +51,7 @@ const CollectionCard = ({
   const { user } = useAuth();
   const router = useRouter();
   const isOwner = user?.id === collection.creatorId;
-  const [isNestDialogOpen, setIsNestDialogOpen] = useState(false);
+  const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
 
   const contentCount = collection.content?.length || 0;
 
@@ -80,97 +73,84 @@ const CollectionCard = ({
     }
   };
 
-  const handleAddNestedCollection = async (parentCollectionId: string) => {
-    try {
-      if (parentCollectionId === collection.id) {
-        toast.error("Cannot nest a collection inside itself");
-        return;
-      }
-
-      const response = await addNestedCollection(
-        parentCollectionId,
-        collection.id
-      );
-      if (response?.status === "success") {
-        toast.success("Added to collection successfully");
-        setIsNestDialogOpen(false);
-      } else {
-        toast.error("Failed to add to collection");
-      }
-    } catch (error) {
-      console.error("Error adding to collection:", error);
-      toast.error("An error occurred while adding to collection");
-    }
-  };
-
   if (viewMode === "list") {
     return (
-      <div
-        className="bg-white/80 hover:bg-white shadow-sm hover:shadow-md p-4 border border-gray-100 rounded-xl transition-all duration-200 cursor-pointer"
-        onClick={handleClick}
-      >
-        <div className="flex gap-4">
-          <div className="bg-blue-50 p-3 rounded-xl">
-            <FolderOpen className="w-6 h-6 text-blue-500" />
-          </div>
-          <div className="flex-grow">
-            <h3 className="mb-2 font-semibold text-gray-900">
-              {collection.label}
-            </h3>
-            <p className="mb-3 text-gray-600 text-sm line-clamp-2">
-              {collection.description}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="text-xs">
-                {contentCount} items
-              </Badge>
-              <Badge
-                variant="outline"
-                className="flex items-center gap-1 text-xs"
-              >
-                {collection.visibility === VisibilityEnum.PUBLIC ? (
-                  <Globe className="w-3 h-3" />
-                ) : (
-                  <Lock className="w-3 h-3" />
-                )}
-                {collection.visibility.toLowerCase()}
-              </Badge>
+      <>
+        <div
+          className="bg-white/80 hover:bg-white shadow-sm hover:shadow-md p-4 border border-gray-100 rounded-xl transition-all duration-200 cursor-pointer"
+          onClick={handleClick}
+        >
+          <div className="flex gap-4">
+            <div className="bg-blue-50 p-3 rounded-xl">
+              <FolderOpen className="w-6 h-6 text-blue-500" />
             </div>
-          </div>
-          {isOwner && (
-            <div className="flex items-start">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="w-8 h-8">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEdit?.(collection);
-                    }}
-                  >
-                    <Edit className="mr-2 w-4 h-4" />
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="text-red-600"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete();
-                    }}
-                  >
-                    <Trash2 className="mr-2 w-4 h-4" />
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="flex-grow">
+              <h3 className="mb-2 font-semibold text-gray-900">
+                {collection.label}
+              </h3>
+              <p className="mb-3 text-gray-600 text-sm line-clamp-2">
+                {collection.description}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="secondary" className="text-xs">
+                  {contentCount} items
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 text-xs"
+                >
+                  {collection.visibility === VisibilityEnum.PUBLIC ? (
+                    <Globe className="w-3 h-3" />
+                  ) : (
+                    <Lock className="w-3 h-3" />
+                  )}
+                  {collection.visibility.toLowerCase()}
+                </Badge>
+              </div>
             </div>
-          )}
+            {isOwner && (
+              <div className="flex items-start">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="w-8 h-8">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit?.(collection);
+                      }}
+                    >
+                      <Edit className="mr-2 w-4 h-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete();
+                      }}
+                    >
+                      <Trash2 className="mr-2 w-4 h-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+
+        <AddToCollectionDialog
+          isOpen={isCollectionDialogOpen}
+          onOpenChange={setIsCollectionDialogOpen}
+          itemId={collection.id}
+          itemType="collection"
+          excludeIds={[collection.id]}
+        />
+      </>
     );
   }
 
@@ -196,7 +176,7 @@ const CollectionCard = ({
                 className="p-1 w-7 h-7"
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsNestDialogOpen(true);
+                  setIsCollectionDialogOpen(true);
                 }}
                 title="Add to another collection"
               >
@@ -265,26 +245,13 @@ const CollectionCard = ({
         )}
       </div>
 
-      {/* Add to Collection Dialog */}
-      <Dialog open={isNestDialogOpen} onOpenChange={setIsNestDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <div className="space-y-4">
-            <h2 className="font-medium text-lg">Add to Collection</h2>
-            <p className="text-gray-500 text-sm">
-              Select a collection to add "{collection.label}" as a nested
-              collection:
-            </p>
-            <SelectCollection
-              onChange={(collectionId) => {
-                handleAddNestedCollection(collectionId);
-              }}
-              value=""
-              onCancel={() => setIsNestDialogOpen(false)}
-              excludeIds={[collection.id]} // Exclude the current collection
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <AddToCollectionDialog
+        isOpen={isCollectionDialogOpen}
+        onOpenChange={setIsCollectionDialogOpen}
+        itemId={collection.id}
+        itemType="collection"
+        excludeIds={[collection.id]}
+      />
     </>
   );
 };
