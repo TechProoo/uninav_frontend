@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { AuthContext } from "@/contexts/authContext";
+import { useAuth } from "@/contexts/authContext";
 import { Collection } from "@/lib/types/response.type";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,32 +12,30 @@ import { getCollection, deleteCollection } from "@/api/collection.api";
 import toast from "react-hot-toast";
 
 export default function CollectionPage() {
-  const { collectionId } = useParams();
+  const params = useParams();
+  const router = useRouter();
+  const { user } = useAuth();
+  const collectionId = params.collectionId as string;
+
   const [collection, setCollection] = useState<Collection | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const router = useRouter();
-  const { user } = useContext(AuthContext) ?? { user: null };
 
   useEffect(() => {
     const fetchCollection = async () => {
-      if (!collectionId || typeof collectionId !== "string") {
-        setError("Invalid collection ID");
-        setLoading(false);
-        return;
-      }
-
       try {
         const response = await getCollection(collectionId);
-        if (response?.status === "success") {
+        if (response.status === "success") {
           setCollection(response.data);
         } else {
-          setError("Failed to load collection details");
+          setError("Failed to load collection");
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error fetching collection:", err);
-        setError("An error occurred while loading the collection");
+        setError(
+          err.message || "An error occurred while loading the collection"
+        );
       } finally {
         setLoading(false);
       }
@@ -78,7 +76,7 @@ export default function CollectionPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">

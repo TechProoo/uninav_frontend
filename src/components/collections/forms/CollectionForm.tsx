@@ -8,24 +8,26 @@ import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface CollectionFormProps {
-  collection?: Collection;
-  onSuccess: () => void;
+  initialData?: Collection;
+  onSuccess: (updatedCollection: Collection) => void;
   onCancel: () => void;
 }
 
 interface CollectionFormData {
   label: string;
   description: string;
+  visibility: "public" | "private";
 }
 
 const CollectionForm: React.FC<CollectionFormProps> = ({
-  collection,
+  initialData,
   onSuccess,
   onCancel,
 }) => {
   const [formData, setFormData] = useState<CollectionFormData>({
-    label: collection?.label || "",
-    description: collection?.description || "",
+    label: initialData?.label || "",
+    description: initialData?.description || "",
+    visibility: initialData?.visibility || "private",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,18 +46,19 @@ const CollectionForm: React.FC<CollectionFormProps> = ({
     }
 
     setIsSubmitting(true);
+    let updatedCollection;
     try {
-      if (collection) {
-        await updateCollection(collection.id, formData);
+      if (initialData) {
+        updatedCollection = await updateCollection(initialData.id, formData);
         toast.success("Collection updated successfully");
       } else {
-        await createCollection(formData);
+        updatedCollection = await createCollection(formData);
         toast.success("Collection created successfully");
       }
-      onSuccess();
+      onSuccess(updatedCollection);
     } catch (error) {
       toast.error(
-        collection
+        initialData
           ? "Failed to update collection"
           : "Failed to create collection"
       );
@@ -67,7 +70,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({
   return (
     <div className="mx-auto max-w-2xl">
       <h2 className="mb-6 font-bold text-2xl">
-        {collection ? "Edit Collection" : "Create Collection"}
+        {initialData ? "Edit Collection" : "Create Collection"}
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -110,9 +113,9 @@ const CollectionForm: React.FC<CollectionFormProps> = ({
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 w-4 h-4 animate-spin" />
-                {collection ? "Updating..." : "Creating..."}
+                {initialData ? "Updating..." : "Creating..."}
               </>
-            ) : collection ? (
+            ) : initialData ? (
               "Save Changes"
             ) : (
               "Create Collection"

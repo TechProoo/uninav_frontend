@@ -6,8 +6,8 @@ import { PlusCircle, Search, FolderHeart, Grid, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Collection } from "@/lib/types/response.type";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAllCollections, deleteCollection } from "@/api/collection.api";
-import CollectionGrid from "@/components/collections/CollectionGrid";
+import { getMyCollections, deleteCollection } from "@/api/collection.api";
+import { CollectionGrid } from "@/components/collections/CollectionGrid";
 import CollectionDetail from "@/components/collections/CollectionDetail";
 import CollectionForm from "@/components/collections/forms/CollectionForm";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -32,9 +32,11 @@ const CollectionsPage = () => {
     error,
   } = useQuery({
     queryKey: ["collections"],
-    queryFn: () => getAllCollections(),
+    queryFn: async () => {
+      let response = await getMyCollections();
+      return response.data;
+    },
   });
-
   // Delete collection mutation
   const deleteMutation = useMutation({
     mutationFn: deleteCollection,
@@ -47,10 +49,9 @@ const CollectionsPage = () => {
       toast.error("Failed to delete collection");
     },
   });
-
   // Filter collections based on search
   const filteredCollections = collections.filter((collection) =>
-    collection.name.toLowerCase().includes(searchQuery.toLowerCase())
+    collection.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCollectionClick = (collection: Collection) => {
@@ -174,7 +175,7 @@ const CollectionsPage = () => {
 
       {showEditForm && selectedCollection && (
         <CollectionForm
-          collection={selectedCollection}
+          initialData={selectedCollection}
           onSuccess={() => {
             setShowEditForm(false);
             queryClient.invalidateQueries({ queryKey: ["collections"] });

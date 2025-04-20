@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { getCollections } from "@/api/collection.api";
+import { getMyCollections } from "@/api/collection.api";
 import { cn } from "@/lib/utils";
 import { Collection } from "@/lib/types/response.type";
 import { toast } from "react-hot-toast";
@@ -42,13 +42,11 @@ export const SelectCollection = ({
     const fetchCollections = async () => {
       try {
         setLoading(true);
-        const response = await getCollections();
-        if (response?.status === "success") {
-          const filteredCollections = response.data.filter(
-            (c) => !excludeIds.includes(c.id)
-          );
-          setCollections(filteredCollections);
-        }
+        const response = await getMyCollections();
+        const filteredCollections = response.data.filter(
+          (c) => !excludeIds.includes(c.id)
+        );
+        setCollections(filteredCollections);
       } catch (error) {
         console.error("Error fetching collections:", error);
         toast.error("Failed to load collections");
@@ -58,7 +56,7 @@ export const SelectCollection = ({
     };
 
     fetchCollections();
-  }, [excludeIds]);
+  }, []);
 
   const selectedCollection = collections.find(
     (collection) => collection.id === externalValue

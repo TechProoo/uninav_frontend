@@ -171,11 +171,12 @@ export type Collection = {
     firstName: string;
     lastName: string;
     username: string;
-    departmentId: string;
-    level: number;
   };
 
-  materials: Material[];
+  content?: {
+    material?: Material;
+    nestedCollection?: Collection;
+  }[];
   createdAt: string;
   updatedAt: string;
 };
