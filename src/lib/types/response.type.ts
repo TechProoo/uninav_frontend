@@ -133,7 +133,11 @@ export type Material = {
   createdAt: string;
   updatedAt: string;
   adverts?: Advert[];
-  collections?: Collection[];
+  collections?: {
+    id: string;
+    collectionId: string;
+    collection: Collection;
+  }[];
   creator: {
     id: string;
     firstName: string;
@@ -165,7 +169,10 @@ export type Collection = {
   description: string;
   visibility: VisibilityEnum;
   creatorId: string;
-  targetCourse: Course;
+  targetCourseId: string;
+  // targetCourse: Course;
+  likes: number;
+  views: number;
   creator: {
     id: string;
     firstName: string;

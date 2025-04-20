@@ -656,7 +656,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
               Featured in Collections
             </h2>
             <CollectionGrid
-              collections={material.collections}
+              collections={material.collections.map((item) => item.collection)}
               onCollectionClick={(collection) =>
                 router.push(`/collections/${collection.id}`)
               }
