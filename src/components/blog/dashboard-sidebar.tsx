@@ -8,6 +8,7 @@ import {
   Settings,
   User,
   Building2,
+  FolderHeart,
 } from "lucide-react";
 
 import {
@@ -48,6 +49,11 @@ const items = [
     title: "Adverts",
     url: "/dashboard/ads",
     icon: Megaphone,
+  },
+  {
+    title: "Collections",
+    url: "/dashboard/collections",
+    icon: FolderHeart,
   },
   {
     title: "Bookmarks",

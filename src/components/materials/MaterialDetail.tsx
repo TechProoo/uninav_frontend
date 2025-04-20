@@ -8,6 +8,7 @@ import {
   VisibilityEnum,
   RestrictionEnum,
   Advert,
+  Collection,
 } from "@/lib/types/response.type";
 import {
   Eye,
@@ -43,6 +44,7 @@ import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import { useAuth } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
+import { CollectionGrid } from "@/components/collections/CollectionGrid";
 
 interface MaterialDetailProps {
   material: Material;
@@ -646,6 +648,21 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             </Button>
           )}
         </div>
+
+        {/* Add Collections Section after Material Info */}
+        {material.collections && material.collections.length > 0 && (
+          <div className="mt-8">
+            <h2 className="mb-4 font-medium text-lg">
+              Featured in Collections
+            </h2>
+            <CollectionGrid
+              collections={material.collections}
+              onCollectionClick={(collection) =>
+                router.push(`/collections/${collection.id}`)
+              }
+            />
+          </div>
+        )}
       </Card>
 
       {/* Advert Detail Modal */}

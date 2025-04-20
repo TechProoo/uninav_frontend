@@ -20,10 +20,13 @@ import { CreateFreeAdvertDto, createFreeAdvert } from "@/api/advert.api";
 import { getCourses } from "@/api/course.api";
 import { useDropzone } from "react-dropzone";
 import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCollection } from "@/components/collections/SelectCollection";
 import toast from "react-hot-toast";
+import { useSearchParams } from "next/navigation";
+import { addMaterialToCollection } from "@/api/collection.api";
 
 interface MaterialFormProps {
-  initialData?: Material;
+  initialData?: Material & { collectionId?: string };
   onSuccess: (material: Material) => void;
   onCancel: () => void;
 }
@@ -53,7 +56,12 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       imagePreview: string | null;
     }[]
   >([]);
-  const [formData, setFormData] = useState<CreateMaterialDto>({
+  const searchParams = useSearchParams();
+  const initialCollectionId = searchParams.get("collectionId");
+
+  const [formData, setFormData] = useState<
+    CreateMaterialDto & { collectionId?: string }
+  >({
     label: "",
     description: "",
     type: MaterialTypeEnum.PDF,
@@ -61,6 +69,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     visibility: VisibilityEnum.PUBLIC,
     restriction: RestrictionEnum.DOWNLOADABLE,
     resourceAddress: "",
+    collectionId: initialCollectionId || "", // Add this line
   });
 
   const [tagInput, setTagInput] = useState("");
@@ -79,6 +88,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         restriction: initialData.restriction,
         resourceAddress: initialData.resource?.resourceAddress || "",
         targetCourseId: initialData.targetCourseId || undefined,
+        collectionId: initialData.collectionId || initialCollectionId || "", // Add this line
       });
 
       if (initialData.targetCourse) {
@@ -317,9 +327,9 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         setIsSubmitting(false);
         return;
       }
-
+      const { collectionId, ...relevantMaterialData } = formData;
       const materialData: CreateMaterialDto = {
-        ...formData,
+        ...relevantMaterialData,
         targetCourseId: selectedCourse?.id,
       };
 
@@ -336,6 +346,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
       if (materialResponse && materialResponse.status === "success") {
         const material = materialResponse.data;
+
+        // If collection is selected, add material to collection
+        if (formData.collectionId) {
+          await addMaterialToCollection(formData.collectionId, material.id);
+        }
 
         // Create adverts if checkbox is checked and there are new adverts to create
         if (includeAdvert && newAdverts.length > 0) {
@@ -640,6 +655,19 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             </div>
           </div>
 
+          {/* Add Collection Selection */}
+          <div>
+            <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
+              Add to Collection (Optional)
+            </label>
+            <SelectCollection
+              onChange={(collectionId) => {
+                setFormData((prev) => ({ ...prev, collectionId }));
+              }}
+              value={formData.collectionId}
+            />
+          </div>
+
           {/* Advert Option */}
           <div className="mt-4 sm:mt-8 pt-3 sm:pt-4 border-t">
             <div className="flex items-center gap-2 mb-3 sm:mb-4">
@@ -920,8 +948,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             {isSubmitting
               ? "Saving..."
               : initialData
-              ? "Update Material"
-              : "Create Material"}
+                ? "Update Material"
+                : "Create Material"}
           </Button>
         </div>
       </form>

@@ -391,38 +391,38 @@ const ContactPage = () => {
 
           <div className="gap-8 grid md:grid-cols-2 lg:grid-cols-4">
             <TeamMemberCard
-              name="Sarah Chen"
-              role="Frontend Developer"
+              name="@techpro"
+              role="Frontend/Fullstack Developer"
               image="https://randomuser.me/api/portraits/women/44.jpg"
-              github="https://github.com/buildminds"
-              linkedin="https://linkedin.com/in/buildminds"
-              twitter="https://twitter.com/uninav"
+              github="https://github.com/techprooo"
+              linkedin="https://linkedin.com/in/techprooo"
+              twitter="https://twitter.com/techprooo"
             />
 
             <TeamMemberCard
-              name="David Okonkwo"
-              role="Backend Engineer"
+              name="@prospercoded"
+              role="Backend/Software Architect"
               image="https://randomuser.me/api/portraits/men/75.jpg"
-              github="https://github.com/buildminds"
-              linkedin="https://linkedin.com/in/buildminds"
-              twitter="https://twitter.com/uninav"
-            />
-            <TeamMemberCard
-              name="Alex Johnson"
-              role="Marketing Manager"
-              image="https://randomuser.me/api/portraits/men/32.jpg"
-              github="https://github.com/buildminds"
-              linkedin="https://linkedin.com/in/buildminds"
-              twitter="https://twitter.com/uninav"
+              github="https://github.com/prospercoded"
+              linkedin="https://linkedin.com/in/prospercoded"
+              twitter="https://twitter.com/prosper_coded"
             />
 
             <TeamMemberCard
-              name="Aisha Mohammed"
+              name="Willy Wonka"
               role="Product Manager"
               image="https://randomuser.me/api/portraits/women/68.jpg"
-              github="https://github.com/buildminds"
-              linkedin="https://linkedin.com/in/buildminds"
-              twitter="https://twitter.com/uninav"
+              github="https://github.com/willy-wonka28"
+              linkedin="https://linkedin.com/in/willy-wonka28"
+              twitter="https://twitter.com/willy-wonka"
+            />
+            <TeamMemberCard
+              name="John"
+              role="Marketing Manager"
+              image="https://randomuser.me/api/portraits/men/32.jpg"
+              github="https://github.com/john"
+              linkedin="https://linkedin.com/in/john"
+              twitter="https://twitter.com/john"
             />
           </div>
         </div>

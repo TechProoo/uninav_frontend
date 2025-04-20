@@ -133,6 +133,7 @@ export type Material = {
   createdAt: string;
   updatedAt: string;
   adverts?: Advert[];
+  collections?: Collection[];
   creator: {
     id: string;
     firstName: string;
@@ -164,7 +165,7 @@ export type Collection = {
   description: string;
   visibility: VisibilityEnum;
   creatorId: string;
-
+  targetCourse: Course;
   creator: {
     id: string;
     firstName: string;
@@ -178,6 +179,7 @@ export type Collection = {
   createdAt: string;
   updatedAt: string;
 };
+
 export type Bookmark = {
   id: string;
   userid: string;
