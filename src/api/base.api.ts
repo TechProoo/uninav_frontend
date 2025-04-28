@@ -3,6 +3,7 @@ import { getSession } from "@/lib/utils";
 
 // * Production
 export const BASE_URL = "https://uninav-backend.up.railway.app";
+// export const BASE_URL = "http://localhost:3200";
 // * Local
 
 export const api = axios.create({
