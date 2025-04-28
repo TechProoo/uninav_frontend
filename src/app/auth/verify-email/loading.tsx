@@ -2,10 +2,14 @@
 import React from "react";
 import styled from "styled-components";
 
-const Loader = () => {
+interface LoaderProps {
+  message?: string;
+}
+
+const Loader: React.FC<LoaderProps> = ({ message }) => {
   return (
     <StyledWrapper>
-      <div className="top-0 right-0 bottom-0 left-0 z-50 absolute flex justify-center items-center bg-[#003666]/80 backdrop-blur-sm w-screen h-screen">
+      <div className="top-0 right-0 bottom-0 left-0 z-50 absolute flex flex-col justify-center items-center bg-[#003666]/80 backdrop-blur-sm w-screen h-screen">
         <div className="loader">
           <div className="box">
             <div className="logo">
@@ -26,6 +30,11 @@ const Loader = () => {
           <div className="box" />
           <div className="box" />
         </div>
+        {message && (
+          <div className="mt-6 px-4 font-medium text-white text-lg text-center">
+            {message}
+          </div>
+        )}
       </div>
     </StyledWrapper>
   );

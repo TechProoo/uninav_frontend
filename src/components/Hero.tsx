@@ -73,7 +73,7 @@ export default function Hero() {
               <p className="mt-5 max-w-md text-base md:text-lg">
                 {isAuthenticated && user
                   ? `Welcome back, ${user.firstName}! Ready to continue your learning journey?`
-                  : "Access, Share & Discover Academic Resources – Organized by Faculty, Department, and Course."}
+                  : "Access, Share & Discover Academic Resources Organized by Faculty, Department, and Course."}
               </p>
             </div>
             <div className="hero_left_bottom flex flex-wrap gap-4 mt-8 md:mt-10">

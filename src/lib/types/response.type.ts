@@ -133,6 +133,11 @@ export type Material = {
   createdAt: string;
   updatedAt: string;
   adverts?: Advert[];
+  collections?: {
+    id: string;
+    collectionId: string;
+    collection: Collection;
+  }[];
   creator: {
     id: string;
     firstName: string;
@@ -164,20 +169,25 @@ export type Collection = {
   description: string;
   visibility: VisibilityEnum;
   creatorId: string;
-
+  targetCourseId: string;
+  // targetCourse: Course;
+  likes: number;
+  views: number;
   creator: {
     id: string;
     firstName: string;
     lastName: string;
     username: string;
-    departmentId: string;
-    level: number;
   };
 
-  materials: Material[];
+  content?: {
+    material?: Material;
+    nestedCollection?: Collection;
+  }[];
   createdAt: string;
   updatedAt: string;
 };
+
 export type Bookmark = {
   id: string;
   userid: string;

@@ -21,11 +21,14 @@ const VerifyEmailPage = () => {
   const token = searchParams.get("token");
 
   const [verificationCode, setVerificationCode] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(!!token); // Start loading if token exists
   const [resendLoading, setResendLoading] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(0);
-  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [isVerifyingToken, setIsVerifyingToken] = useState<boolean>(!!token); // Track if token verification is active
   const [emailInput, setEmailInput] = useState<string>(email || "");
+  const [showVerificationForm, setShowVerificationForm] = useState<boolean>(
+    !token
+  ); // Control form visibility
 
   // Array to hold 6 input references for the verification code
   const [codeInputs, setCodeInputs] = useState<string[]>([
@@ -47,11 +50,13 @@ const VerifyEmailPage = () => {
   // Effect to handle automatic token verification
   useEffect(() => {
     const verifyWithToken = async () => {
-      if (token && !isVerifying) {
-        setIsVerifying(true);
-        setLoading(true);
+      // Only run if token exists, form isn't shown yet, and not already verifying
+      if (token && !showVerificationForm && isVerifyingToken) {
+        setLoading(true); // Ensure loading state is true
         try {
-          const response = await verifyEmailByToken(token);
+          // since token is automatically decoded when using useSearchParams, we have to encode it back as that's what the server expects
+          let encodedToken = encodeURIComponent(token);
+          const response = await verifyEmailByToken(encodedToken);
           toast.success(response.message || "Email verified successfully!");
           toast.loading("Redirecting...", {
             duration: 2000,
@@ -59,20 +64,30 @@ const VerifyEmailPage = () => {
           // Update user profile to get the latest verification status
           await refreshUserProfile();
           router.push("/dashboard");
+          // No need to set loading false here as we are redirecting
         } catch (error: any) {
           console.error("Error verifying email with token:", error);
           toast.error(
             error.message ||
-              "Verification failed. Please try again with the code."
+              "Token verification failed. Please use the code instead."
           );
-        } finally {
-          setLoading(false);
+          setShowVerificationForm(true); // Show the form on error
+          setIsVerifyingToken(false); // Stop token verification attempt
+          setLoading(false); // Stop loading indicator
         }
+        // Removed finally block as success leads to redirect
+      } else if (!token) {
+        // If no token, ensure loading is false and form is shown
+        setLoading(false);
+        setShowVerificationForm(true);
+        setIsVerifyingToken(false);
       }
     };
 
     verifyWithToken();
-  }, [token, isVerifying, refreshUserProfile, router]);
+    // Dependencies: token, showVerificationForm, isVerifyingToken, refreshUserProfile, router
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, isVerifyingToken, refreshUserProfile, router]); // Removed showVerificationForm from deps to avoid loop on error
 
   // Effect to handle countdown for resend button
   useEffect(() => {
@@ -201,8 +216,9 @@ const VerifyEmailPage = () => {
     }
   };
 
-  if (loading) {
-    return <Loader />;
+  // Show loader if loading state is true (covers both token and code verification)
+  if (loading && isVerifyingToken && !showVerificationForm) {
+    return <Loader message="Verifying email via token..." />;
   }
 
   return (
@@ -240,9 +256,10 @@ const VerifyEmailPage = () => {
                   /* @ts-ignore */
                 ></lord-icon>
               </h1>
-              {token ? (
+              {/* Conditional text based on whether the form is shown */}
+              {token && !showVerificationForm ? (
                 <p className="mt-2 text-gray-600 dark:text-gray-300">
-                  Verifying your email address...
+                  Verifying your email address via token...
                 </p>
               ) : (
                 <p className="mt-2 text-gray-600 dark:text-gray-300">
@@ -252,7 +269,8 @@ const VerifyEmailPage = () => {
               )}
             </div>
 
-            {!token && (
+            {/* Render form only if showVerificationForm is true */}
+            {showVerificationForm && (
               <form onSubmit={handleVerifyEmail} className="space-y-6">
                 {" "}
                 {/* Use space-y for spacing */}
@@ -272,6 +290,8 @@ const VerifyEmailPage = () => {
                     placeholder="your@email.com"
                     className="bg-gray-50 dark:bg-gray-700 p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full dark:text-white"
                     required
+                    // Disable if verifying via token initially and form just appeared due to error
+                    // disabled={token && !showVerificationForm}
                   />
                 </div>
                 {/* Verification Code Inputs */}
@@ -308,7 +328,7 @@ const VerifyEmailPage = () => {
                   <ButtonSlider
                     text="Verify Email"
                     type="submit"
-                    loading={loading}
+                    loading={loading && !isVerifyingToken} // Show loading only for code verification submit
                   />
                   <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
                     Didn't receive the code?{" "}
