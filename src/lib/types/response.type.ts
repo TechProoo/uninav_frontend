@@ -50,7 +50,7 @@ export type UserProfile = {
   createdAt: string;
   updatedAt: string;
   department: {
-    id: string;
+    id: string; 
     name: string;
     description: string;
     facultyId: string;
