@@ -56,7 +56,7 @@ const CourseManagementPage = () => {
       const response = await getCoursesPaginated({
         page: currentPage,
         limit: 10,
-        allowDuplicates: true,
+        allowDepartments: true,
         ...(searchQuery ? { query: searchQuery } : {}),
       });
 
