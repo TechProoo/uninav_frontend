@@ -100,13 +100,12 @@ export default function MaterialPage() {
         <Button
           variant="ghost"
           asChild
-          className="border border-[#0c385f] rounded-md hover:bg-[#0c385f] hover:text-white"
+          className="hover:bg-[#0c385f] border border-[#0c385f] rounded-md hover:text-white"
         >
           <div
             onClick={() => {
               router.back();
             }}
-            className="flex items-center gap-2"
           >
             <span>← Back</span>
           </div>

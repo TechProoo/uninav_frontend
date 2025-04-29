@@ -50,7 +50,7 @@ export type UserProfile = {
   createdAt: string;
   updatedAt: string;
   department: {
-    id: string; 
+    id: string;
     name: string;
     description: string;
     facultyId: string;
@@ -180,9 +180,12 @@ export type Collection = {
     username: string;
   };
 
-  content?: {
+  content: {
     material?: Material;
     nestedCollection?: Collection;
+    contentMaterialId: string;
+    contentCollectionId: string;
+    collectionId: string;
   }[];
   createdAt: string;
   updatedAt: string;

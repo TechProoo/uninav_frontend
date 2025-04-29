@@ -108,11 +108,22 @@ export const AddToCollectionDialog = ({
                 <SelectValue placeholder="Select a collection" />
               </SelectTrigger>
               <SelectContent position="popper">
-                {collections.map((collection) => (
-                  <SelectItem key={collection.id} value={collection.id}>
-                    {collection.label}
-                  </SelectItem>
-                ))}
+                {collections.map((collection) => {
+                  console.log(collection, itemId);
+                  if (
+                    collection.content?.some(
+                      (item) =>
+                        item.contentMaterialId === itemId ||
+                        item.collectionId === itemId
+                    )
+                  )
+                    return null;
+                  return (
+                    <SelectItem key={collection.id} value={collection.id}>
+                      {collection.label}
+                    </SelectItem>
+                  );
+                })}
               </SelectContent>
             </Select>
           )}

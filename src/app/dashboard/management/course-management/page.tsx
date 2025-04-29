@@ -120,89 +120,106 @@ const CourseManagementPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 container">
-      <div className="flex items-center mb-6">
-        <Button variant="ghost" size="sm" className="mr-2" asChild>
+    <div className="mx-auto px-3 sm:px-4 container">
+      <div className="flex items-center mb-4 sm:mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mr-1 sm:mr-2 p-1 sm:p-2"
+          asChild
+        >
           <Link href="/dashboard/management">
-            <ChevronLeft className="w-5 h-5" />
-            <span>Back</span>
+            <ChevronLeft className="w-4 sm:w-5 h-4 sm:h-5" />
+            <span className="hidden sm:inline ml-1">Back</span>
           </Link>
         </Button>
-        <h1 className="font-bold text-3xl">Course Management</h1>
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
+          Course Management
+        </h1>
       </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <form onSubmit={handleSearch} className="flex gap-2">
+      <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+        <form onSubmit={handleSearch} className="flex gap-2 w-full sm:w-auto">
           <Input
             type="search"
             placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
+            className="max-w-full sm:max-w-md text-sm"
           />
-          <Button type="submit">
-            <Search className="mr-2 w-4 h-4" />
-            Search
+          <Button type="submit" size="sm" className="whitespace-nowrap">
+            <Search className="mr-1 sm:mr-2 w-3 sm:w-4 h-3 sm:h-4" />
+            <span className="text-xs sm:text-sm">Search</span>
           </Button>
         </form>
-        <Button onClick={handleFormToggle}>
-          <Plus className="mr-2 w-4 h-4" />
+        <Button
+          onClick={handleFormToggle}
+          size="sm"
+          className="mt-2 sm:mt-0 w-full sm:w-auto text-xs sm:text-sm"
+        >
+          <Plus className="mr-1 sm:mr-2 w-3 sm:w-4 h-3 sm:h-4" />
           {showForm ? "Cancel" : "Add Course"}
         </Button>
       </div>
 
       {showForm && (
-        <div className="bg-white shadow-sm mb-8 p-6 border rounded-lg">
-          <h2 className="mb-4 font-semibold text-xl">Add New Course</h2>
+        <div className="bg-white shadow-sm mb-6 sm:mb-8 p-3 sm:p-6 border rounded-lg">
+          <h2 className="mb-3 sm:mb-4 font-semibold text-lg sm:text-xl">
+            Add New Course
+          </h2>
           <CourseForm onSuccess={handleFormSuccess} />
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+          <div className="flex justify-center items-center py-12 sm:py-20">
+            <Loader2 className="w-6 sm:w-8 h-6 sm:h-8 text-blue-500 animate-spin" />
           </div>
         ) : error ? (
-          <div className="bg-red-50 p-4 rounded-md text-red-500">
+          <div className="bg-red-50 p-3 sm:p-4 rounded-md text-red-500 text-sm sm:text-base">
             <p>{error}</p>
           </div>
         ) : courses.length === 0 ? (
-          <div className="bg-gray-50 p-8 rounded-md text-center">
-            <GraduationCap className="mx-auto mb-4 w-12 h-12 text-gray-400" />
-            <h3 className="mb-2 font-medium text-xl">No courses found</h3>
-            <p className="text-gray-500">
+          <div className="bg-gray-50 p-4 sm:p-8 rounded-md text-center">
+            <GraduationCap className="mx-auto mb-3 sm:mb-4 w-8 sm:w-12 h-8 sm:h-12 text-gray-400" />
+            <h3 className="mb-1 sm:mb-2 font-medium text-lg sm:text-xl">
+              No courses found
+            </h3>
+            <p className="text-gray-500 text-sm sm:text-base">
               Get started by adding your first course.
             </p>
           </div>
         ) : (
           <>
-            <div className="gap-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            <div className="gap-3 sm:gap-4 lg:gap-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => (
                 <div
                   key={course.id}
                   className="bg-white shadow-sm hover:shadow-md border rounded-lg overflow-hidden transition-shadow"
                 >
-                  <div className="p-6">
-                    <div className="flex justify-between items-center mb-4">
+                  <div className="p-3 sm:p-4 lg:p-6">
+                    <div className="flex justify-between items-center mb-3 sm:mb-4">
                       <div className="flex items-center">
-                        <GraduationCap className="mr-2 w-5 h-5 text-blue-600" />
-                        <Badge className="bg-blue-100 text-blue-700">
+                        <GraduationCap className="mr-1 sm:mr-2 w-4 sm:w-5 h-4 sm:h-5 text-blue-600" />
+                        <Badge className="bg-blue-100 text-blue-700 text-xs sm:text-sm">
                           {course.courseCode}
                         </Badge>
                       </div>
-                      <Badge variant="outline">Level {course.level}</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Level {course.level}
+                      </Badge>
                     </div>
 
-                    <h3 className="mb-2 font-semibold text-lg">
+                    <h3 className="mb-1 sm:mb-2 font-semibold text-base sm:text-lg">
                       {course.courseName}
                     </h3>
-                    <p className="mb-4 text-gray-500 text-sm line-clamp-2">
+                    <p className="mb-3 sm:mb-4 text-gray-500 text-xs sm:text-sm line-clamp-2">
                       {course.description || "No description provided."}
                     </p>
 
-                    <div className="flex items-center text-gray-500 text-sm">
-                      <Building className="mr-1 w-4 h-4" />
+                    <div className="flex items-center text-gray-500 text-xs sm:text-sm">
+                      <Building className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
                       <span>
                         Department: {course?.departmentId.substring(0, 8)}...
                       </span>
@@ -214,26 +231,30 @@ const CourseManagementPage = () => {
 
             {/* Pagination controls */}
             {courses.length > 0 && (
-              <div className="flex justify-between items-center pt-8">
-                <p className="text-gray-600">
+              <div className="flex xs:flex-row flex-col justify-between items-center gap-2 pt-4 sm:pt-8">
+                <p className="text-gray-600 text-xs sm:text-sm">
                   Page {currentPage} of {totalPages}
                 </p>
-                <div className="space-x-2">
+                <div className="flex space-x-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage <= 1}
+                    className="h-8 sm:h-9 text-xs"
                   >
-                    <ChevronLeft className="mr-1 w-4 h-4" /> Previous
+                    <ChevronLeft className="w-3 sm:w-4 h-3 sm:h-4" />
+                    <span className="ml-1">Prev</span>
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage >= totalPages}
+                    className="h-8 sm:h-9 text-xs"
                   >
-                    Next <ChevronRight className="ml-1 w-4 h-4" />
+                    <span className="mr-1">Next</span>
+                    <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4" />
                   </Button>
                 </div>
               </div>
