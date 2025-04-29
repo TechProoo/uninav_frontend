@@ -46,7 +46,7 @@ export default function MaterialPage() {
     fetchMaterial();
   }, [materialId]);
 
-  const isOwner = user && material?.creatorId === user.id;
+  const isOwner = user && material?.creatorId === user.id ? true : undefined;
 
   const handleEdit = (material: Material) => {
     setIsEditing(true);
@@ -97,7 +97,11 @@ export default function MaterialPage() {
   return (
     <div className="mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8">
-        <Button variant="ghost" asChild>
+        <Button
+          variant="ghost"
+          asChild
+          className="border border-[#0c385f] rounded-md hover:bg-[#0c385f] hover:text-white"
+        >
           <div
             onClick={() => {
               router.back();

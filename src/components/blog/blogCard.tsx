@@ -16,6 +16,7 @@ import { Blog, BlogType } from "@/lib/types/response.type";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
+import Def from "../../../public/Image/def.png";
 
 type BlogCardProps = {
   data: Blog;
@@ -86,11 +87,12 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
           <div className="md:w-1/4">
             <div className="relative rounded-lg overflow-hidden">
               <Image
-                src={data.headingImageAddress || "/fallback.jpg"}
+                src={data.headingImageAddress || Def.src}
                 alt="Blog Image"
                 width={300}
                 height={200}
                 className="rounded-lg w-full h-48 md:h-40 object-cover"
+                priority
               />
               <Badge
                 className={cn(
@@ -114,7 +116,7 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
                   {data.creator?.username || "Anonymous"}
                 </div>
                 <span className="text-gray-400">•</span>
-                <div className="flex items-center text-gray-500 text-sm">
+                <div className="flex items-center text-gray-500 text-xs">
                   <CalendarIcon className="mr-1 w-3 h-3" />
                   {formatDate(data.createdAt)}
                 </div>
@@ -142,7 +144,7 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
 
               {data.tags && data.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-3">
-                  {data.tags.map((tag, index) => (
+                  {data.tags.slice(0, 4).map((tag, index) => (
                     <Badge
                       key={index}
                       variant="outline"
@@ -152,6 +154,9 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
                       {tag}
                     </Badge>
                   ))}
+                  {data.tags.length > 4 && (
+                    <span className="text-gray-500 text-sm">...</span>
+                  )}
                 </div>
               )}
             </div>
@@ -166,7 +171,7 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
     <div className="relative bg-white shadow-sm hover:shadow-md p-4 rounded-[24px] transition-shadow">
       <div className="relative rounded-[24px] overflow-hidden">
         <Image
-          src={data.headingImageAddress || "/fallback.jpg"}
+          src={data.headingImageAddress ? data.headingImageAddress : Def.src}
           alt="Blog Image"
           width={400}
           height={200}
@@ -195,7 +200,7 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
         )}
       </div>
 
-      <h2 className="mt-4 font-semibold text-gray-900 text-xl line-clamp-2">
+      <h2 className="mt-4 font-semibold text-gray-900 text-xl line-clamp-1">
         {data.title}
       </h2>
       <p className="mt-1 text-gray-500 text-sm line-clamp-2">

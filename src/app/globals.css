@@ -481,13 +481,18 @@ body {
   color: #333;
   font-family: "Georgia", serif;
 }
-
 .ql-editor p {
   margin-bottom: 1rem;
   line-height: 1.6;
   font-size: 1rem;
-  color: #555;
+  color: #0c385f;
   font-family: "Georgia", serif;
+}
+
+@media (max-width: 768px) {
+  .ql-editor p {
+    font-size: 1.1rem; /* Increased font size for smaller screens */
+  }
 }
 
 /* SERVICES */

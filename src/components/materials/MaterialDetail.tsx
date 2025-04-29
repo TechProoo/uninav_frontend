@@ -396,298 +396,271 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   };
 
   return (
-    <>
-      <Card className="bg-white/80 backdrop-blur-sm mx-auto p-6 max-w-4xl">
-        <div className="flex justify-between items-start mb-6">
-          <div className="flex items-center gap-4">
-            {/* {!onClose && (
-              <Button
-                variant="ghost"
-                onClick={() => router.back()}
-                className="mr-2"
-              >
-                <ChevronLeft className="mr-1 w-5 h-5" />
-                Back
-              </Button>
-            )} */}
-            {getFileIcon(material.type)}
-            <div>
-              <h1 className="font-bold text-gray-900 text-2xl">
-                {material.label}
-              </h1>
-              <p className="text-gray-600 text-sm">
-                by {material.creator.firstName} {material.creator.lastName}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "hover:text-blue-600",
-                isCurrentlyBookmarked && "text-blue-600"
-              )}
-              onClick={handleBookmarkToggle}
-            >
-              <Bookmark
-                className={cn(
-                  "w-4 h-4",
-                  isCurrentlyBookmarked && "fill-current"
-                )}
-              />
-            </Button>
-            {onClose && (
-              <Button variant="outline" onClick={onClose}>
-                Close
-              </Button>
-            )}
+    <Card className="bg-white/80 backdrop-blur-sm mx-auto p-8 rounded-2xl shadow-md max-w-4xl space-y-8">
+      {/* Header Section */}
+      <div className="flex justify-between items-start">
+        <div className="flex items-start gap-4">
+          {getFileIcon(material.type)}
+          <div>
+            <h1 className="font-semibold text-2xl text-gray-900">
+              {material.label}
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              by {material.creator.firstName} {material.creator.lastName}
+            </p>
           </div>
         </div>
-
-        {isOwner && (
-          <div className="flex justify-end items-center gap-2 mt-2 mb-4">
-            <Button
-              variant="outline"
-              onClick={handleEdit}
-              className="flex items-center gap-1 hover:bg-[#003666] border-[#003666] text-[#003666] hover:text-white transition-colors"
-            >
-              <Edit className="w-4 h-4" />
-              Edit Material
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "hover:text-blue-600",
+              isCurrentlyBookmarked && "text-blue-600"
+            )}
+            onClick={handleBookmarkToggle}
+          >
+            <Bookmark
+              className={cn("w-5 h-5", isCurrentlyBookmarked && "fill-current")}
+            />
+          </Button>
+          {onClose && (
+            <Button variant="outline" size="sm" onClick={onClose}>
+              Close
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleDelete}
-              className="flex items-center gap-1 hover:bg-red-600 border-red-600 text-red-600 hover:text-white transition-colors"
-              disabled={isDeleting}
-            >
-              <Trash2 className="w-4 h-4" />
-              {isDeleting ? "Deleting..." : "Delete Material"}
-            </Button>
-          </div>
-        )}
+          )}
+        </div>
+      </div>
 
-        {/* Display associated adverts if available */}
-        {material.adverts && material.adverts.length > 0 && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Megaphone className="w-5 h-5 text-blue-600" />
-              <h3 className="font-semibold text-lg">
-                {material.adverts.length > 1
-                  ? "Advertisements"
-                  : "Advertisement"}
-              </h3>
-            </div>
-            <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
-              {material.adverts.map((advert) => (
-                <AdvertCard
-                  key={advert.id}
-                  advert={advert}
-                  isPreview={true}
-                  onClick={() => handleAdvertClick(advert)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+      {/* Edit/Delete Controls */}
+      {isOwner && (
+        <div className="flex justify-end items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={handleEdit}
+            className="flex items-center gap-1 border-[#003666] text-[#003666] hover:bg-[#003666] hover:text-white transition"
+          >
+            <Edit className="w-4 h-4" />
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleDelete}
+            className="flex items-center gap-1 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition"
+            disabled={isDeleting}
+          >
+            <Trash2 className="w-4 h-4" />
+            {isDeleting ? "Deleting..." : "Delete"}
+          </Button>
+        </div>
+      )}
 
-        <div className="gap-6 grid grid-cols-1 md:grid-cols-2 mb-6">
-          <div>
-            <h3 className="mb-2 font-semibold text-lg">Description</h3>
-            <p className="text-gray-700">
+      {/* Advertisement Section */}
+      {(material.adverts ?? []).length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3 text-blue-600">
+            <Megaphone className="w-5 h-5" />
+            <h3 className="font-semibold text-lg">
+              {(material.adverts ?? []).length > 1 ? "Advertisements" : "Advertisement"}
+            </h3>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {(material.adverts ?? []).map((advert) => (
+              <AdvertCard
+                key={advert.id}
+                advert={advert}
+                isPreview
+                onClick={() => handleAdvertClick(advert)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Main Content Grid */}
+      <div className="grid gap-8 md:grid-cols-2">
+        {/* Left Column: Description, Course, Tags */}
+        <div className="space-y-6">
+          <section>
+            <h3 className="font-semibold text-lg text-gray-800 mb-2">
+              Description
+            </h3>
+            <p className="text-gray-700 text-sm">
               {material.description || "No description available"}
             </p>
+          </section>
 
-            {material.targetCourse && (
-              <div className="mt-4">
-                <h3 className="mb-2 font-semibold text-lg">Course</h3>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <Book className="w-4 h-4" />
-                  <span>
-                    {material.targetCourse.courseCode} -{" "}
-                    {material.targetCourse.courseName}
-                  </span>
-                </div>
+          {material.targetCourse && (
+            <section>
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">
+                Course
+              </h3>
+              <div className="flex items-center gap-2 text-gray-700">
+                <Book className="w-4 h-4" />
+                <span>
+                  {material.targetCourse.courseCode} -{" "}
+                  {material.targetCourse.courseName}
+                </span>
               </div>
-            )}
+            </section>
+          )}
 
-            <div className="mt-4">
-              <h3 className="mb-2 font-semibold text-lg">Tags</h3>
+          {material.tags?.length > 0 && (
+            <section>
+              <h3 className="font-semibold text-lg text-gray-800 mb-2">Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {material.tags.map((tag) => (
                   <Badge
                     key={tag}
                     variant="secondary"
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 text-sm"
                   >
                     <Tag className="w-3 h-3" />
                     {tag}
                   </Badge>
                 ))}
               </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-4">
-              <div className="flex items-center gap-2 text-gray-600">
-                <Eye className="w-4 h-4" />
-                <span>{material.views} Views</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Download className="w-4 h-4" />
-                <span>{material.downloads} Downloads</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLikeToggle}
-                disabled={isLiking}
-                className={cn(
-                  "flex items-center gap-2",
-                  material.isLiked && "text-blue-600"
-                )}
-              >
-                <ThumbsUp
-                  className={cn("w-4 h-4", material.isLiked && "fill-current")}
-                />
-                <span>{material.likes}</span>
-              </Button>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-gray-600" />
-                <span className="text-gray-600 text-sm">
-                  {material.visibility === VisibilityEnum.PUBLIC
-                    ? "Public"
-                    : "Private"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-gray-600" />
-                <span className="text-gray-600 text-sm">
-                  {material.restriction === RestrictionEnum.DOWNLOADABLE
-                    ? "Downloadable"
-                    : "Read Only"}
-                </span>
-              </div>
-            </div>
-
-            {material.restriction === RestrictionEnum.DOWNLOADABLE && (
-              <div className="space-y-2">
-                <Button
-                  onClick={handleDownload}
-                  className="bg-blue-600 hover:bg-blue-700 w-full"
-                  disabled={isDownloading}
-                >
-                  {material.resource?.resourceType === "url" ||
-                  material.resource?.resourceType === "GDrive" ? (
-                    <>
-                      <Eye className="mr-2 w-4 h-4" />
-                      Visit Resource
-                    </>
-                  ) : (
-                    <>
-                      <Download className="mr-2 w-4 h-4" />
-                      {isDownloading ? "Downloading..." : "Download Material"}
-                    </>
-                  )}
-                </Button>
-
-                {isDownloading &&
-                  material.resource?.resourceType === "upload" && (
-                    <Button
-                      variant="outline"
-                      onClick={handleFallbackDownload}
-                      className="w-full text-sm"
-                    >
-                      If download hasn't started, click here
-                    </Button>
-                  )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Share buttons section - NEW CONTENT */}
-        <div className="space-y-2 mt-4 pt-4 border-t">
-          <h3 className="font-semibold text-gray-700">Share Material</h3>
-
-          <Button
-            onClick={handleShareMaterial}
-            variant="outline"
-            className="flex justify-start items-center gap-2 w-full"
-            disabled={shareLoading}
-          >
-            {shareLoading ? (
-              <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
-            ) : copySuccess === "Material link copied to clipboard!" ? (
-              <Check className="w-4 h-4 text-green-600" />
-            ) : (
-              <Share2 className="w-4 h-4" />
-            )}
-            <span>Share this material</span>
-          </Button>
-
-          {material.restriction === RestrictionEnum.DOWNLOADABLE && (
-            <Button
-              onClick={handleGetDownloadLink}
-              variant="outline"
-              disabled={downloadLinkLoading}
-              className="flex justify-start items-center gap-2 w-full"
-            >
-              {downloadLinkLoading ? (
-                <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
-              ) : copySuccess === "Download link copied to clipboard!" ? (
-                <Check className="w-4 h-4 text-green-600" />
-              ) : (
-                <LinkIcon className="w-4 h-4" />
-              )}
-              <span>Copy download link</span>
-            </Button>
+            </section>
           )}
         </div>
 
-        {/* Add Collections Section after Material Info */}
-        {material.collections && material.collections.length > 0 && (
-          <div className="mt-8">
-            <h2 className="mb-4 font-medium text-lg">
-              Featured in Collections
-            </h2>
-            <CollectionGrid
-              collections={material.collections.map((item) => item.collection)}
-              onCollectionClick={(collection) =>
-                router.push(`/collections/${collection.id}`)
-              }
-            />
+        {/* Right Column: Stats, Visibility, Download */}
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-4 text-gray-600 text-sm">
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              <span>{material.views} Views</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              <span>{material.downloads} Downloads</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleLikeToggle}
+              disabled={isLiking}
+              className={cn(
+                "flex items-center gap-2",
+                material.isLiked && "text-blue-600"
+              )}
+            >
+              <ThumbsUp
+                className={cn("w-4 h-4", material.isLiked && "fill-current")}
+              />
+              <span>{material.likes}</span>
+            </Button>
           </div>
-        )}
-      </Card>
 
-      {/* Advert Detail Modal */}
-      {selectedAdvert && (
-        <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/50 p-4">
-          <div className="bg-white shadow-xl rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
-            <AdvertDetail
-              advertId={selectedAdvert.id}
-              initialAdvert={selectedAdvert}
-              onClose={handleCloseAdvertDetail}
-            />
+          <div className="space-y-1 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              <span>
+                {material.visibility === VisibilityEnum.PUBLIC
+                  ? "Public"
+                  : "Private"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              <span>
+                {material.restriction === RestrictionEnum.DOWNLOADABLE
+                  ? "Downloadable"
+                  : "Read Only"}
+              </span>
+            </div>
           </div>
+
+          {/* Download Section */}
+          {material.restriction === RestrictionEnum.DOWNLOADABLE && (
+            <div className="space-y-2">
+              <Button
+                onClick={handleDownload}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                disabled={isDownloading}
+              >
+                {material.resource?.resourceType === "url" ||
+                material.resource?.resourceType === "GDrive" ? (
+                  <>
+                    <Eye className="mr-2 w-4 h-4" />
+                    Visit Resource
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 w-4 h-4" />
+                    {isDownloading ? "Downloading..." : "Download Material"}
+                  </>
+                )}
+              </Button>
+              {isDownloading &&
+                material.resource?.resourceType === "upload" && (
+                  <Button
+                    variant="outline"
+                    onClick={handleFallbackDownload}
+                    className="w-full text-xs"
+                  >
+                    If download hasn’t started, click here
+                  </Button>
+                )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Share Section */}
+      <div className="space-y-3 pt-6 border-t border-gray-200">
+        <h3 className="font-semibold text-gray-800">Share Material</h3>
+
+        <Button
+          onClick={handleShareMaterial}
+          variant="outline"
+          className="flex items-center gap-2 w-full"
+          disabled={shareLoading}
+        >
+          {shareLoading ? (
+            <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
+          ) : copySuccess === "Material link copied to clipboard!" ? (
+            <Check className="w-4 h-4 text-green-600" />
+          ) : (
+            <Share2 className="w-4 h-4" />
+          )}
+          <span>Share this material</span>
+        </Button>
+
+        {material.restriction === RestrictionEnum.DOWNLOADABLE && (
+          <Button
+            onClick={handleGetDownloadLink}
+            variant="outline"
+            className="flex items-center gap-2 w-full"
+            disabled={downloadLinkLoading}
+          >
+            {downloadLinkLoading ? (
+              <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
+            ) : copySuccess === "Download link copied to clipboard!" ? (
+              <Check className="w-4 h-4 text-green-600" />
+            ) : (
+              <LinkIcon className="w-4 h-4" />
+            )}
+            <span>Copy download link</span>
+          </Button>
+        )}
+      </div>
+
+      {/* Collections Section */}
+      {(material.collections ?? []).length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-lg font-medium mb-4 text-gray-800">
+            Featured in Collections
+          </h2>
+          <CollectionGrid
+            collections={material.collections.map((item) => item.collection)}
+            onCollectionClick={(collection) =>
+              router.push(`/collections/${collection.id}`)
+            }
+          />
         </div>
       )}
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-        title="Delete Material"
-        message="Are you sure you want to delete this material? This action cannot be undone and will remove all associated data including resources and advertisements."
-        itemType="material"
-      />
-    </>
+    </Card>
   );
 };
 

@@ -346,6 +346,17 @@ const ExploreContent = () => {
     <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
       <Toaster />
 
+      <div className="mb-4">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 px-2 py-1 border border-[#0c385f] rounded-lg hover:bg-[#0c385f] hover:text-[#ffffff]   transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span>Back</span>
+        </button>
+      </div>
+        
+
       {/* Advanced Search Information Dialog */}
       <Dialog
         open={showAdvancedSearchInfo}

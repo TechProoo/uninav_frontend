@@ -110,11 +110,12 @@ export default function BlogPage() {
           onClick={() => {
             router.back();
           }}
+          className="border border-black cursor-pointer hover:bg-black hover:text-white"
         >
           <div className="flex items-center gap-2">
             <span>← Back </span>
           </div>
-        </Button>
+        </Button>         
       </div>
       {isEditing ? (
         <div className="bg-white shadow-md p-6 rounded-lg">
