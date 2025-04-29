@@ -82,21 +82,6 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
     }
   };
 
-  const handleAddToCollection = async (collectionId: string) => {
-    try {
-      const response = await addMaterialToCollection(collectionId, material.id);
-      if (response?.status === "success") {
-        toast.success("Added to collection successfully");
-        setIsCollectionDialogOpen(false);
-      } else {
-        toast.error("Failed to add to collection");
-      }
-    } catch (error) {
-      console.error("Error adding to collection:", error);
-      toast.error("An error occurred while adding to collection");
-    }
-  };
-
   const handleRemoveFromCollection = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {

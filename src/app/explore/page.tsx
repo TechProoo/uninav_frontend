@@ -349,13 +349,12 @@ const ExploreContent = () => {
       <div className="mb-4">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 px-2 py-1 border border-[#0c385f] rounded-lg hover:bg-[#0c385f] hover:text-[#ffffff]   transition-colors"
+          className="flex items-center gap-2 hover:bg-[#0c385f] px-2 py-1 border border-[#0c385f] rounded-lg hover:text-[#ffffff] transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Back</span>
         </button>
       </div>
-        
 
       {/* Advanced Search Information Dialog */}
       <Dialog

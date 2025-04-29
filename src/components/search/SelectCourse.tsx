@@ -67,14 +67,14 @@ export const SelectCourse = ({ onChange, currentValue }: Props) => {
           {loading
             ? "Loading courses..."
             : value
-            ? selectedCourse
-              ? `${selectedCourse.courseCode}: ${selectedCourse.courseName}`
-              : "Select course..."
-            : "Select course..."}
+              ? selectedCourse
+                ? `${selectedCourse.courseCode}: ${selectedCourse.courseName}`
+                : "Select course..."
+              : "Select course..."}
           <ChevronsUpDown className="opacity-50 ml-2 w-4 h-4 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-full">
+      <PopoverContent className="p-0 w-full" tabIndex={1}>
         <Command>
           <CommandInput placeholder="Search courses..." />
           <CommandList>
