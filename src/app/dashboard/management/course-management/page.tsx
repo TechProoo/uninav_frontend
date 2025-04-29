@@ -9,32 +9,30 @@ import {
   Plus,
   GraduationCap,
   Search,
-  Building,
   ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import {
-  getDepartmentLevelCourses,
-  getCoursesPaginated,
-} from "@/api/course.api";
-import { Course, DLC } from "@/lib/types/response.type";
+import { getCoursesPaginated } from "@/api/course.api";
+import { Course } from "@/lib/types/response.type";
 import { Badge } from "@/components/ui/badge";
 import CourseForm from "@/components/management/CourseForm";
+import CourseModal from "./CourseModal";
 
 const CourseManagementPage = () => {
   const router = useRouter();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [departmentCourses, setDepartmentCourses] = useState<DLC[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Redirect if not admin or moderator
   useEffect(() => {
@@ -74,24 +72,6 @@ const CourseManagementPage = () => {
     }
   };
 
-  const fetchDepartmentCourses = async () => {
-    try {
-      setIsLoading(true);
-      const response = await getDepartmentLevelCourses({
-        page: 1,
-        limit: 20,
-      });
-
-      if (response?.status === "success") {
-        setDepartmentCourses(response.data.data);
-      }
-    } catch (err) {
-      console.error("Error fetching department courses:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1); // Reset to first page when searching
@@ -112,6 +92,11 @@ const CourseManagementPage = () => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
+  };
+
+  const handleViewCourse = (courseId: string) => {
+    setSelectedCourseId(courseId);
+    setIsModalOpen(true);
   };
 
   // If user not loaded yet or not admin/moderator, show nothing
@@ -206,8 +191,8 @@ const CourseManagementPage = () => {
                           {course.courseCode}
                         </Badge>
                       </div>
-                      <Badge variant="outline" className="text-xs">
-                        Level {course.level}
+                      <Badge variant="outline" className="bg-gray-50 text-xs">
+                        {course.departments?.length || 0} departments
                       </Badge>
                     </div>
 
@@ -218,11 +203,34 @@ const CourseManagementPage = () => {
                       {course.description || "No description provided."}
                     </p>
 
-                    <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                      <Building className="mr-1 w-3 sm:w-4 h-3 sm:h-4" />
-                      <span>
-                        Department: {course?.departmentId.substring(0, 8)}...
-                      </span>
+                    {course.departments && course.departments.length > 0 && (
+                      <div className="space-y-2 mt-3">
+                        <div className="font-medium text-gray-600 text-sm">
+                          Offered in:
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {course.departments.map((dept, index) => (
+                            <Badge
+                              key={`${dept.departmentId}-${index}`}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              Level {dept.level}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex justify-end mt-3 pt-3 border-t">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs"
+                        onClick={() => handleViewCourse(course.id)}
+                      >
+                        View Details
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -262,6 +270,15 @@ const CourseManagementPage = () => {
           </>
         )}
       </div>
+
+      <CourseModal
+        courseId={selectedCourseId}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedCourseId(null);
+        }}
+      />
     </div>
   );
 };
