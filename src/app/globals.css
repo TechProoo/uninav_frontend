@@ -321,7 +321,7 @@ body {
   background: linear-gradient(
     347deg,
     rgba(0, 54, 102, 1) 2%,
-    rgba(240, 248, 255, 1) 100%
+    rgb(63, 83, 101) 100%
   );
 }
 
@@ -530,3 +530,4 @@ body {
     margin-bottom: 0.8rem;
   }
 }
+
