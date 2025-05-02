@@ -50,7 +50,7 @@ export type UserProfile = {
   createdAt: string;
   updatedAt: string;
   department: {
-    id: string; 
+    id: string;
     name: string;
     description: string;
     facultyId: string;
@@ -82,21 +82,22 @@ export type Pagination<T> = {
   };
   data: T;
 };
-export type Course = {
+export interface Course {
   id: string;
   courseName: string;
   courseCode: string;
   description: string;
   reviewStatus: ApprovalStatusEnum;
-  reviewedById: string | null;
-
-  // only available for duplicate courses
-  departmentId?: string;
-  // only available for duplicate courses
-  level?: number;
-  createdAt?: string;
-  updatedAt?: string;
-};
+  createdAt: string;
+  departments?: {
+    departmentId: string;
+    level: number;
+    courseId: string;
+    reviewStatus: ApprovalStatusEnum;
+    reviewedById: string | null;
+    department: Department;
+  }[];
+}
 
 export enum CourseLevel {
   L100 = 100,
@@ -180,9 +181,12 @@ export type Collection = {
     username: string;
   };
 
-  content?: {
+  content: {
     material?: Material;
     nestedCollection?: Collection;
+    contentMaterialId: string;
+    contentCollectionId: string;
+    collectionId: string;
   }[];
   createdAt: string;
   updatedAt: string;

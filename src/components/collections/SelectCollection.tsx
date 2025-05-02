@@ -64,7 +64,7 @@ export const SelectCollection = ({
 
   return (
     <div className="space-y-4">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen} modal={false}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -81,8 +81,30 @@ export const SelectCollection = ({
             <ChevronsUpDown className="opacity-50 ml-2 w-4 h-4 shrink-0" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0 w-full">
-          <Command>
+        <PopoverContent
+          className="p-0 w-[--radix-popover-trigger-width]"
+          style={{ zIndex: 1000 }} // Set a very high z-index to ensure it appears above Dialog
+          align="start"
+          sideOffset={5}
+          avoidCollisions={false}
+          onEscapeKeyDown={(e) => {
+            // Prevent escape from closing parent dialog
+            e.stopPropagation();
+          }}
+          onInteractOutside={(e) => {
+            // Prevent clicks outside from bubbling up to Dialog
+            e.stopPropagation();
+          }}
+          onFocusOutside={(e) => {
+            // Prevent focus outside from bubbling up to Dialog
+            e.stopPropagation();
+          }}
+          onPointerDownOutside={(e) => {
+            // Prevent pointer down outside from bubbling up to Dialog
+            e.stopPropagation();
+          }}
+        >
+          <Command shouldFilter={false}>
             <CommandInput placeholder="Search collections..." />
             <CommandList>
               <CommandEmpty>No collections found.</CommandEmpty>
@@ -91,11 +113,20 @@ export const SelectCollection = ({
                   <CommandItem
                     key={collection.id}
                     value={collection.label}
-                    onSelect={() => {
-                      console.log("selected ", collection.id);
-                      setSelectedId(collection.id);
-                      onChange(collection.id);
-                      setOpen(false);
+                    onSelect={(currentValue) => {
+                      const selected = collections.find(
+                        (c) =>
+                          c.label.toLowerCase() === currentValue.toLowerCase()
+                      );
+                      if (selected) {
+                        setSelectedId(selected.id);
+                        onChange(selected.id);
+                        setOpen(false);
+                      }
+                    }}
+                    onPointerDown={(e) => {
+                      // Prevent default to help with the Dialog interaction
+                      e.stopPropagation();
                     }}
                   >
                     <Check

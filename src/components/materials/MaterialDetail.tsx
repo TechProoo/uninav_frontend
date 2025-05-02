@@ -61,7 +61,9 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   onDelete,
   onClose,
 }) => {
-  const [material, setMaterial] = useState(initialMaterial);
+  const [material, setMaterial] = useState(
+    initialMaterial as Required<Material>
+  );
   const [isDownloading, setIsDownloading] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -396,16 +398,16 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   };
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm mx-auto p-8 rounded-2xl shadow-md max-w-4xl space-y-8">
+    <Card className="space-y-8 bg-white/80 shadow-md backdrop-blur-sm mx-auto p-8 rounded-2xl max-w-4xl">
       {/* Header Section */}
       <div className="flex justify-between items-start">
         <div className="flex items-start gap-4">
           {getFileIcon(material.type)}
           <div>
-            <h1 className="font-semibold text-2xl text-gray-900">
+            <h1 className="font-semibold text-gray-900 text-2xl">
               {material.label}
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="mt-1 text-gray-500 text-sm">
               by {material.creator.firstName} {material.creator.lastName}
             </p>
           </div>
@@ -438,7 +440,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           <Button
             variant="outline"
             onClick={handleEdit}
-            className="flex items-center gap-1 border-[#003666] text-[#003666] hover:bg-[#003666] hover:text-white transition"
+            className="flex items-center gap-1 hover:bg-[#003666] border-[#003666] text-[#003666] hover:text-white transition"
           >
             <Edit className="w-4 h-4" />
             Edit
@@ -446,7 +448,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           <Button
             variant="outline"
             onClick={handleDelete}
-            className="flex items-center gap-1 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition"
+            className="flex items-center gap-1 hover:bg-red-600 border-red-600 text-red-600 hover:text-white transition"
             disabled={isDeleting}
           >
             <Trash2 className="w-4 h-4" />
@@ -461,10 +463,12 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           <div className="flex items-center gap-2 mb-3 text-blue-600">
             <Megaphone className="w-5 h-5" />
             <h3 className="font-semibold text-lg">
-              {(material.adverts ?? []).length > 1 ? "Advertisements" : "Advertisement"}
+              {(material.adverts ?? []).length > 1
+                ? "Advertisements"
+                : "Advertisement"}
             </h3>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="gap-4 grid md:grid-cols-2">
             {(material.adverts ?? []).map((advert) => (
               <AdvertCard
                 key={advert.id}
@@ -478,11 +482,11 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       )}
 
       {/* Main Content Grid */}
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="gap-8 grid md:grid-cols-2">
         {/* Left Column: Description, Course, Tags */}
         <div className="space-y-6">
           <section>
-            <h3 className="font-semibold text-lg text-gray-800 mb-2">
+            <h3 className="mb-2 font-semibold text-gray-800 text-lg">
               Description
             </h3>
             <p className="text-gray-700 text-sm">
@@ -492,7 +496,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
           {material.targetCourse && (
             <section>
-              <h3 className="font-semibold text-lg text-gray-800 mb-2">
+              <h3 className="mb-2 font-semibold text-gray-800 text-lg">
                 Course
               </h3>
               <div className="flex items-center gap-2 text-gray-700">
@@ -507,7 +511,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
           {material.tags?.length > 0 && (
             <section>
-              <h3 className="font-semibold text-lg text-gray-800 mb-2">Tags</h3>
+              <h3 className="mb-2 font-semibold text-gray-800 text-lg">Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {material.tags.map((tag) => (
                   <Badge
@@ -552,7 +556,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             </Button>
           </div>
 
-          <div className="space-y-1 text-sm text-gray-600">
+          <div className="space-y-1 text-gray-600 text-sm">
             <div className="flex items-center gap-2">
               <Globe className="w-4 h-4" />
               <span>
@@ -576,7 +580,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             <div className="space-y-2">
               <Button
                 onClick={handleDownload}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 w-full text-white"
                 disabled={isDownloading}
               >
                 {material.resource?.resourceType === "url" ||
@@ -608,7 +612,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       </div>
 
       {/* Share Section */}
-      <div className="space-y-3 pt-6 border-t border-gray-200">
+      <div className="space-y-3 pt-6 border-gray-200 border-t">
         <h3 className="font-semibold text-gray-800">Share Material</h3>
 
         <Button
@@ -649,7 +653,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       {/* Collections Section */}
       {(material.collections ?? []).length > 0 && (
         <div className="mt-10">
-          <h2 className="text-lg font-medium mb-4 text-gray-800">
+          <h2 className="mb-4 font-medium text-gray-800 text-lg">
             Featured in Collections
           </h2>
           <CollectionGrid
