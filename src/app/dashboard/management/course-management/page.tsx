@@ -99,6 +99,12 @@ const CourseManagementPage = () => {
     setIsModalOpen(true);
   };
 
+  const handleCourseDeleted = () => {
+    // Refresh the courses list
+    fetchCourses();
+    toast.success("Course deleted successfully");
+  };
+
   // If user not loaded yet or not admin/moderator, show nothing
   if (!user || (user.role !== "admin" && user.role !== "moderator")) {
     return null;
@@ -278,6 +284,7 @@ const CourseManagementPage = () => {
           setIsModalOpen(false);
           setSelectedCourseId(null);
         }}
+        onCourseDeleted={handleCourseDeleted}
       />
     </div>
   );

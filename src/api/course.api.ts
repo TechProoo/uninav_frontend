@@ -15,6 +15,12 @@ interface LinkCourseDto {
   level: number;
 }
 
+interface UpdateCourseDto {
+  courseName?: string;
+  courseCode?: string;
+  description?: string;
+}
+
 export const getCourses = async (filters?: {
   departmentId?: string;
   level?: number;
@@ -139,5 +145,55 @@ export const getDepartmentLevelCourses = async ({
   } catch (error) {
     console.error("Error fetching department level courses:", error);
     return null;
+  }
+};
+
+export const updateCourse = async (
+  courseId: string,
+  updateData: UpdateCourseDto
+): Promise<Response<Course>> => {
+  try {
+    const response = await api.patch<Response<Course>>(
+      `/courses/${courseId}`,
+      updateData
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error updating course:", error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to update course"
+    );
+  }
+};
+
+export const deleteCourse = async (
+  courseId: string
+): Promise<Response<void>> => {
+  try {
+    const response = await api.delete<Response<void>>(`/courses/${courseId}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error deleting course:", error);
+    throw new Error(
+      error?.response?.data?.message || "Failed to delete course"
+    );
+  }
+};
+
+export const removeDepartmentLevelCourse = async (
+  departmentId: string,
+  courseId: string
+): Promise<Response<void>> => {
+  try {
+    const response = await api.delete<Response<void>>(
+      `/courses/department-level/${departmentId}/${courseId}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error removing department level course:", error);
+    throw new Error(
+      error?.response?.data?.message ||
+        "Failed to remove department level course"
+    );
   }
 };
