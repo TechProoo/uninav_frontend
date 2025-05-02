@@ -109,6 +109,9 @@ const ExploreContent = () => {
   const query = searchParams.get("query");
   const courseId = searchParams.get("courseId");
   const defaultTab = searchParams.get("defaultTab");
+  const [isVisible, setIsVisible] = useState(false);
+
+  const ref = React.useRef<HTMLDivElement>(null);
 
   // State for active tab
   const [activeTab, setActiveTab] = useState<string>(
@@ -156,6 +159,35 @@ const ExploreContent = () => {
   );
   const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      {
+        root: null,
+        threshold: 0.1,
+      }
+    );
+
+    const currentElement = ref.current;
+    if (currentElement) observer.observe(currentElement);
+
+    return () => {
+      if (currentElement) observer.unobserve(currentElement);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isVisible) {
+      setMaterialPage((prev) => prev + 1);
+    }
+  }, [isVisible]);
+
+  useEffect(() => {
+    fetchMaterials(materialPage);
+  }, [materialPage]);
+
   // Toggle view mode between grid and list
   const toggleViewMode = () => {
     setViewMode(viewMode === "grid" ? "list" : "grid");
@@ -176,7 +208,7 @@ const ExploreContent = () => {
       const response = await searchMaterialsApi({
         query: searchQuery,
         page,
-        limit: 10,
+        limit: 5,
         tag: materialTag || undefined,
         courseId: materialCourse || undefined,
         type: materialType || undefined,
@@ -355,7 +387,6 @@ const ExploreContent = () => {
           <span>Back</span>
         </button>
       </div>
-        
 
       {/* Advanced Search Information Dialog */}
       <Dialog
@@ -890,7 +921,10 @@ const ExploreContent = () => {
                   ) : (
                     <>
                       {blogs?.data && blogs.data.length > 0 ? (
-                        <div className="space-y-3 sm:space-y-4 md:space-y-6">
+                        <div
+                          ref={ref}
+                          className=" space-y-3 sm:space-y-4 md:space-y-6"
+                        >
                           <BlogGrid
                             blogs={blogs.data}
                             onBlogClick={handleBlogClick}
@@ -898,11 +932,11 @@ const ExploreContent = () => {
                           />
 
                           {/* Blogs Pagination */}
-                          {blogTotalPages > 1 && (
+                          {blogTotalPages && (
                             <div className="flex justify-between items-center pt-2 sm:pt-3 md:pt-4 border-t text-xs sm:text-sm">
-                              <p className="text-gray-500">
+                              {/* <p className="text-gray-500">
                                 Page {blogPage} of {blogTotalPages}
-                              </p>
+                              </p> */}
                               <div className="flex gap-1 sm:gap-2">
                                 <button
                                   onClick={() =>
@@ -939,7 +973,10 @@ const ExploreContent = () => {
                           )}
                         </div>
                       ) : (
-                        <div className="py-8 sm:py-12 md:py-16 text-center">
+                        <div
+                          className="py-
+                        8 sm:py-12 md:py-16 text-center"
+                        >
                           <p className="text-gray-500 text-sm sm:text-base md:text-lg">
                             No blogs found
                           </p>

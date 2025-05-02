@@ -113,52 +113,53 @@ const BookmarkSlider: React.FC<BookmarkSliderProps> = ({
         {bookmarks.map((bookmark) => (
           <SwiperSlide key={bookmark.id}>
             <div
-              className="flex bg-white shadow-md hover:shadow-lg rounded-lg h-32 overflow-hidden transition-shadow cursor-pointer"
+              className="group relative flex flex-col bg-[#003666]/60 backdrop-blur-md border border-white/10 shadow-md hover:shadow-cyan-400/30 rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer w-full hover:scale-[1.015]"
               onClick={() => handleBookmarkClick(bookmark)}
             >
-              <div className="flex-shrink-0 w-32 h-32">
-                {bookmark.material ? (
-                  <div className="relative flex justify-center items-center bg-gradient-to-r from-blue-100 to-blue-50 h-full">
-                    {bookmark.material.resource?.resourceAddress ? (
-                      <div
-                        className="bg-cover bg-center w-full h-full"
-                        style={{
-                          backgroundImage: `url(${bookmark.material.resource.resourceAddress})`,
-                        }}
-                      />
-                    ) : (
-                      <div className="flex justify-center items-center w-full h-full">
-                        <Book size={32} className="text-blue-500" />
-                      </div>
-                    )}
-                  </div>
+              <div className="relative w-full h-44 md:h-36 bg-gradient-to-br from-[#004b8d] via-[#003666] to-[#001f33] animate-gradient-x flex items-center justify-center overflow-hidden">
+                {bookmark.material?.resource?.resourceAddress ? (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center transition-all duration-300 group-hover:scale-105"
+                    style={{
+                      backgroundImage: `url(${bookmark.material.resource.resourceAddress})`,
+                    }}
+                  />
                 ) : (
-                  <div className="flex justify-center items-center bg-gray-200 w-full h-full">
-                    <Book size={32} className="text-gray-400" />
+                  <div className="z-10">
+                    <Book
+                      className="text-cyan-300 drop-shadow-md group-hover:scale-110 transition-transform duration-300"
+                      size={36}
+                    />
                   </div>
                 )}
+                <div className="absolute inset-0 bg-black/40" />
               </div>
 
-              <div className="flex flex-col flex-1 p-4">
-                <h3 className="mb-1 font-medium text-gray-900 text-sm line-clamp-1">
-                  {bookmark.material
-                    ? bookmark.material.label
-                    : "Untitled Material"}
+              <div className="flex flex-col flex-1 p-4 space-y-2 text-white">
+                <h3
+                  className="text-sm md:text-base font-semibold tracking-wide truncate"
+                  title={bookmark.material?.label}
+                >
+                  {bookmark.material?.label || "Untitled Material"}
                 </h3>
-                <p className="mb-2 text-gray-500 text-xs line-clamp-2">
+                <p className="text-xs md:text-sm text-gray-300 line-clamp-2">
                   {bookmark.material?.description || "No description available"}
                 </p>
                 <div className="mt-auto">
-                  <span className="text-gray-400 text-xs">
+                  <span className="text-[10px] text-cyan-200/70 italic">
                     {bookmark.createdAt
                       ? `Saved ${formatDistanceToNow(
                           new Date(bookmark.createdAt),
-                          { addSuffix: true }
+                          {
+                            addSuffix: true,
+                          }
                         )}`
                       : "Recently saved"}
                   </span>
                 </div>
               </div>
+
+              <div className="absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </SwiperSlide>
         ))}
