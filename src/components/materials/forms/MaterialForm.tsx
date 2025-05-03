@@ -7,6 +7,8 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
+  Link,
+  File,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -51,6 +53,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [includeAdvert, setIncludeAdvert] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [uploadMode, setUploadMode] = useState<"url" | "file">("url");
+
   // Define the maximum number of free adverts allowed per material
   const MAX_FREE_ADVERTS = 1;
 
@@ -430,7 +434,27 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
               Upload File or Provide URL *
             </label>
-            <div className="gap-3 sm:gap-4 grid md:grid-cols-2">
+            <div className="flex gap-2 mb-2">
+              <Button
+                type="button"
+                onClick={() => setUploadMode("file")}
+                variant={uploadMode === "file" ? "default" : "outline"}
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+              >
+                <File className="w-3 sm:w-4 h-3 sm:h-4" />
+                File
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setUploadMode("url")}
+                variant={uploadMode === "url" ? "default" : "outline"}
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+              >
+                <Link className="w-3 sm:w-4 h-3 sm:h-4" />
+                URL
+              </Button>
+            </div>
+            {uploadMode === "file" ? (
               <div
                 {...getRootProps()}
                 className={cn(
@@ -459,7 +483,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   )}
                 </div>
               </div>
-
+            ) : (
               <div>
                 <input
                   id="resourceAddress"
@@ -474,7 +498,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   You can either upload a file or provide a URL
                 </p>
               </div>
-            </div>
+            )}
 
             {/* File Preview */}
             {filePreview && (
@@ -530,7 +554,9 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             ) : (
               <ChevronDown size={20} />
             )}
-            {showMoreOptions ? "Hide Options" : "More Options"}
+            {showMoreOptions
+              ? "Hide Options"
+              : "More Options (Help others find this easier & Adverts)"}
           </button>
 
           {/* Additional Options (Hidden by default) */}
