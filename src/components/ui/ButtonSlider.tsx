@@ -118,4 +118,18 @@ const StyledWrapper = styled.div`
       transform: rotate(360deg);
     }
   }
+
+  /* Add media query for smaller screens */
+  @media (max-width: 768px) {
+    .button {
+      --fs-size: 14px; /* Smaller font size */
+      letter-spacing: 2px; /* Less letter spacing */
+      --border-right: 4px; /* Thinner border */
+    }
+
+    .spinner {
+      width: 16px; /* Smaller spinner */
+      height: 16px;
+    }
+  }
 `;

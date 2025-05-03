@@ -17,7 +17,8 @@ export default function Hero() {
   return (
     <div className="relative overflow-hidden hero_container">
       <div className="items-center grid grid-cols-12 m-auto py-8 md:py-16 lg:py-20 w-11/12 md:w-10/12 min-h-[80vh] md:min-h-[70vh]">
-        <div className="order-2 md:order-1 col-span-12 md:col-span-6">
+        {/* Text Content: Order 1 on mobile, Order 1 (left) on desktop */}
+        <div className="order-1 md:order-1 col-span-12 md:col-span-6">
           <div className="hero_left">
             <div className="hero_left_top flex items-center gap-2">
               <div className="w-7">
@@ -137,7 +138,8 @@ export default function Hero() {
             </div>
           </div>
         </div>
-        <div className="order-1 md:order-2 col-span-12 md:col-span-6 mb-8 md:mb-0">
+        {/* Image: Order 2 on mobile, Order 2 (right) on desktop */}
+        <div className="order-2 md:order-2 col-span-12 md:col-span-6 mb-8 md:mb-0">
           <div className="flex justify-center md:justify-end hero_img">
             <Image
               className="w-4/5 md:w-full md:max-w-none max-w-md hero_img_main"
