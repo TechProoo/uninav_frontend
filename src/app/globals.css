@@ -509,6 +509,53 @@ body {
   animation: bounce-slow 2s infinite;
 }
 
+/* DASHBOARD SECTION HEADINGS */
+.section-heading {
+  position: relative;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+  background: linear-gradient(90deg, #003666 0%, #75bfff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-heading::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 60%;
+  background: linear-gradient(90deg, #003666 0%, #75bfff 100%);
+  border-radius: 10px;
+  transition: width 0.3s ease-in-out;
+}
+
+.section-heading:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .section-heading {
+    font-size: 1.25rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .section-heading::after {
+    height: 2px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-heading {
+    font-size: 1.125rem;
+  }
+}
+
 @media (max-width: 768px) {
   .ql-editor h1 {
     font-size: 1.75rem;
@@ -530,4 +577,3 @@ body {
     margin-bottom: 0.8rem;
   }
 }
-

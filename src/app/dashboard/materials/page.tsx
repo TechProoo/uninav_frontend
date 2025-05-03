@@ -137,9 +137,7 @@ const MaterialsPage = () => {
             Back
           </Button>
         ) : null}
-        <h1 className="font-bold text-lg sm:text-xl md:text-2xl">
-          Manage My Materials
-        </h1>
+        <h1 className="section-heading">Manage My Materials</h1>
         <Button
           onClick={handleAddMaterial}
           className="px-2 sm:px-3 py-1 sm:py-2 h-8 sm:h-10 text-xs sm:text-sm"

@@ -89,9 +89,7 @@ const BlogsPage = () => {
   return (
     <div className="px-2 sm:px-4 w-full">
       <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6 w-full">
-        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl fst">
-          Manage Blogs
-        </h1>
+        <h1 className="section-heading">Manage Blogs</h1>
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <ThemeButton
             text="All Blogs"

@@ -232,7 +232,7 @@ const DLCReviewPage = () => {
             <span>Back</span>
           </Link>
         </Button>
-        <h1 className="font-bold text-3xl">Department Level Courses Review</h1>
+        <h1 className="section-heading">Department Level Courses Review</h1>
       </div>
 
       <div className="mb-6">
@@ -277,8 +277,8 @@ const DLCReviewPage = () => {
                 {activeTab === ApprovalStatusEnum.PENDING
                   ? "There are no department level courses waiting for review."
                   : activeTab === ApprovalStatusEnum.APPROVED
-                  ? "There are no approved department level courses."
-                  : "There are no rejected department level courses."}
+                    ? "There are no approved department level courses."
+                    : "There are no rejected department level courses."}
               </p>
             </div>
           ) : (

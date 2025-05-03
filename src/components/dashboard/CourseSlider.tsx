@@ -18,7 +18,7 @@ const CourseSlider = () => {
 
   return (
     <div className="w-full">
-      <h2 className="mb-4 font-semibold text-xl">My Courses</h2>
+      <h2 className="section-heading">My Courses</h2>
       <div className="pb-4 overflow-x-auto">
         <div className="flex gap-4">
           {user.courses.map((courseEnrollment) => (

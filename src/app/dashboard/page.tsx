@@ -145,9 +145,7 @@ export default function Dashboard() {
 
         {/* Bookmarks Section */}
         <section className="mb-8">
-          <h2 className="mb-4 font-semibold text-xl sm:text-2xl">
-            Your Bookmarks
-          </h2>
+          <h2 className="section-heading">Your Bookmarks</h2>
           <BookmarkSlider
             bookmarks={bookmarks}
             loading={loadingState.bookmarks}
@@ -157,7 +155,7 @@ export default function Dashboard() {
 
         {/* Recommendations Section */}
         <section className="mb-8">
-          <h2 className="mb-4 font-semibold text-2xl">Recommended Materials</h2>
+          <h2 className="section-heading">Recommended Materials</h2>
           <MaterialGrid
             materials={recommendations}
             onMaterialClick={handleMaterialClick}

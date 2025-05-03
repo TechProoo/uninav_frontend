@@ -124,9 +124,7 @@ const CourseManagementPage = () => {
             <span className="hidden sm:inline ml-1">Back</span>
           </Link>
         </Button>
-        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
-          Course Management
-        </h1>
+        <h1 className="section-heading">Course Management</h1>
       </div>
 
       <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">

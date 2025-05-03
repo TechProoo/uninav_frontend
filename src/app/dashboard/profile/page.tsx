@@ -136,9 +136,7 @@ const ProfilePage = () => {
   return (
     <div className="mx-auto px-2 sm:px-4 max-w-4xl container">
       <div className="flex justify-between items-center mb-4 sm:mb-6">
-        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
-          Your Profile
-        </h1>
+        <h1 className="section-heading">Your Profile</h1>
         <button
           onClick={toggleEdit}
           disabled={isSubmitting}

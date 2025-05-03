@@ -93,7 +93,7 @@ const CollectionsPage = () => {
             Back
           </Button>
         ) : null}
-        <h1 className="font-bold text-2xl">My Collections</h1>
+        <h1 className="section-heading">My Collections</h1>
         <Button onClick={() => setShowAddForm(true)} className="gap-2">
           <PlusCircle className="w-4 h-4" />
           Create Collection

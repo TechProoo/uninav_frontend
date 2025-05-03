@@ -153,9 +153,7 @@ const ManageAdsPage = () => {
   return (
     <div className="mx-auto px-2 sm:px-4 container">
       <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-2 mb-3 sm:mb-6">
-        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
-          Manage Advertisements
-        </h1>
+        <h1 className="section-heading">Manage Advertisements</h1>
         <Button
           onClick={() => router.push("/dashboard/materials")}
           className="px-3 sm:px-4 py-1.5 sm:py-2 w-full sm:w-auto h-8 sm:h-10 text-xs sm:text-sm"

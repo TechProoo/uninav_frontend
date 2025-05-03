@@ -223,7 +223,7 @@ const CoursesReviewPage = () => {
             <span>Back</span>
           </Link>
         </Button>
-        <h1 className="font-bold text-3xl">Courses Review</h1>
+        <h1 className="section-heading">Courses Review</h1>
       </div>
 
       <div className="mb-6">
@@ -266,8 +266,8 @@ const CoursesReviewPage = () => {
                 {activeTab === ApprovalStatusEnum.PENDING
                   ? "There are no courses waiting for review."
                   : activeTab === ApprovalStatusEnum.APPROVED
-                  ? "There are no approved courses."
-                  : "There are no rejected courses."}
+                    ? "There are no approved courses."
+                    : "There are no rejected courses."}
               </p>
             </div>
           ) : (

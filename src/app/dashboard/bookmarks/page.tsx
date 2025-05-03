@@ -140,9 +140,7 @@ const BookmarksPage = () => {
           </Button>
         ) : (
           <>
-            <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
-              Manage Bookmarks
-            </h1>
+            <h1 className="section-heading">Manage Bookmarks</h1>
             <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 variant={viewMode === "grid" ? "default" : "outline"}
