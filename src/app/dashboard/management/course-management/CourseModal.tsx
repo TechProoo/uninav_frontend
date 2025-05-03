@@ -18,19 +18,18 @@ import {
   deleteCourse,
   removeDepartmentLevelCourse,
 } from "@/api/course.api";
-import LinkCourseForm from "@/components/management/LinkCourseForm";
 import EditCourseForm from "@/components/management/EditCourseForm";
+import toast from "react-hot-toast";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import toast from "react-hot-toast";
 
 interface CourseModalProps {
   courseId: string | null;
@@ -228,13 +227,13 @@ export default function CourseModal({
                         <h4 className="mb-3 font-medium text-sm">
                           Link to Department
                         </h4>
-                        <LinkCourseForm
+                        {/* <LinkCourseForm
                           courseId={course.id}
                           onSuccess={() => {
                             setShowLinkForm(false);
                             fetchCourseDetails();
                           }}
-                        />
+                        /> */}
                       </div>
                     )}
 
