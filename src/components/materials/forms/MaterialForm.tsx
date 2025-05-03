@@ -556,7 +556,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
             )}
             {showMoreOptions
               ? "Hide Options"
-              : "More Options (Help others find this easier & Adverts)"}
+              : "More Options (Help others find this better & Adverts)"}
           </button>
 
           {/* Additional Options (Hidden by default) */}
