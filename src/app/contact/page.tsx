@@ -315,12 +315,12 @@ const ContactPage = () => {
                   Have an urgent question? Call us:
                 </p>
                 <a
-                  href="https://wa.me/234123456789"
+                  href="https://wa.me/2348028110588"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-green-600 hover:underline"
                 >
-                  +234 123 456 789
+                  +234 8028110588
                 </a>
                 <p className="mt-1 text-gray-500 text-sm">
                   (Redirects to WhatsApp)
@@ -335,8 +335,8 @@ const ContactPage = () => {
               <div>
                 <h3 className="mb-1 font-semibold text-lg">Our Base</h3>
                 <p className="text-gray-600">
-                  BuildMinds Development Team <br />
-                  Lagos, Nigeria
+                  University of Ibadan <br />
+                  Ibadan, Oyo, Nigeria.
                 </p>
               </div>
             </div>
@@ -348,7 +348,8 @@ const ContactPage = () => {
               <p className="mb-4 text-gray-600">
                 Follow us on social media for updates, tips, and announcements.
               </p>
-              <div className="flex gap-6">
+              <p>Social handles coming soon...</p>
+              {/* <div className="flex gap-6">
                 <a
                   href="https://twitter.com/uninav"
                   target="_blank"
@@ -357,14 +358,7 @@ const ContactPage = () => {
                 >
                   <Twitter size={20} />
                 </a>
-                <a
-                  href="https://github.com/buildminds/uninav"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-white shadow-sm p-3 rounded-full text-gray-700 hover:text-black transition-colors"
-                >
-                  <Github size={20} />
-                </a>
+               
                 <a
                   href="https://linkedin.com/company/buildminds"
                   target="_blank"
@@ -373,7 +367,7 @@ const ContactPage = () => {
                 >
                   <Linkedin size={20} />
                 </a>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -393,7 +387,7 @@ const ContactPage = () => {
             <TeamMemberCard
               name="@techpro"
               role="Frontend/Fullstack Developer"
-              image="https://randomuser.me/api/portraits/women/44.jpg"
+              image="/Image/team/techpro.png"
               github="https://github.com/techprooo"
               linkedin="https://linkedin.com/in/techprooo"
               twitter="https://twitter.com/techprooo"
@@ -402,7 +396,7 @@ const ContactPage = () => {
             <TeamMemberCard
               name="@prospercoded"
               role="Backend/Software Architect"
-              image="https://randomuser.me/api/portraits/men/75.jpg"
+              image="/Image/team/prosper.png"
               github="https://github.com/prospercoded"
               linkedin="https://linkedin.com/in/prospercoded"
               twitter="https://twitter.com/prosper_coded"
@@ -411,7 +405,7 @@ const ContactPage = () => {
             <TeamMemberCard
               name="Willy Wonka"
               role="Product Manager"
-              image="https://randomuser.me/api/portraits/women/68.jpg"
+              image=""
               github="https://github.com/willy-wonka28"
               linkedin="https://linkedin.com/in/willy-wonka28"
               twitter="https://twitter.com/willy-wonka"
@@ -419,7 +413,7 @@ const ContactPage = () => {
             <TeamMemberCard
               name="John"
               role="Marketing Manager"
-              image="https://randomuser.me/api/portraits/men/32.jpg"
+              image=""
               github="https://github.com/john"
               linkedin="https://linkedin.com/in/john"
               twitter="https://twitter.com/john"

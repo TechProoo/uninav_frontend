@@ -21,6 +21,7 @@ import {
   Share2,
   MessageSquareText,
   Award,
+  Sparkles, // Added for potential use
 } from "lucide-react";
 
 // Register GSAP plugins
@@ -29,12 +30,13 @@ gsap.registerPlugin(ScrollTrigger);
 const AboutPage = () => {
   // Animation for hero section
   useGSAP(() => {
-    gsap.from(".hero-content", {
+    // Target elements within the hero section specifically
+    gsap.from(".hero-content-item", {
       opacity: 0,
-      y: 100,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power2.out",
+      y: 50, // Adjusted starting position
+      duration: 0.8, // Slightly adjusted duration
+      stagger: 0.15, // Adjusted stagger
+      ease: "power3.out", // Smoother ease
     });
 
     // Animate features when they come into view
@@ -68,40 +70,53 @@ const AboutPage = () => {
   return (
     <div className="bg-gradient-to-b from-slate-50 to-blue-50 min-h-screen">
       {/* Hero Section */}
-      <section className="mx-auto px-4 md:px-8 lg:px-16 pt-20 pb-16 max-w-7xl">
-        <div className="flex lg:flex-row flex-col items-center gap-8 lg:gap-16">
-          <div className="space-y-6 lg:w-1/2">
-            <h1 className="font-bold text-[#003666] text-4xl md:text-5xl lg:text-6xl hero-content">
-              Your Gateway to Academic Excellence
-            </h1>
-            <p className="text-gray-700 text-lg md:text-xl hero-content">
-              UniNav is a collaborative university study materials platform that
-              organizes and simplifies resource discovery for students.
-            </p>
-            <div className="flex flex-wrap gap-4 hero-content">
-              <div className="flex items-center gap-2 bg-blue-50 px-4 py-2 border border-blue-200 rounded-lg text-blue-700">
-                <BookOpen size={20} />
-                <span>Study Materials</span>
-              </div>
-              <div className="flex items-center gap-2 bg-green-50 px-4 py-2 border border-green-200 rounded-lg text-green-700">
-                <GraduationCap size={20} />
-                <span>Academic Resources</span>
-              </div>
-              <div className="flex items-center gap-2 bg-amber-50 px-4 py-2 border border-amber-200 rounded-lg text-amber-700">
-                <Users size={20} />
-                <span>Student Community</span>
+      <section className="relative bg-[url('/Image/about-hero.jpg')] bg-cover bg-center pt-28 md:pt-36 pb-24 md:pb-32 overflow-hidden text-white">
+        {/* Overlay */}
+        <div className="z-0 absolute inset-0 bg-gradient-to-t from-[#001c33]/80 via-[#003666]/70 to-transparent"></div>
+
+        {/* Content Container */}
+        <div className="z-10 relative mx-auto px-4 md:px-8 lg:px-16 max-w-7xl">
+          <div className="flex lg:flex-row flex-col items-center gap-8 lg:gap-16">
+            {/* Text Content */}
+            <div className="space-y-6 lg:w-1/2 lg:text-left text-center">
+              <h1 className="drop-shadow-md font-bold text-4xl md:text-5xl lg:text-6xl hero-content-item">
+                Your Gateway to Academic Excellence
+              </h1>
+              <p className="drop-shadow-sm text-gray-200 text-lg md:text-xl hero-content-item">
+                UniNav is a collaborative university study materials platform
+                that organizes and simplifies resource discovery for students.
+              </p>
+              {/* Feature Badges */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-3 md:gap-4 hero-content-item">
+                <div className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-400 shadow-md px-4 py-2 rounded-full text-white hover:scale-105 transition-transform duration-300 transform">
+                  <BookOpen size={18} />
+                  <span className="font-medium text-sm">Study Materials</span>
+                </div>
+                <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-400 shadow-md px-4 py-2 rounded-full text-white hover:scale-105 transition-transform duration-300 transform">
+                  <GraduationCap size={18} />
+                  <span className="font-medium text-sm">
+                    Academic Resources
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-400 shadow-md px-4 py-2 rounded-full text-white hover:scale-105 transition-transform duration-300 transform">
+                  <Users size={18} />
+                  <span className="font-medium text-sm">Student Community</span>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="lg:w-1/2 hero-content">
-            <Image
-              src="/Image/about-hero.jpg"
-              alt="Students collaborating on academic materials"
-              width={600}
-              height={450}
-              className="shadow-lg rounded-xl"
-              priority
-            />
+            {/* Laptop Image Container */}
+            <div className="relative mt-8 lg:mt-0 lg:w-[55%] hero-content-item">
+              {/* Animated Background Element */}
+              <div className="-z-10 absolute inset-[-10%] bg-gradient-to-br from-cyan-400/30 via-blue-500/30 to-indigo-600/30 blur-3xl rounded-full animate-pulse duration-[4000ms]"></div>
+              <Image
+                src="/Image/dashboard-laptop.png"
+                alt="UniNav Platform Dashboard on Laptop"
+                width={700} // Increased width
+                height={525} // Increased height proportionally
+                className="drop-shadow-2xl"
+                priority
+              />
+            </div>
           </div>
         </div>
       </section>
