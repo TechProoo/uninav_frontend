@@ -79,10 +79,18 @@ export default function Hero() {
             </div>
             <div className="hero_left_bottom flex flex-wrap gap-4 mt-8 md:mt-10">
               {isAuthenticated && user ? (
-                <ButtonSlider
-                  onClick={() => navigateTo("/dashboard")}
-                  text={"Visit Dashboard"}
-                />
+                <>
+                  <ButtonSlider
+                    onClick={() => navigateTo("/dashboard")}
+                    text={"Visit Dashboard"}
+                  />
+                  <ButtonSlider
+                    onClick={() =>
+                      navigateTo("/dashboard/materials?action=create")
+                    }
+                    text={"Upload Material"}
+                  />
+                </>
               ) : (
                 <>
                   <ButtonSlider

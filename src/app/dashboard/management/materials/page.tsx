@@ -273,8 +273,8 @@ const MaterialsReviewPage = () => {
                 {activeTab === ApprovalStatusEnum.PENDING
                   ? "There are no materials waiting for review."
                   : activeTab === ApprovalStatusEnum.APPROVED
-                  ? "There are no approved materials yet."
-                  : "There are no rejected materials."}
+                    ? "There are no approved materials yet."
+                    : "There are no rejected materials."}
               </p>
             </div>
           ) : (
@@ -295,9 +295,9 @@ const MaterialsReviewPage = () => {
                               ApprovalStatusEnum.PENDING
                                 ? "outline"
                                 : material.reviewStatus ===
-                                  ApprovalStatusEnum.APPROVED
-                                ? "default"
-                                : "destructive"
+                                    ApprovalStatusEnum.APPROVED
+                                  ? "default"
+                                  : "destructive"
                             }
                             className="text-xs capitalize"
                           >
@@ -324,30 +324,32 @@ const MaterialsReviewPage = () => {
                         <p className="mb-1 sm:mb-2 text-gray-700 text-xs sm:text-sm line-clamp-2">
                           {material.description || "No description provided."}
                         </p>
-                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2">
-                          {material.tags.slice(0, 2).map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                          {material.tags.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{material.tags.length - 2}
-                            </Badge>
-                          )}
-                          {material.targetCourse && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs"
-                            >
-                              {material.targetCourse.courseCode}
-                            </Badge>
-                          )}
-                        </div>
+                        {material.tags && (
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-2">
+                            {material.tags.slice(0, 2).map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                            {material.tags.length > 2 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{material.tags.length - 2}
+                              </Badge>
+                            )}
+                            {material.targetCourse && (
+                              <Badge
+                                variant="secondary"
+                                className="bg-blue-100 hover:bg-blue-200 text-blue-700 text-xs"
+                              >
+                                {material.targetCourse.courseCode}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                         <div className="flex flex-wrap gap-1 sm:gap-2 mt-3">
                           <Button
                             variant="outline"

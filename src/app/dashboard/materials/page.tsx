@@ -9,7 +9,7 @@ import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 import { Material, MaterialTypeEnum } from "@/lib/types/response.type";
 import { searchMaterialsLoggedIn, getMyMaterials } from "@/api/material.api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type ViewMode = "grid" | "list";
 
@@ -30,6 +30,16 @@ const MaterialsPage = () => {
   const [filterType, setFilterType] = useState<string>("");
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Check for action=create in query parameters
+    const action = searchParams.get("action");
+    if (action === "create") {
+      setShowAddForm(true);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     fetchMaterials();
   }, [page, filterType]);

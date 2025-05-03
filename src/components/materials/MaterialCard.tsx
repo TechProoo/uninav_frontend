@@ -212,24 +212,25 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
                     : "Read Only"}
                 </div>
               </div>
-
-              <div className="flex flex-wrap gap-2 mt-3">
-                {material.tags?.slice(0, 2).map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="outline"
-                    className="flex items-center gap-1 bg-white border-gray-300 rounded-md text-xs"
-                  >
-                    <Tag className="w-3 h-3" />
-                    {tag}
-                  </Badge>
-                ))}
-                {material.tags?.length > 2 && (
-                  <Badge variant="outline" className="rounded-md text-xs">
-                    +{material.tags.length - 2}
-                  </Badge>
-                )}
-              </div>
+              {material.tags && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {material.tags?.slice(0, 2).map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="outline"
+                      className="flex items-center gap-1 bg-white border-gray-300 rounded-md text-xs"
+                    >
+                      <Tag className="w-3 h-3" />
+                      {tag}
+                    </Badge>
+                  ))}
+                  {material.tags?.length > 2 && (
+                    <Badge variant="outline" className="rounded-md text-xs">
+                      +{material.tags.length - 2}
+                    </Badge>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Right side with stats and actions */}
@@ -404,27 +405,28 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
                 </Badge>
               )}
             </div>
-
-            <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-2">
-              {material.tags.slice(0, 2).map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="px-1 sm:px-1.5 py-0 h-4 sm:h-5 text-[0.65rem] sm:text-xs"
-                >
-                  <Tag className="mr-0.5 w-2 sm:w-3 h-2 sm:h-3" />
-                  {tag}
-                </Badge>
-              ))}
-              {material.tags.length > 2 && (
-                <Badge
-                  variant="outline"
-                  className="px-1 sm:px-1.5 py-0 h-4 sm:h-5 text-[0.65rem] sm:text-xs"
-                >
-                  +{material.tags.length - 2}
-                </Badge>
-              )}
-            </div>
+            {material.tags && (
+              <div className="flex flex-wrap gap-1 sm:gap-1.5 mt-2">
+                {material.tags.slice(0, 2).map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="outline"
+                    className="px-1 sm:px-1.5 py-0 h-4 sm:h-5 text-[0.65rem] sm:text-xs"
+                  >
+                    <Tag className="mr-0.5 w-2 sm:w-3 h-2 sm:h-3" />
+                    {tag}
+                  </Badge>
+                ))}
+                {material.tags.length > 2 && (
+                  <Badge
+                    variant="outline"
+                    className="px-1 sm:px-1.5 py-0 h-4 sm:h-5 text-[0.65rem] sm:text-xs"
+                  >
+                    +{material.tags.length - 2}
+                  </Badge>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Compact stats row */}

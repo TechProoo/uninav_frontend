@@ -111,7 +111,7 @@ export enum CourseLevel {
 export type Material = {
   id: string;
   type: string;
-  tags: string[];
+  tags?: string[];
   clicks: number;
   views: number;
   downloads: number;
@@ -229,7 +229,7 @@ export interface Blog {
   bodyKey: string;
   likes: number;
   views: number;
-  tags: string[];
+  tags?: string[];
   body: string;
   createdAt: string;
   updatedAt: string;
