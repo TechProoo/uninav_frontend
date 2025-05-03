@@ -6,6 +6,7 @@ import { motion, useInView } from "framer-motion";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+// import AboutHeroImage from "@/app/";
 import {
   BookOpen,
   GraduationCap,
@@ -94,7 +95,7 @@ const AboutPage = () => {
           </div>
           <div className="lg:w-1/2 hero-content">
             <Image
-              src="https://img.freepik.com/free-vector/students-studying-together-illustrated_23-2148536553.jpg"
+              src="/Image/about-hero.jpg"
               alt="Students collaborating on academic materials"
               width={600}
               height={450}

@@ -31,19 +31,24 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ showName = false }) => {
     router.push(path);
   };
 
+  // Truncate name if it's longer than 6 characters
+  const displayName = `${user.firstName} ${user.lastName}`;
+  const truncatedName =
+    displayName.length > 6 ? `${displayName.substring(0, 6)}...` : displayName;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="group relative cursor-pointer">
           {showName ? (
-            <div className="flex items-center bg-blue-950/80 hover:bg-blue-950/95 px-2 py-1.5 rounded-full transition-colors">
-              <Avatar className="w-9 h-9">
-                <AvatarFallback className="bg-primary/90 text-white">
+            <div className="flex items-center bg-blue-950/80 hover:bg-blue-950/95 px-1.5 py-1 rounded-full transition-colors">
+              <Avatar className="w-8 h-8">
+                <AvatarFallback className="bg-primary/90 text-white text-xs">
                   {initials}
                 </AvatarFallback>
               </Avatar>
-              <span className="ml-2 font-semibold text-white">
-                {user.firstName} {user.lastName}
+              <span className="ml-1.5 font-medium text-white text-sm">
+                {truncatedName}
               </span>
             </div>
           ) : (

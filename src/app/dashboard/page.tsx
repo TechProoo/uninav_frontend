@@ -89,9 +89,9 @@ export default function Dashboard() {
 
   return (
     <div className="flex-grow w-full min-h-screen">
-      <div className="space-y-8 mx-auto px-4 py-8 max-w-7xl">
+      <div className="space-y-8 mx-auto px-4 py-2 max-w-7xl">
         {/* Welcome Banner with Search */}
-        <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-6 md:p-8 rounded-xl text-white dashboard_gr">
+        <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-4 md:p-8 rounded-xl text-white dashboard_gr">
           <div className="flex flex-col items-center md:items-start space-y-4">
             <Image
               src={Book}
@@ -101,7 +101,7 @@ export default function Dashboard() {
           </div>
 
           <div className="max-w-xl md:text-left text-center">
-            <h1 className="font-semibold text-2xl md:text-3xl  text-white">
+            <h1 className="font-semibold text-white text-2xl md:text-3xl">
               Hi, {user?.firstName || "Student"}
             </h1>
             <p className="mt-2 text-sm md:text-base">
@@ -126,7 +126,7 @@ export default function Dashboard() {
               {/* Show button on all screen sizes with responsive styling */}
               <button
                 onClick={handleSearch}
-                className="flex justify-center items-center bg-[#003666] hover:bg-[#0036669f]  text-white px-3 sm:px-6 py-2 rounded-r-full min-w-[40px] text-slate-600 transition"
+                className="flex justify-center items-center bg-[#003666] hover:bg-[#0036669f] px-3 sm:px-6 py-2 rounded-r-full min-w-[40px] text-slate-600 text-white transition"
                 aria-label="Search"
               >
                 <Search className="sm:hidden w-4 h-4" />
