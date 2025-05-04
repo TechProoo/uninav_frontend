@@ -156,15 +156,27 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      setFile(file);
+      const selectedFile = acceptedFiles[0];
+      setFile(selectedFile);
+
+      // Auto-populate label if empty
+      if (!formData.label.trim()) {
+        const fileNameWithoutExtension =
+          selectedFile.name.substring(0, selectedFile.name.lastIndexOf(".")) ||
+          selectedFile.name; // Fallback to full name if no extension
+        setFormData((prev) => ({
+          ...prev,
+          label: fileNameWithoutExtension,
+        }));
+      }
+
       // Create preview for images
-      if (file.type.startsWith("image/")) {
+      if (selectedFile.type.startsWith("image/")) {
         const reader = new FileReader();
         reader.onload = () => {
           setFilePreview(reader.result as string);
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(selectedFile);
       }
       // Clear resourceAddress when uploading a file
       setFormData((prev) => ({
@@ -250,10 +262,47 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     >
   ) => {
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    // Auto-populate label from URL if label is empty
+    if (name === "resourceAddress" && !formData.label.trim()) {
+      try {
+        const url = new URL(value);
+        const pathSegments = url.pathname.split("/").filter(Boolean);
+        if (pathSegments.length > 0) {
+          const lastSegment = decodeURIComponent(
+            pathSegments[pathSegments.length - 1]
+          );
+          // Remove potential file extension from URL segment
+          const labelFromUrl = lastSegment.includes(".")
+            ? lastSegment.substring(0, lastSegment.lastIndexOf("."))
+            : lastSegment;
+
+          // Only update if the label field was previously empty
+          setFormData((prev) => {
+            // Check again inside setFormData to avoid race conditions
+            // and ensure the label wasn't manually changed between the event firing and state update
+            if (!prev.label.trim()) {
+              return { ...prev, label: labelFromUrl };
+            }
+            return prev; // Keep existing label if it was manually set
+          });
+        }
+      } catch (error) {
+        // Invalid URL, do nothing
+        console.warn("Could not parse URL for label extraction:", error);
+      }
+    }
+
+    // Clear file when URL is entered
+    if (name === "resourceAddress" && value.trim()) {
+      setFile(null);
+      setFilePreview(null);
+    }
   };
 
   const handleAdvertChange = (
@@ -273,12 +322,36 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+
+      // Auto-populate label if empty
+      if (!formData.label.trim()) {
+        const fileNameWithoutExtension =
+          selectedFile.name.substring(0, selectedFile.name.lastIndexOf(".")) ||
+          selectedFile.name; // Fallback to full name if no extension
+        setFormData((prev) => ({
+          ...prev,
+          label: fileNameWithoutExtension,
+        }));
+      }
+
       // Clear resourceAddress when uploading a file
       setFormData((prev) => ({
         ...prev,
         resourceAddress: "",
       }));
+
+      // Create preview for images
+      if (selectedFile.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setFilePreview(reader.result as string);
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        setFilePreview(null); // Clear preview if not an image
+      }
     }
   };
 
@@ -409,26 +482,6 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         )}
 
         <div className="space-y-3 sm:space-y-4">
-          {/* Essential Fields */}
-          <div>
-            <label
-              htmlFor="label"
-              className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
-            >
-              Title *
-            </label>
-            <input
-              id="label"
-              name="label"
-              type="text"
-              required
-              value={formData.label}
-              onChange={handleChange}
-              className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
-              placeholder="Material Title"
-            />
-          </div>
-
           {/* File Upload Zone */}
           <div>
             <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
@@ -464,7 +517,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                     : "border-gray-300 hover:border-gray-400"
                 )}
               >
-                <input {...getInputProps()} />
+                <input {...getInputProps()} onChange={handleFileChange} />{" "}
+                {/* Added onChange here */}
                 <div className="flex flex-col items-center space-y-1 sm:space-y-2">
                   <Upload className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
                   {isDragActive ? (
@@ -525,6 +579,25 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 </div>
               </div>
             )}
+          </div>
+          {/* Essential Fields */}
+          <div>
+            <label
+              htmlFor="label"
+              className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm"
+            >
+              Title *
+            </label>
+            <input
+              id="label"
+              name="label"
+              type="text"
+              required
+              value={formData.label}
+              onChange={handleChange}
+              className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
+              placeholder="Material Title"
+            />
           </div>
           <div>
             <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
