@@ -132,17 +132,12 @@ const AdvertCard: React.FC<AdvertCardProps> = ({
       </div>
 
       {/* Detail Modal */}
-      {showDetail && (
-        <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/50 p-4">
-          <div className="bg-white shadow-xl rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
-            <AdvertDetail
-              advertId={advert.id}
-              initialAdvert={advert}
-              onClose={handleCloseModal}
-            />
-          </div>
-        </div>
-      )}
+      <AdvertDetail
+        advertId={advert.id}
+        initialAdvert={advert}
+        onClose={handleCloseModal}
+        isOpen={showDetail}
+      />
     </>
   );
 };

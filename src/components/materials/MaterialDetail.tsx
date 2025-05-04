@@ -37,14 +37,24 @@ import {
   deleteMaterial,
 } from "@/api/material.api";
 import AdvertCard from "./AdvertCard";
-import AdvertDetail from "./AdvertDetail";
 import { useBookmarks } from "@/contexts/bookmarksContext";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
-import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import { useAuth } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
 import { CollectionGrid } from "@/components/collections/CollectionGrid";
+import { ResourceType } from "@/lib/types/response.type";
+import AdvertDetail from "./AdvertDetail";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface MaterialDetailProps {
   material: Material;
@@ -313,6 +323,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       if (response?.status === "success") {
         toast.success("Material deleted successfully");
         if (onDelete) onDelete(material.id);
+        if (onClose) onClose(); // Close the detail view after deletion
       } else {
         toast.error("Failed to delete material");
       }
@@ -321,6 +332,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       toast.error("Failed to delete material. Please try again.");
     } finally {
       setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -631,23 +643,24 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           <span>Share this material</span>
         </Button>
 
-        {material.restriction === RestrictionEnum.DOWNLOADABLE && (
-          <Button
-            onClick={handleGetDownloadLink}
-            variant="outline"
-            className="flex items-center gap-2 w-full"
-            disabled={downloadLinkLoading}
-          >
-            {downloadLinkLoading ? (
-              <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
-            ) : copySuccess === "Download link copied to clipboard!" ? (
-              <Check className="w-4 h-4 text-green-600" />
-            ) : (
-              <LinkIcon className="w-4 h-4" />
-            )}
-            <span>Copy download link</span>
-          </Button>
-        )}
+        {material.restriction === RestrictionEnum.DOWNLOADABLE &&
+          material.resource?.resourceType === ResourceType.UPLOAD && (
+            <Button
+              onClick={handleGetDownloadLink}
+              variant="outline"
+              className="flex items-center gap-2 w-full"
+              disabled={downloadLinkLoading}
+            >
+              {downloadLinkLoading ? (
+                <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
+              ) : copySuccess === "Download link copied to clipboard!" ? (
+                <Check className="w-4 h-4 text-green-600" />
+              ) : (
+                <LinkIcon className="w-4 h-4" />
+              )}
+              <span>Copy download link</span>
+            </Button>
+          )}
       </div>
 
       {/* Collections Section */}
@@ -664,6 +677,39 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           />
         </div>
       )}
+
+      {/* Advertisement Detail Modal */}
+      {selectedAdvert && (
+        <AdvertDetail
+          advertId={selectedAdvert.id}
+          initialAdvert={selectedAdvert}
+          onClose={handleCloseAdvertDetail}
+          isOpen={!!selectedAdvert}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              material and remove it from all collections.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

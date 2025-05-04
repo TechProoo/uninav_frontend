@@ -41,6 +41,17 @@ import { useBookmarks } from "@/contexts/bookmarksContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { AddToCollectionDialog } from "../collections/AddToCollectionDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { deleteMaterial } from "@/api/material.api";
 
 interface MaterialCardProps {
   material: Material;
@@ -71,6 +82,8 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const isCurrentlyBookmarked = isBookmarked(material.id);
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -99,6 +112,30 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
     } catch (error) {
       console.error("Error removing from collection:", error);
       toast.error("Failed to remove from collection");
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setIsDeleting(true);
+      const response = await deleteMaterial(material.id);
+      if (response?.status === "success") {
+        toast.success("Material deleted successfully");
+        onDelete?.(material);
+      } else {
+        toast.error("Failed to delete material");
+      }
+    } catch (error) {
+      console.error("Error deleting material:", error);
+      toast.error("Failed to delete material. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -170,7 +207,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
             </div>
 
             {/* Middle section with title and details */}
-            <div className="md:w-2/4">
+            <div className="w-full text-left">
               <h3 className="font-semibold text-gray-900 text-base md:text-lg line-clamp-2">
                 {material.label}
               </h3>
@@ -326,7 +363,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
                           className="text-red-600"
                           onClick={(e) => {
                             e.stopPropagation();
-                            onDelete?.(material);
+                            handleDelete(e);
                           }}
                         >
                           Delete
@@ -346,6 +383,34 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
           itemId={material.id}
           itemType="material"
         />
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog
+          open={isDeleteModalOpen}
+          onOpenChange={setIsDeleteModalOpen}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete your
+                material and remove it from all collections.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </>
     );
   }
@@ -531,7 +596,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
                         className="text-red-600"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onDelete?.(material);
+                          handleDelete(e);
                         }}
                       >
                         Delete
@@ -551,6 +616,29 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
         itemId={material.id}
         itemType="material"
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              material and remove it from all collections.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
