@@ -12,7 +12,7 @@ import Loader from "../login/loading";
 function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams.get("token"); // decoded automatically by Next.js;
 
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
