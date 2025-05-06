@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Collection } from "@/lib/types/response.type";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createCollection, updateCollection } from "@/api/collection.api";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/SelectCourse";
 import toast from "react-hot-toast";
 
 interface CollectionFormProps {
@@ -31,11 +31,23 @@ export const CollectionForm = ({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    label: collection?.label || "",
-    description: collection?.description || "",
-    visibility: collection?.visibility || "public",
-    targetCourseId: collection?.targetCourseId || "",
+    label: "",
+    description: "",
+    visibility: "public",
+    targetCourseId: "",
   });
+
+  // Initialize form data when collection is provided (edit mode)
+  useEffect(() => {
+    if (collection) {
+      setFormData({
+        label: collection.label || "",
+        description: collection.description || "",
+        visibility: collection.visibility || "public",
+        targetCourseId: collection.targetCourseId || "",
+      });
+    }
+  }, [collection]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

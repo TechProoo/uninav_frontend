@@ -672,7 +672,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           <CollectionGrid
             collections={material.collections.map((item) => item.collection)}
             onCollectionClick={(collection) =>
-              router.push(`/collections/${collection.id}`)
+              router.push(`/collection/${collection.id}`)
             }
           />
         </div>

@@ -170,7 +170,7 @@ export type Collection = {
   description: string;
   visibility: VisibilityEnum;
   creatorId: string;
-  targetCourseId: string;
+  targetCourseId?: string;
   // targetCourse: Course;
   likes: number;
   views: number;

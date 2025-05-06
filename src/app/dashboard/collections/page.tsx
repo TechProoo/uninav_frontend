@@ -10,7 +10,6 @@ import { getMyCollections, deleteCollection } from "@/api/collection.api";
 import { CollectionGrid } from "@/components/collections/CollectionGrid";
 import CollectionDetail from "@/components/collections/CollectionDetail";
 import CollectionForm from "@/components/collections/forms/CollectionForm";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import toast from "react-hot-toast";
 
 type ViewMode = "grid" | "list";

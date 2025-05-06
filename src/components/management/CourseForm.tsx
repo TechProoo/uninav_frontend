@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
+import DepartmentByFacultySelectModal from "@/components/DepartmentByFacultySelectModal";
 import { Loader2, Search, Plus, X } from "lucide-react";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/SelectCourse";
 import { createCourse, linkCourseToDepartment } from "@/api/course.api";
 import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
@@ -123,7 +124,7 @@ export const LinkCourseForm: React.FC<LinkCourseFormProps> = ({
       <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="departmentId">Department</Label>
-          <DepartmentByFacultySelect
+          <DepartmentByFacultySelectModal
             onDepartmentSelect={handleDepartmentSelect}
           />
         </div>

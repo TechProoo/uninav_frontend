@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createCollection, updateCollection } from "@/api/collection.api";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/SelectCourse";
 import toast from "react-hot-toast";
 
 interface CollectionFormProps {

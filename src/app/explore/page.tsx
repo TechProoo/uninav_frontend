@@ -4,7 +4,7 @@ import React, { useEffect, useState, KeyboardEvent, Suspense } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/SelectCourse";
 import {
   searchMaterialsLoggedIn,
   searchMaterialsNotLoggedIn,
@@ -923,7 +923,7 @@ const ExploreContent = () => {
                       {blogs?.data && blogs.data.length > 0 ? (
                         <div
                           ref={ref}
-                          className=" space-y-3 sm:space-y-4 md:space-y-6"
+                          className="space-y-3 sm:space-y-4 md:space-y-6"
                         >
                           <BlogGrid
                             blogs={blogs.data}
@@ -974,8 +974,7 @@ const ExploreContent = () => {
                         </div>
                       ) : (
                         <div
-                          className="py-
-                        8 sm:py-12 md:py-16 text-center"
+                          className="py- sm:py-12 md:py-16 text-center 8"
                         >
                           <p className="text-gray-500 text-sm sm:text-base md:text-lg">
                             No blogs found

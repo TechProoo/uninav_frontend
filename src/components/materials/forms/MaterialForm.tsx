@@ -28,7 +28,7 @@ import {
 import { CreateFreeAdvertDto, createFreeAdvert } from "@/api/advert.api";
 import { getCourses } from "@/api/course.api";
 import { useDropzone } from "react-dropzone";
-import { SelectCourse } from "@/components/search/SelectCourse";
+import { SelectCourse } from "@/components/SelectCourse";
 import { SelectCollection } from "@/components/collections/SelectCollection";
 import toast from "react-hot-toast";
 import { useSearchParams } from "next/navigation";

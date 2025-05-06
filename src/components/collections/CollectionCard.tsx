@@ -10,6 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   BookMarked,
   Edit,
   FolderOpen,
@@ -22,6 +32,7 @@ import {
   Tag,
   PlusCircle,
   User,
+  Loader2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 import { deleteCollection } from "@/api/collection.api";
@@ -52,16 +63,27 @@ const CollectionCard = ({
   const router = useRouter();
   const isOwner = user?.id === collection.creatorId;
   const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const contentCount = collection.content?.length || 0;
 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteDialogOpen(true);
+  };
+
   const handleDelete = async () => {
     try {
+      setIsDeleting(true);
       await deleteCollection(collection.id);
       onDelete?.(collection.id);
       toast.success("Collection deleted successfully");
     } catch (error: any) {
       toast.error(error.message || "Failed to delete collection");
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
     }
   };
 
@@ -128,10 +150,7 @@ const CollectionCard = ({
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete();
-                      }}
+                      onClick={handleDeleteClick}
                     >
                       <Trash2 className="mr-2 w-4 h-4" />
                       Delete
@@ -150,6 +169,42 @@ const CollectionCard = ({
           itemType="collection"
           excludeIds={[collection.id]}
         />
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Collection</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{collection.label}"? This
+                action cannot be undone and all materials will be removed from
+                this collection.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </>
     );
   }
@@ -231,10 +286,7 @@ const CollectionCard = ({
             )}
             {onDelete && (
               <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete();
-                }}
+                onClick={handleDeleteClick}
                 className="bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
                 size="icon"
               >
@@ -252,6 +304,40 @@ const CollectionCard = ({
         itemType="collection"
         excludeIds={[collection.id]}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Collection</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{collection.label}"? This action
+              cannot be undone and all materials will be removed from this
+              collection.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
