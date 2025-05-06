@@ -12,6 +12,161 @@ import { createCourse, linkCourseToDepartment } from "@/api/course.api";
 import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
 
+// Link Course Form Props
+export interface LinkCourseFormProps {
+  courseId?: string; // Optional for when we already have a course ID
+  onSuccess: () => void;
+}
+
+// Link Course Form data type
+interface LinkCourseFormData {
+  courseId: string;
+  departmentId: string;
+  level: number;
+}
+
+// LinkCourseForm component for linking an existing course to a department
+export const LinkCourseForm: React.FC<LinkCourseFormProps> = ({
+  courseId: initialCourseId,
+  onSuccess,
+}) => {
+  const [formData, setFormData] = useState<LinkCourseFormData>({
+    courseId: initialCourseId || "",
+    departmentId: "",
+    level: 100,
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialCourseId) {
+      setFormData((prev) => ({ ...prev, courseId: initialCourseId }));
+    }
+  }, [initialCourseId]);
+
+  // Handle input changes
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle department selection
+  const handleDepartmentSelect = (departmentId: string) => {
+    setFormData((prev) => ({ ...prev, departmentId }));
+  };
+
+  // Handle course selection
+  const handleCourseSelect = (courseId: string) => {
+    setFormData((prev) => ({ ...prev, courseId }));
+  };
+
+  // Form submission handler
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    // Validation
+    if (!formData.courseId) {
+      setError("Please select a course");
+      return;
+    }
+
+    if (!formData.departmentId) {
+      setError("Department selection is required");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      // Link course to department
+      const response = await linkCourseToDepartment({
+        courseId: formData.courseId,
+        departmentId: formData.departmentId,
+        level: Number(formData.level),
+      });
+
+      if (response?.status === "success") {
+        toast.success("Course linked to department successfully");
+        onSuccess();
+      } else {
+        setError("Failed to link course to department. Please try again.");
+      }
+    } catch (err: any) {
+      console.error("Error linking course:", err);
+      setError(err?.message || "An error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {error && (
+        <div className="bg-red-50 p-3 border border-red-200 rounded-md text-red-600">
+          {error}
+        </div>
+      )}
+
+      {/* Only show course selection if no courseId was provided */}
+      {!initialCourseId && (
+        <div className="space-y-2">
+          <Label htmlFor="courseId">Select Course</Label>
+          <SelectCourse
+            onChange={handleCourseSelect}
+            currentValue={formData.courseId}
+          />
+        </div>
+      )}
+
+      {/* Department and Level selection */}
+      <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="departmentId">Department</Label>
+          <DepartmentByFacultySelect
+            onDepartmentSelect={handleDepartmentSelect}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="level">Level</Label>
+          <select
+            id="level"
+            name="level"
+            value={formData.level}
+            onChange={handleChange}
+            className="block px-3 py-2 border border-gray-300 rounded-md w-full text-sm"
+            required
+          >
+            <option value="100">100 Level</option>
+            <option value="200">200 Level</option>
+            <option value="300">300 Level</option>
+            <option value="400">400 Level</option>
+            <option value="500">500 Level</option>
+            <option value="600">600 Level</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="flex justify-end">
+        <Button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 w-4 h-4 animate-spin" />
+              Linking Course...
+            </>
+          ) : (
+            <>
+              <Plus className="mr-2 w-4 h-4" />
+              Link Course to Department
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
+  );
+};
+
+// Course form props
 interface CourseFormProps {
   onSuccess: () => void;
 }

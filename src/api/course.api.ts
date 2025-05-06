@@ -25,7 +25,7 @@ export const getCourses = async (filters?: {
   departmentId?: string;
   level?: number;
   limit?: number;
-  // neccessary if you want to get(departmentId, and level since this will course duplicates for different departments)
+  // necessary if you want to get(departmentId, and level since this will course duplicates for different departments)
   allowDepartments?: boolean;
 }): Promise<Response<Course[]>> => {
   try {
@@ -50,7 +50,7 @@ export const getCoursesPaginated = async (filters?: {
   level?: number;
   page?: number;
   limit?: number;
-  // neccessary if you want to get(departmentId, and level since this will course duplicates for different departments)
+  // necessary if you want to get(departmentId, and level since this will course duplicates for different departments)
   allowDepartments?: boolean;
 }): Promise<Response<Pagination<Course[]>>> => {
   try {

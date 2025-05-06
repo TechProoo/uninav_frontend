@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Plus, Loader2, Trash2, Edit2, X } from "lucide-react";
 import {
@@ -18,6 +17,7 @@ import {
   deleteCourse,
   removeDepartmentLevelCourse,
 } from "@/api/course.api";
+import { LinkCourseForm } from "@/components/management/CourseForm";
 import EditCourseForm from "@/components/management/EditCourseForm";
 import toast from "react-hot-toast";
 import {
@@ -134,7 +134,7 @@ export default function CourseModal({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={() => onClose()}>
-        <DialogContent className="max-w-3xl h-[80vh] overflow-y-auto">
+        <DialogContent className="h-[90vh] overflow-y-auto">
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
@@ -146,16 +146,19 @@ export default function CourseModal({
           ) : course ? (
             <>
               <DialogHeader>
-                <DialogTitle className="font-bold text-2xl">
-                  Course Details
+                <DialogTitle className="flex items-center font-bold text-2xl">
+                  <Badge className="bg-blue-100 mr-2 text-blue-700 text-sm">
+                    {course.courseCode}
+                  </Badge>
+                  {course.courseName}
                 </DialogTitle>
               </DialogHeader>
 
-              <div className="gap-6 grid grid-cols-1 lg:grid-cols-3">
+              <div className="gap-8 grid grid-cols-1 lg:grid-cols-3 mt-6">
                 {/* Course Information */}
-                <div className="space-y-6 lg:col-span-2">
+                <div className="space-y-8 order-2 lg:order-1 lg:col-span-2">
                   {showEditForm ? (
-                    <div className="bg-white p-4 rounded-lg">
+                    <div className="bg-white shadow-sm p-6 border rounded-lg">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-semibold text-lg">Edit Course</h3>
                         <Button
@@ -173,43 +176,46 @@ export default function CourseModal({
                       />
                     </div>
                   ) : (
-                    <div className="bg-white p-4 rounded-lg">
+                    <div className="bg-white shadow-sm p-6 border rounded-lg">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <Badge className="bg-blue-100 mb-2 text-blue-700 text-sm">
-                            {course.courseCode}
-                          </Badge>
-                          <h2 className="mb-2 font-semibold text-xl">
-                            {course.courseName}
-                          </h2>
-                          <p className="text-gray-600">{course.description}</p>
+                          <h3 className="mb-2 font-semibold text-lg">
+                            Course Details
+                          </h3>
+                          <p className="mb-4 text-gray-600">
+                            {course.description}
+                          </p>
+                          <div className="flex items-center text-gray-500 text-sm">
+                            <span className="mr-4">
+                              Created:{" "}
+                              {new Date(course.createdAt).toLocaleDateString()}
+                            </span>
+                            <Badge
+                              variant={
+                                course.reviewStatus === "approved"
+                                  ? "success"
+                                  : "secondary"
+                              }
+                            >
+                              {course.reviewStatus}
+                            </Badge>
+                          </div>
                         </div>
-                        <Badge variant="outline" className="px-3 py-1 text-sm">
-                          {course?.departments?.length} Departments
-                        </Badge>
-                      </div>
-
-                      <div className="flex items-center text-gray-500 text-sm">
-                        <span className="mr-4">
-                          Created:{" "}
-                          {new Date(course.createdAt).toLocaleDateString()}
-                        </span>
-                        <Badge
-                          variant={
-                            course.reviewStatus === "approved"
-                              ? "success"
-                              : "secondary"
-                          }
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowEditForm(true)}
                         >
-                          {course.reviewStatus}
-                        </Badge>
+                          <Edit2 className="mr-2 w-4 h-4" />
+                          Edit
+                        </Button>
                       </div>
                     </div>
                   )}
 
                   {/* Department Offerings */}
-                  <div className="bg-white p-4 rounded-lg">
-                    <div className="flex justify-between items-center mb-4">
+                  <div className="bg-white shadow-sm p-6 border rounded-lg">
+                    <div className="flex justify-between items-center mb-6">
                       <h3 className="font-semibold text-lg">
                         Department Offerings
                       </h3>
@@ -223,34 +229,52 @@ export default function CourseModal({
                     </div>
 
                     {showLinkForm && (
-                      <div className="bg-gray-50 mb-6 p-4 border rounded-lg">
-                        <h4 className="mb-3 font-medium text-sm">
-                          Link to Department
-                        </h4>
-                        {/* <LinkCourseForm
+                      <div className="bg-gray-50 shadow-sm mb-6 p-5 border rounded-lg">
+                        <div className="flex justify-between items-center mb-3">
+                          <h4 className="font-medium text-sm">
+                            Link to Department
+                          </h4>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowLinkForm(false)}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <LinkCourseForm
                           courseId={course.id}
                           onSuccess={() => {
                             setShowLinkForm(false);
                             fetchCourseDetails();
                           }}
-                        /> */}
+                        />
                       </div>
                     )}
 
                     <div className="space-y-4">
                       {course.departments.length === 0 ? (
-                        <p className="text-gray-500 text-sm">
-                          This course is not yet linked to any departments.
-                        </p>
+                        <div className="flex flex-col justify-center items-center bg-gray-50 p-6 rounded-lg text-center">
+                          <p className="mb-4 text-gray-500">
+                            This course is not yet linked to any departments.
+                          </p>
+                          <Button
+                            size="sm"
+                            onClick={() => setShowLinkForm(true)}
+                          >
+                            <Plus className="mr-1 w-4 h-4" />
+                            Link to Department
+                          </Button>
+                        </div>
                       ) : (
-                        <div className="gap-3 grid">
+                        <div className="gap-4 grid grid-cols-1 md:grid-cols-2">
                           {course.departments.map((dept) => (
                             <div
                               key={`${dept.departmentId}-${dept.level}`}
-                              className="flex justify-between items-center bg-gray-50 p-3 border rounded-lg"
+                              className="flex justify-between items-center bg-gray-50 p-4 border rounded-lg"
                             >
                               <div>
-                                <p className="font-medium text-sm">
+                                <p className="font-medium">
                                   {dept.department.name}
                                 </p>
                                 <p className="text-gray-500 text-sm">
@@ -290,19 +314,19 @@ export default function CourseModal({
                 </div>
 
                 {/* Statistics and Actions */}
-                <div className="space-y-6">
-                  <div className="bg-white p-4 rounded-lg">
+                <div className="space-y-6 order-1 lg:order-2">
+                  <div className="bg-white shadow-sm p-6 border rounded-lg">
                     <h3 className="mb-4 font-semibold text-lg">Quick Stats</h3>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
                         <span className="text-gray-600">Total Departments</span>
-                        <span className="font-medium">
+                        <span className="font-medium text-lg">
                           {course.departments.length}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
                         <span className="text-gray-600">Approved Links</span>
-                        <span className="font-medium">
+                        <span className="font-medium text-green-600 text-lg">
                           {
                             course.departments.filter(
                               (d) => d.reviewStatus === "approved"
@@ -310,9 +334,9 @@ export default function CourseModal({
                           }
                         </span>
                       </div>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center bg-gray-50 p-3 rounded-md">
                         <span className="text-gray-600">Pending Links</span>
-                        <span className="font-medium">
+                        <span className="font-medium text-amber-600 text-lg">
                           {
                             course.departments.filter(
                               (d) => d.reviewStatus === "pending"
@@ -323,9 +347,17 @@ export default function CourseModal({
                     </div>
                   </div>
 
-                  <div className="bg-white p-4 rounded-lg">
+                  <div className="bg-white shadow-sm p-6 border rounded-lg">
                     <h3 className="mb-4 font-semibold text-lg">Actions</h3>
                     <div className="space-y-3">
+                      <Button
+                        variant="outline"
+                        className="justify-start w-full"
+                        onClick={() => setShowLinkForm(true)}
+                      >
+                        <Plus className="mr-2 w-4 h-4" />
+                        Link to Department
+                      </Button>
                       <Button
                         variant="outline"
                         className="justify-start w-full"
