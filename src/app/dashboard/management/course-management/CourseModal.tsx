@@ -15,7 +15,7 @@ import {
   getCourseById,
   updateCourse,
   deleteCourse,
-  removeDepartmentLevelCourse,
+  unlinkCourseToDepartment,
 } from "@/api/course.api";
 import { LinkCourseForm } from "@/components/management/CourseForm";
 import EditCourseForm from "@/components/management/EditCourseForm";
@@ -119,7 +119,7 @@ export default function CourseModal({
   const handleUnlinkDepartment = async (departmentId: string) => {
     if (!course) return;
     try {
-      await removeDepartmentLevelCourse(departmentId, course.id);
+      await unlinkCourseToDepartment(departmentId, course.id);
       await fetchCourseDetails();
       toast.success("Course unlinked from department successfully");
     } catch (error: any) {
@@ -129,12 +129,48 @@ export default function CourseModal({
     }
   };
 
+  // Close main dialog when opening an alert dialog to prevent nesting issues
+  useEffect(() => {
+    // This temporarily suspends the main dialog while the alert dialog is open
+    const mainDialogElement = document.querySelector(
+      '[role="dialog"][data-state="open"]'
+    );
+    if ((showDeleteDialog || showUnlinkDialog.show) && mainDialogElement) {
+      mainDialogElement.setAttribute("data-dialog-suppressed", "true");
+    }
+
+    return () => {
+      if (mainDialogElement) {
+        mainDialogElement.removeAttribute("data-dialog-suppressed");
+      }
+    };
+  }, [showDeleteDialog, showUnlinkDialog.show]);
+
+  // Modified unlink handler to manage dialog states properly
+  const handleUnlinkClick = (departmentId: string) => {
+    // First set up the unlink data
+    setShowUnlinkDialog({
+      departmentId,
+      show: true,
+    });
+  };
+
   if (!isOpen) return null;
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={() => onClose()}>
-        <DialogContent className="h-[90vh] overflow-y-auto">
+      <Dialog
+        open={isOpen && !(showDeleteDialog || showUnlinkDialog.show)}
+        onOpenChange={(open) => {
+          if (!open && !showDeleteDialog && !showUnlinkDialog.show) {
+            onClose();
+          }
+        }}
+      >
+        <DialogContent
+          className="h-[90vh] overflow-y-auto"
+          aria-describedby="course-modal"
+        >
           {isLoading ? (
             <div className="flex justify-center items-center py-12">
               <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
@@ -146,7 +182,11 @@ export default function CourseModal({
           ) : course ? (
             <>
               <DialogHeader>
-                <DialogTitle className="flex items-center font-bold text-2xl">
+                <DialogTitle
+                  className="flex items-center font-bold text-2xl"
+                  aria-description="course-title"
+                  aria-describedby="course-modal"
+                >
                   <Badge className="bg-blue-100 mr-2 text-blue-700 text-sm">
                     {course.courseCode}
                   </Badge>
@@ -295,12 +335,12 @@ export default function CourseModal({
                                   variant="ghost"
                                   size="sm"
                                   className="text-red-500 hover:text-red-700"
-                                  onClick={() =>
-                                    setShowUnlinkDialog({
-                                      departmentId: dept.departmentId,
-                                      show: true,
-                                    })
-                                  }
+                                  onClick={(e) => {
+                                    // Stop propagation to prevent focus issues
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleUnlinkClick(dept.departmentId);
+                                  }}
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
@@ -385,7 +425,24 @@ export default function CourseModal({
       </Dialog>
 
       {/* Delete Course Confirmation Dialog */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <AlertDialog
+        open={showDeleteDialog}
+        onOpenChange={(open) => {
+          setShowDeleteDialog(open);
+          // Re-open main dialog if this one is closed
+          if (!open && isOpen) {
+            setTimeout(() => {
+              // Small timeout to prevent focus conflicts
+              const mainDialog = document.querySelector(
+                '[data-dialog-suppressed="true"]'
+              );
+              if (mainDialog) {
+                mainDialog.removeAttribute("data-dialog-suppressed");
+              }
+            }, 10);
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Course</AlertDialogTitle>
@@ -409,9 +466,21 @@ export default function CourseModal({
       {/* Unlink Department Confirmation Dialog */}
       <AlertDialog
         open={showUnlinkDialog.show}
-        onOpenChange={(show) =>
-          setShowUnlinkDialog({ ...showUnlinkDialog, show })
-        }
+        onOpenChange={(open) => {
+          setShowUnlinkDialog({ ...showUnlinkDialog, show: open });
+          // Re-open main dialog if this one is closed
+          if (!open && isOpen) {
+            setTimeout(() => {
+              // Small timeout to prevent focus conflicts
+              const mainDialog = document.querySelector(
+                '[data-dialog-suppressed="true"]'
+              );
+              if (mainDialog) {
+                mainDialog.removeAttribute("data-dialog-suppressed");
+              }
+            }, 10);
+          }
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>

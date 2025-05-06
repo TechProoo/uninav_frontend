@@ -118,12 +118,31 @@ export const linkCourseToDepartment = async (
       linkData
     );
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error linking course to department:", error);
-    return null;
+    throw new Error(
+      error.response?.data?.message || "Failed to link course to department"
+    );
   }
 };
 
+// remove link between course and department
+export const unlinkCourseToDepartment = async (
+  departmentId: string,
+  courseId: string
+): Promise<Response<void> | null> => {
+  try {
+    const response = await api.delete<Response<void>>(
+      `/courses/department-level/${departmentId}/${courseId}`
+    );
+    return response.data;
+  } catch (error: any) {
+    console.error("Error unlinking course to department:", error);
+    throw new Error(
+      error.response?.data?.message || "Failed to link course to department"
+    );
+  }
+};
 export const getDepartmentLevelCourses = async ({
   departmentId,
   courseId,
@@ -176,24 +195,6 @@ export const deleteCourse = async (
     console.error("Error deleting course:", error);
     throw new Error(
       error?.response?.data?.message || "Failed to delete course"
-    );
-  }
-};
-
-export const removeDepartmentLevelCourse = async (
-  departmentId: string,
-  courseId: string
-): Promise<Response<void>> => {
-  try {
-    const response = await api.delete<Response<void>>(
-      `/courses/department-level/${departmentId}/${courseId}`
-    );
-    return response.data;
-  } catch (error: any) {
-    console.error("Error removing department level course:", error);
-    throw new Error(
-      error?.response?.data?.message ||
-        "Failed to remove department level course"
     );
   }
 };

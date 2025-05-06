@@ -1,0 +1,25 @@
+/* Dialog stacking and focus management fixes */
+[data-dialog-suppressed="true"] {
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+/* Ensure alert dialogs always appear on top */
+[role="alertdialog"] {
+  z-index: 100 !important;
+}
+
+/* Fix for nested modals focus issues */
+.dialog-stack-portal {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.dialog-stack-portal > * {
+  pointer-events: auto;
+}
