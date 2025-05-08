@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AuthContext, useAuth } from "@/contexts/authContext";
+import BackButton from "@/components/ui/BackButton";
 
 export default function BlogPage() {
   const { blogId } = useParams();
@@ -104,18 +105,7 @@ export default function BlogPage() {
   return (
     <div className="mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8">
-        <Button
-          variant="ghost"
-          asChild
-          onClick={() => {
-            router.back();
-          }}
-          className="border border-black cursor-pointer hover:bg-black hover:text-white"
-        >
-          <div className="flex items-center gap-2">
-            <span>← Back </span>
-          </div>
-        </Button>         
+        <BackButton />
       </div>
       {isEditing ? (
         <div className="bg-white shadow-md p-6 rounded-lg">

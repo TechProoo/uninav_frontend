@@ -11,6 +11,7 @@ import { CollectionForm } from "@/components/collections/CollectionForm";
 import { getCollection, deleteCollection } from "@/api/collection.api";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import BackButton from "@/components/ui/BackButton";
 
 export default function CollectionPage() {
   const params = useParams();
@@ -113,19 +114,7 @@ export default function CollectionPage() {
   return (
     <div className="mx-auto px-4 py-8 max-w-6xl container">
       <div className="mb-8">
-        <Button
-          variant="ghost"
-          asChild
-          className="hover:bg-[#0c385f] border border-[#0c385f] rounded-md hover:text-white"
-        >
-          <div
-            onClick={() => {
-              router.back();
-            }}
-          >
-            <span>← Back</span>
-          </div>
-        </Button>
+        <BackButton />
       </div>
 
       {isEditing ? (
