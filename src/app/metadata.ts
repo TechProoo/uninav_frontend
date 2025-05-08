@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://uninav.live"),
+  metadataBase: new URL("https://uninav.livex"),
   title: "UniNav - Your Gateway to Academic Excellence",
   description:
     "A collaborative university study materials platform that allows students to upload, share, and access course-related materials organized by faculty and department.",

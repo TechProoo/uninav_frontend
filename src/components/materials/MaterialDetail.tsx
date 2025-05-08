@@ -640,7 +640,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           ) : (
             <Share2 className="w-4 h-4" />
           )}
-          <span>Share this material</span>
+          <span>Share this material </span>
         </Button>
 
         {material.restriction === RestrictionEnum.DOWNLOADABLE &&
@@ -658,7 +658,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
               ) : (
                 <LinkIcon className="w-4 h-4" />
               )}
-              <span>Copy download link</span>
+              <span>Copy download link (expires in 2 days)</span>
             </Button>
           )}
       </div>

@@ -160,32 +160,55 @@ const ExploreContent = () => {
   const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
 
   useEffect(() => {
+    if (!ref.current) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          if (
+            activeTab === "materials" &&
+            !isLoadingMaterials &&
+            materialPage < materialTotalPages
+          ) {
+            setMaterialPage((prev) => prev + 1);
+          } else if (
+            activeTab === "blogs" &&
+            !isLoadingBlogs &&
+            blogPage < blogTotalPages
+          ) {
+            setBlogPage((prev) => prev + 1);
+          }
+        }
       },
       {
         root: null,
         threshold: 0.1,
+        rootMargin: "100px",
       }
     );
 
-    const currentElement = ref.current;
-    if (currentElement) observer.observe(currentElement);
+    observer.observe(ref.current);
 
     return () => {
-      if (currentElement) observer.unobserve(currentElement);
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+      observer.disconnect();
     };
-  }, []);
+  }, [
+    isLoadingMaterials,
+    isLoadingBlogs,
+    materialPage,
+    blogPage,
+    materialTotalPages,
+    blogTotalPages,
+    activeTab,
+  ]);
 
   useEffect(() => {
-    if (isVisible) {
-      setMaterialPage((prev) => prev + 1);
+    if (materialPage > 1) {
+      fetchMaterials(materialPage);
     }
-  }, [isVisible]);
-
-  useEffect(() => {
-    fetchMaterials(materialPage);
   }, [materialPage]);
 
   // Toggle view mode between grid and list
@@ -216,7 +239,13 @@ const ExploreContent = () => {
       });
 
       if (response && response.status === "success") {
-        setMaterials(response.data);
+        setMaterials((prev) => {
+          if (page === 1) return response.data;
+          return {
+            ...response.data,
+            data: [...(prev?.data || []), ...response.data.data],
+          };
+        });
         setMaterialTotalPages(response.data.pagination?.totalPages || 1);
         return;
       }
@@ -240,7 +269,13 @@ const ExploreContent = () => {
         type: (blogType as BlogType) || undefined,
       });
 
-      setBlogs(response.data);
+      setBlogs((prev) => {
+        if (page === 1) return response.data;
+        return {
+          ...response.data,
+          data: [...(prev?.data || []), ...response.data.data],
+        };
+      });
       setBlogTotalPages(response.data.pagination?.totalPages || 1);
       setBlogContentLoaded(true);
     } catch (error) {
@@ -689,48 +724,17 @@ const ExploreContent = () => {
                             viewMode={viewMode}
                           />
 
-                          {/* Materials Pagination */}
-                          {materialTotalPages > 1 && (
-                            <div className="flex justify-between items-center pt-2 sm:pt-3 md:pt-4 border-t text-xs sm:text-sm">
-                              <p className="text-gray-500">
-                                Page {materialPage} of {materialTotalPages}
-                              </p>
-                              <div className="flex gap-1 sm:gap-2">
-                                <button
-                                  onClick={() =>
-                                    setMaterialPage((prev) =>
-                                      Math.max(prev - 1, 1)
-                                    )
-                                  }
-                                  disabled={materialPage === 1}
-                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
-                                    materialPage === 1
-                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
-                                  }`}
-                                >
-                                  <ChevronLeft className="w-3 sm:w-4 h-3 sm:h-4" />{" "}
-                                  Prev
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    setMaterialPage((prev) =>
-                                      Math.min(prev + 1, materialTotalPages)
-                                    )
-                                  }
-                                  disabled={materialPage === materialTotalPages}
-                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
-                                    materialPage === materialTotalPages
-                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
-                                  }`}
-                                >
-                                  Next{" "}
-                                  <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                          {/* Infinite Scroll Loading Indicator */}
+                          <div ref={ref} className="py-4 flex justify-center">
+                            {((activeTab === "materials" &&
+                              !isLoadingMaterials &&
+                              materialPage < materialTotalPages) ||
+                              (activeTab === "blogs" &&
+                                !isLoadingBlogs &&
+                                blogPage < blogTotalPages)) && (
+                              <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                            )}
+                          </div>
                         </div>
                       ) : (
                         <div className="py-8 sm:py-12 md:py-16 text-center">
@@ -931,51 +935,16 @@ const ExploreContent = () => {
                             viewMode={viewMode}
                           />
 
-                          {/* Blogs Pagination */}
-                          {blogTotalPages && (
-                            <div className="flex justify-between items-center pt-2 sm:pt-3 md:pt-4 border-t text-xs sm:text-sm">
-                              {/* <p className="text-gray-500">
-                                Page {blogPage} of {blogTotalPages}
-                              </p> */}
-                              <div className="flex gap-1 sm:gap-2">
-                                <button
-                                  onClick={() =>
-                                    setBlogPage((prev) => Math.max(prev - 1, 1))
-                                  }
-                                  disabled={blogPage === 1}
-                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
-                                    blogPage === 1
-                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
-                                  }`}
-                                >
-                                  <ChevronLeft className="w-3 sm:w-4 h-3 sm:h-4" />{" "}
-                                  Prev
-                                </button>
-                                <button
-                                  onClick={() =>
-                                    setBlogPage((prev) =>
-                                      Math.min(prev + 1, blogTotalPages)
-                                    )
-                                  }
-                                  disabled={blogPage === blogTotalPages}
-                                  className={`flex items-center gap-1 px-2 sm:px-3 md:px-4 py-1 sm:py-2 rounded-md transition ${
-                                    blogPage === blogTotalPages
-                                      ? "text-gray-400 bg-gray-100 cursor-not-allowed"
-                                      : "text-gray-700 border border-gray-300 hover:bg-gray-50"
-                                  }`}
-                                >
-                                  Next{" "}
-                                  <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4" />
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                          {/* Infinite Scroll Loading Indicator */}
+                          <div className="py-4 flex justify-center">
+                            {((activeTab === 'materials' && !isLoadingMaterials && materialPage < materialTotalPages) ||
+                              (activeTab === 'blogs' && !isLoadingBlogs && blogPage < blogTotalPages)) && (
+                              <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                            )}
+                          </div>
                         </div>
                       ) : (
-                        <div
-                          className="py- sm:py-12 md:py-16 text-center 8"
-                        >
+                        <div className="py- sm:py-12 md:py-16 text-center 8">
                           <p className="text-gray-500 text-sm sm:text-base md:text-lg">
                             No blogs found
                           </p>
