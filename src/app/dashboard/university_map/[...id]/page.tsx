@@ -1,11 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useEffect, useState } from "react";
 
 type Props = {
   params: { id: string };
@@ -23,84 +18,62 @@ const dummyCourses = [
 ];
 
 export default function DepartmentPage({ params }: Props) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const racesRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // simulate load
+  // simulate loading
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
-  }, []);
-
-  useGSAP(() => {
-    const wrapper = wrapperRef.current;
-    const races = racesRef.current;
-    if (!wrapper || !races) return;
-
-    // Calculate the scroll amount for horizontal scrolling
-    function getScrollAmount() {
-      return -(races.scrollWidth - wrapper.clientWidth); // Adjust based on the width of the container
-    }
-
-    // GSAP tween animation for scrolling
-    const tween = gsap.to(races, {
-      x: getScrollAmount,
-      ease: "none",
-      duration: 1,
-    });
-
-    // ScrollTrigger setup for pinning the scroll container
-    ScrollTrigger.create({
-      trigger: wrapper,
-      start: "top top",
-      end: () => `+=${races.scrollWidth}`,
-      pin: true,
-      scrub: 1,
-      animation: tween,
-      invalidateOnRefresh: true,
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-      tween.kill();
-    };
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
-      <div className="h-[50vh] bg-gray-800" /> {/* Top spacer */}
-      <div
-        ref={wrapperRef}
-        className="racesWrapper h-screen relative overflow-hidden bg-bgMain text-white"
-      >
+    <div className="min-h-screen bg-gray-100">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-20 px-6 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          Department of Computer Science
+        </h1>
+        <p className="text-lg md:text-2xl">
+          Explore our diverse courses designed to shape tomorrow's innovators.
+        </p>
+      </section>
+
+      {/* Courses Grid */}
+      <section className="max-w-6xl mx-auto py-16 px-6">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <span>Loading Courses...</span>
+          <div className="flex justify-center items-center h-64">
+            <span className="text-gray-500">Loading Courses...</span>
           </div>
         ) : (
-          <div
-            ref={racesRef}
-            className="races flex no-wrap whitespace-nowrap will-change-transform px-6 py-10"
-          >
-            {dummyCourses.map((c) => (
-              <h2
-                key={c.id}
-                className="flex-shrink-0 text-[20vw] font-bold px-4"
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {dummyCourses.map((course) => (
+              <div
+                key={course.id}
+                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
               >
-                {c.code}
-              </h2>
+                <div className="text-3xl font-extrabold text-blue-600 mb-2">
+                  {course.code}
+                </div>
+                <div className="text-lg text-gray-700">{course.name}</div>
+              </div>
             ))}
           </div>
         )}
-      </div>
-      <div className="h-[100vh] bg-gray-900 px-6 py-10 text-white">
-        <h2 className="text-3xl mb-4">About the Department</h2>
-        <p>
-          Once you’ve scrolled through all courses, the pin releases and you
-          continue down to this vertical content.
-        </p>
-      </div>
+      </section>
+
+      {/* About Section */}
+      <section className="bg-white py-16 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">About the Department</h2>
+          <p className="text-gray-600 leading-relaxed">
+            The Department of Computer Science offers a rigorous curriculum
+            covering fundamental concepts and cutting-edge technologies. Our
+            mission is to foster critical thinking, innovation, and ethical
+            practices among students, preparing them for successful careers in
+            academia and industry.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
