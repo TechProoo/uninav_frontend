@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/contexts/authContext";
+import BackButton from "@/components/ui/BackButton";
 
 export default function MaterialPage() {
   const { materialId } = useParams();
@@ -97,19 +98,7 @@ export default function MaterialPage() {
   return (
     <div className="mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8">
-        <Button
-          variant="ghost"
-          asChild
-          className="hover:bg-[#0c385f] border border-[#0c385f] rounded-md hover:text-white"
-        >
-          <div
-            onClick={() => {
-              router.back();
-            }}
-          >
-            <span>← Back</span>
-          </div>
-        </Button>
+        <BackButton />
       </div>
 
       {isEditing ? (

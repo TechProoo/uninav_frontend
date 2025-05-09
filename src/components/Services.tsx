@@ -37,17 +37,20 @@ export default function Services() {
 
         <div className="gap-10 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-12">
           {services.map((service, index) => (
-            <div key={index} className="group relative">
+            <div
+              key={index}
+              className="group relative cursor-pointer"
+            >
               {/* Gradient Accent Border */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#75bfff] to-[#003666] opacity-0 group-hover:opacity-100 blur-sm p-[1px] rounded-2xl transition-all duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#75bfff] to-[#003666] opacity-0 group-hover:opacity-100 blur-md p-[2px] rounded-2xl transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_8px_32px_0_rgba(0,54,102,0.25)]" />
 
               {/* Card */}
-              <div className="relative bg-white/70 shadow-xl hover:shadow-2xl backdrop-blur-md p-6 rounded-2xl text-center hover:scale-[1.02] transition-all hover:-translate-y-1 duration-300 transform">
+              <div className="relative bg-white/80 shadow-xl group-hover:shadow-2xl group-hover:shadow-[#75bfff]/40 backdrop-blur-md p-6 rounded-2xl text-center transition-all duration-300 transform group-hover:scale-105 group-hover:-translate-y-2 border border-transparent group-hover:border-[#75bfff]">
                 {/* Top Tab Accent */}
                 <div className="-top-2 left-1/2 absolute bg-[#75bfff] shadow-md rounded-b-md w-14 h-1.5 -translate-x-1/2 transform" />
 
-                {/* Icon with slow bounce */}
-                <div className="flex justify-center items-center mb-5 text-[#003666] animate-bounce-slow">
+                {/* Icon with animated effect */}
+                <div className="flex justify-center items-center mb-5 text-[#003666] transition-all duration-300 group-hover:text-[#75bfff] group-hover:animate-wiggle">
                   {service.icon}
                 </div>
 

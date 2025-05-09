@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import ButtonSlider from "../components/ui/ButtonSlider";
+import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
 import UserAvatar from "@/components/ui/UserAvatar";
@@ -12,9 +12,8 @@ const Navbar = () => {
   const router = useRouter();
 
   const { isAuthenticated, loading } = useAuth();
-  const handleNavigation = (path: string) => {
-    router.push(path);
-  };
+  const handleNavigation = (path: string) => router.push(path);
+
   return (
     <div className="relative bg-white/95 shadow-md">
       <nav className="mx-auto px-4 py-2 max-w-[1400px]">

@@ -53,6 +53,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import BackButton from "@/components/ui/BackButton";
 
 // Blog type options for filtering
 const blogTypeOptions = [
@@ -389,57 +390,12 @@ const ExploreContent = () => {
     <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
       <Toaster />
 
-      <div className="mb-4">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 hover:bg-[#0c385f] px-2 py-1 border border-[#0c385f] rounded-lg hover:text-[#ffffff] transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>Back</span>
-        </button>
-      </div>
-
-      {/* Advanced Search Information Dialog */}
-      <Dialog
-        open={showAdvancedSearchInfo}
-        onOpenChange={setShowAdvancedSearchInfo}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Wand2 className="w-5 h-5 text-blue-500" />
-              Advanced Search
-            </DialogTitle>
-            <DialogDescription>
-              <p className="py-2">
-                Advanced search uses more sophisticated algorithms to find
-                relevant results but may take longer to complete.
-              </p>
-              <div className="bg-amber-50 mt-2 p-3 border border-amber-200 rounded-md">
-                <div className="flex items-start gap-2">
-                  <Info className="mt-0.5 w-5 h-5 text-amber-500" />
-                  <div>
-                    <p className="font-medium text-amber-800">
-                      Performance Note
-                    </p>
-                    <p className="text-amber-700 text-sm">
-                      This feature performs in-depth analysis which may slow
-                      down search results. Use it only when standard search
-                      doesn't yield helpful results.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-
       <div className="mx-auto max-w-7xl">
         <div className="bg-white shadow-md mb-2 sm:mb-4 md:mb-6 p-2 sm:p-4 md:p-6 rounded-lg sm:rounded-xl">
-          <h1 className="mb-2 sm:mb-4 font-bold text-xl sm:text-2xl">
-            Explore UniNav
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="font-bold text-xl sm:text-2xl">Explore UniNav</h1>
+            <BackButton />
+          </div>
 
           {/* Main Tabs - Fixed container width */}
           <div className="w-full overflow-hidden">
@@ -932,6 +888,42 @@ const ExploreContent = () => {
           </div>
         </div>
       </div>
+
+      {/* Advanced Search Information Dialog */}
+      <Dialog
+        open={showAdvancedSearchInfo}
+        onOpenChange={setShowAdvancedSearchInfo}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wand2 className="w-5 h-5 text-blue-500" />
+              Advanced Search
+            </DialogTitle>
+            <DialogDescription>
+              <p className="py-2">
+                Advanced search uses more sophisticated algorithms to find
+                relevant results but may take longer to complete.
+              </p>
+              <div className="bg-amber-50 mt-2 p-3 border border-amber-200 rounded-md">
+                <div className="flex items-start gap-2">
+                  <Info className="mt-0.5 w-5 h-5 text-amber-500" />
+                  <div>
+                    <p className="font-medium text-amber-800">
+                      Performance Note
+                    </p>
+                    <p className="text-amber-700 text-sm">
+                      This feature performs in-depth analysis which may slow
+                      down search results. Use it only when standard search
+                      doesn't yield helpful results.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
