@@ -7,6 +7,7 @@ import {
   Megaphone,
   Pencil,
   Settings,
+  University,
   User,
 } from "lucide-react";
 
@@ -56,6 +57,11 @@ const items = [
     title: "Bookmarks",
     url: "/dashboard/bookmarks",
     icon: Bookmark,
+  },
+  {
+    title: "University Map",
+    url: "/dashboard/university-map",
+    icon: University,
   },
   {
     title: "Account",

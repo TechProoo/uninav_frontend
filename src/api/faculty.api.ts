@@ -1,7 +1,7 @@
 import { api } from "./base.api";
 import { Faculty, Response } from "@/lib/types/response.type";
 
-interface FacultyWithDepartments extends Faculty {
+export interface FacultyWithDepartments extends Faculty {
   departments: Array<{
     id: string;
     name: string;

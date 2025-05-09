@@ -9,6 +9,7 @@ import {
   User,
   Building2,
   FolderHeart,
+  University,
 } from "lucide-react";
 
 import {
@@ -59,6 +60,11 @@ const items = [
     title: "Bookmarks",
     url: "/dashboard/bookmarks",
     icon: Bookmark,
+  },
+  {
+    title: "University Map",
+    url: "/dashboard/university_map",
+    icon: University,
   },
   {
     title: "Profile",
