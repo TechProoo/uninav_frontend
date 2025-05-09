@@ -160,24 +160,14 @@ const ExploreContent = () => {
   const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
 
   useEffect(() => {
-    if (!ref.current) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          if (
-            activeTab === "materials" &&
-            !isLoadingMaterials &&
-            materialPage < materialTotalPages
-          ) {
-            setMaterialPage((prev) => prev + 1);
-          } else if (
-            activeTab === "blogs" &&
-            !isLoadingBlogs &&
-            blogPage < blogTotalPages
-          ) {
-            setBlogPage((prev) => prev + 1);
-          }
+        if (
+          entry.isIntersecting &&
+          !isLoadingMaterials &&
+          materialPage < materialTotalPages
+        ) {
+          setMaterialPage((prev) => prev + 1);
         }
       },
       {
@@ -187,23 +177,13 @@ const ExploreContent = () => {
       }
     );
 
-    observer.observe(ref.current);
+    const currentElement = ref.current;
+    if (currentElement) observer.observe(currentElement);
 
     return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current);
-      }
-      observer.disconnect();
+      if (currentElement) observer.unobserve(currentElement);
     };
-  }, [
-    isLoadingMaterials,
-    isLoadingBlogs,
-    materialPage,
-    blogPage,
-    materialTotalPages,
-    blogTotalPages,
-    activeTab,
-  ]);
+  }, [isLoadingMaterials, materialPage, materialTotalPages]);
 
   useEffect(() => {
     if (materialPage > 1) {
@@ -226,7 +206,6 @@ const ExploreContent = () => {
 
   // Fetch materials with filters
   const fetchMaterials = async (page = materialPage) => {
-    setIsLoadingMaterials(true);
     try {
       const response = await searchMaterialsApi({
         query: searchQuery,
@@ -239,13 +218,14 @@ const ExploreContent = () => {
       });
 
       if (response && response.status === "success") {
-        setMaterials((prev) => {
-          if (page === 1) return response.data;
-          return {
+        if (page === 1) {
+          setMaterials(response.data);
+        } else {
+          setMaterials((prev) => ({
             ...response.data,
             data: [...(prev?.data || []), ...response.data.data],
-          };
-        });
+          }));
+        }
         setMaterialTotalPages(response.data.pagination?.totalPages || 1);
         return;
       }
@@ -254,14 +234,11 @@ const ExploreContent = () => {
       // Only show toast from catch block, remove the duplicate toast
       const err = error as Error;
       toast.error(err?.message || "Failed to fetch materials");
-    } finally {
-      setIsLoadingMaterials(false);
     }
   };
 
   // Fetch blogs with filters
   const fetchBlogs = async (page = blogPage) => {
-    setIsLoadingBlogs(true);
     try {
       const response = await searchBlogs({
         query: searchQuery,
@@ -269,13 +246,14 @@ const ExploreContent = () => {
         type: (blogType as BlogType) || undefined,
       });
 
-      setBlogs((prev) => {
-        if (page === 1) return response.data;
-        return {
+      if (page === 1) {
+        setBlogs(response.data);
+      } else {
+        setBlogs((prev) => ({
           ...response.data,
           data: [...(prev?.data || []), ...response.data.data],
-        };
-      });
+        }));
+      }
       setBlogTotalPages(response.data.pagination?.totalPages || 1);
       setBlogContentLoaded(true);
     } catch (error) {
@@ -283,8 +261,6 @@ const ExploreContent = () => {
       // Show only one toast message
       const err = error as Error;
       toast.error(err?.message || "Failed to fetch blogs");
-    } finally {
-      setIsLoadingBlogs(false);
     }
   };
 
@@ -726,14 +702,10 @@ const ExploreContent = () => {
 
                           {/* Infinite Scroll Loading Indicator */}
                           <div ref={ref} className="py-4 flex justify-center">
-                            {((activeTab === "materials" &&
-                              !isLoadingMaterials &&
-                              materialPage < materialTotalPages) ||
-                              (activeTab === "blogs" &&
-                                !isLoadingBlogs &&
-                                blogPage < blogTotalPages)) && (
-                              <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
-                            )}
+                            {!isLoadingMaterials &&
+                              materialPage < materialTotalPages && (
+                                <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                              )}
                           </div>
                         </div>
                       ) : (
@@ -936,9 +908,8 @@ const ExploreContent = () => {
                           />
 
                           {/* Infinite Scroll Loading Indicator */}
-                          <div className="py-4 flex justify-center">
-                            {((activeTab === 'materials' && !isLoadingMaterials && materialPage < materialTotalPages) ||
-                              (activeTab === 'blogs' && !isLoadingBlogs && blogPage < blogTotalPages)) && (
+                          <div ref={ref} className="py-4 flex justify-center">
+                            {!isLoadingBlogs && blogPage < blogTotalPages && (
                               <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
                             )}
                           </div>
