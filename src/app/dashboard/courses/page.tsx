@@ -12,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import {
   getUserCourses,
   addUserCourses,
@@ -31,6 +30,7 @@ const CoursesPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [courseCodeError, setCourseCodeError] = useState<string | null>(null);
 
   // Form state for creating a new course
   const [newCourse, setNewCourse] = useState({
@@ -101,9 +101,24 @@ const CoursesPage = () => {
 
   const handleCreateCourse = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate course code
+    const courseCode = newCourse.courseCode.trim().replace(/\s+/g, '');
+    if (courseCode.length > 6) {
+      setCourseCodeError("Course code must not exceed 6 characters");
+      return;
+    }
+    
     try {
       setIsSubmitting(true);
-      await createCourse(newCourse);
+      setCourseCodeError(null);
+      
+      // Ensure no spaces in course code
+      await createCourse({
+        ...newCourse,
+        courseCode: courseCode
+      });
+      
       setIsCreateDialogOpen(false);
       setNewCourse({
         courseName: "",
@@ -119,6 +134,16 @@ const CoursesPage = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCourseCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\s+/g, '');
+    if (value.length > 6) {
+      setCourseCodeError("Course code must not exceed 6 characters");
+    } else {
+      setCourseCodeError(null);
+    }
+    setNewCourse({ ...newCourse, courseCode: value });
   };
 
   if (isLoading) {
@@ -285,12 +310,15 @@ const CoursesPage = () => {
                 <input
                   type="text"
                   required
-                  className="p-2 border rounded-md w-full"
+                  maxLength={6}
+                  className={`p-2 border rounded-md w-full ${courseCodeError ? 'border-red-500' : ''}`}
                   value={newCourse.courseCode}
-                  onChange={(e) =>
-                    setNewCourse({ ...newCourse, courseCode: e.target.value })
-                  }
+                  onChange={handleCourseCodeChange}
+                  placeholder="MAX 6 chars, no spaces"
                 />
+                {courseCodeError && (
+                  <p className="text-red-500 text-xs mt-1">{courseCodeError}</p>
+                )}
               </div>
               <div>
                 <label className="block mb-2 font-medium text-sm">
@@ -316,7 +344,10 @@ const CoursesPage = () => {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting || !!courseCodeError}
+              >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 w-4 h-4 animate-spin" />
