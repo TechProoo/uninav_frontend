@@ -199,11 +199,26 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   // add course to tag when it changes
   useEffect(() => {
     if (selectedCourse) {
-      // const tags = selectedCourse.courseCode.
-      setCommonFormData((prev) => ({
-        ...prev,
-        tags: [selectedCourse.courseCode.slice(0, 3), selectedCourse.courseCode, ...(prev.tags || [])],
-      }));
+      const courseCode = selectedCourse.courseCode;
+      const courseCodePrefix = courseCode.slice(0, 3);
+      
+      setCommonFormData((prev) => {
+        const existingTags = prev.tags || [];
+        const newTags: string[] = [];
+        
+        if (!existingTags.includes(courseCodePrefix)) {
+          newTags.push(courseCodePrefix);
+        }
+        
+        if (!existingTags.includes(courseCode)) {
+          newTags.push(courseCode);
+        }
+        
+        return {
+          ...prev,
+          tags: [...newTags, ...existingTags],
+        };
+      });
     }
   }, [selectedCourse]);
 
@@ -1119,7 +1134,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 value={singleMaterialData.label}
                 onChange={handleChange}
                 className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
-                placeholder="Material Title"
+                placeholder="Material Title (!don't include spaces in course code)"
               />
             </div>
           )}

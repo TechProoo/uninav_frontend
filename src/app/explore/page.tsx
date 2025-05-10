@@ -430,7 +430,7 @@ const ExploreContent = () => {
                 {/* Materials Search Bar */}
                 <div className="flex md:flex-row flex-col gap-2 md:gap-4">
                   <div className="relative flex-1">
-                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-5 text-gray-400 -translate-y-1/2 transform" />
+                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-8 text-gray-400 -translate-y-1/2 transform" />
                     <input
                       type="text"
                       value={searchQuery}
