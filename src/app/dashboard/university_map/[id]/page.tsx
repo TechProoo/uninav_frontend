@@ -8,9 +8,10 @@ import { getDepartmentById } from "@/api/department.api";
 import { getCourses } from "@/api/course.api";
 import { Department, Course } from "@/lib/types/response.type";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type Props = {
-  params: { id: string[] };
+  params: { id: string };
 };
 
 // Group courses by level based on course code
@@ -33,12 +34,12 @@ export default function DepartmentPage({ params }: Props) {
     [key: number]: Course[];
   }>({});
   const [activeLevel, setActiveLevel] = useState<number>(100);
-
+  const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const departmentId = params.id[0];
+        const departmentId = params.id;
 
         // Fetch department details
         const departmentResponse = await getDepartmentById(departmentId);
@@ -92,10 +93,12 @@ export default function DepartmentPage({ params }: Props) {
     (courses) => courses.length > 0
   );
 
+  const departmentId = params.id;
   const handleClick = (details: string) => {
-    const departmentId = params.id[0];
-    window.location.href = `/dashboard/university_map/${departmentId}/${details}`;
+    router.push(`/dashboard/university_map/${departmentId}/${details}`);
   };
+
+  console.log(departmentId)
 
   return (
     <div className="p-6 min-h-screen bg-slate-50">
