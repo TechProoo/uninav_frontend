@@ -52,7 +52,6 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [open, setOpen] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [includeAdvert, setIncludeAdvert] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
@@ -195,6 +194,18 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     };
     loadCourses();
   }, []);
+
+
+  // add course to tag when it changes
+  useEffect(() => {
+    if (selectedCourse) {
+      // const tags = selectedCourse.courseCode.
+      setCommonFormData((prev) => ({
+        ...prev,
+        tags: [selectedCourse.courseCode.slice(0, 3), selectedCourse.courseCode, ...(prev.tags || [])],
+      }));
+    }
+  }, [selectedCourse]);
 
   // Effect to check and enforce advert limits when toggling includeAdvert
   useEffect(() => {
@@ -518,35 +529,6 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         [field]: value,
       },
     }));
-  };
-
-  const handleMultiAdvertImage = (id: string, file: File | null) => {
-    if (!file) {
-      setMultiAdverts((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], image: null, imagePreview: null },
-      }));
-      return;
-    }
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setMultiAdverts((prev) => ({
-          ...prev,
-          [id]: {
-            ...prev[id],
-            image: file,
-            imagePreview: reader.result as string,
-          },
-        }));
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setMultiAdverts((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], image: file, imagePreview: null },
-      }));
-    }
   };
 
   const simulateProgress = (

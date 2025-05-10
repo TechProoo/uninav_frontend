@@ -203,7 +203,16 @@ const CourseForm: React.FC<CourseFormProps> = ({ onSuccess }) => {
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "courseCode") {
+      // Remove spaces from course code
+      const cleanedValue = value.replace(/\s+/g, "");
+      if (value !== cleanedValue) {
+        toast.error("Course code cannot contain spaces. Spaces have been removed.");
+      }
+      setFormData((prev) => ({ ...prev, [name]: cleanedValue }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   // Handle department selection from the DepartmentByFacultySelect component
