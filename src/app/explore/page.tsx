@@ -206,10 +206,10 @@ const ExploreContent = () => {
   };
 
   // Fetch materials with filters
-  const fetchMaterials = async (page = materialPage) => {
+  const fetchMaterials = async (page = materialPage, query=searchQuery) => {
     try {
       const response = await searchMaterialsApi({
-        query: searchQuery,
+        query: query,
         page,
         limit: 5,
         tag: materialTag || undefined,
@@ -239,10 +239,10 @@ const ExploreContent = () => {
   };
 
   // Fetch blogs with filters
-  const fetchBlogs = async (page = blogPage) => {
+  const fetchBlogs = async (page = blogPage, query=searchQuery) => {
     try {
       const response = await searchBlogs({
-        query: searchQuery,
+        query: query,
         page,
         type: (blogType as BlogType) || undefined,
       });
@@ -434,7 +434,12 @@ const ExploreContent = () => {
                     <input
                       type="text"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value)
+                        if(e.target.value.length === 0){
+                          fetchMaterials(1, '');
+                        }
+                      }}
                       onKeyPress={handleKeyPress}
                       placeholder="Search for study materials..."
                       className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full text-xs sm:text-sm md:text-base"
@@ -691,7 +696,13 @@ const ExploreContent = () => {
                     <input
                       type="text"
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                        if(e.target.value.length === 0){
+                          fetchBlogs(1, '');
+                        }
+                        setSearchQuery(e.target.value)
+                      }}
                       onKeyPress={handleKeyPress}
                       placeholder="Search for blogs, articles, guides..."
                       className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-xs sm:text-sm md:text-base"

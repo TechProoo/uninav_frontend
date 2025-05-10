@@ -209,6 +209,10 @@ const CourseForm: React.FC<CourseFormProps> = ({ onSuccess }) => {
       if (value !== cleanedValue) {
         toast.error("Course code cannot contain spaces. Spaces have been removed.");
       }
+      if(value.length >= 7){
+        toast.error("Course code cannot be more than 7 characters");
+        return;
+      }
       setFormData((prev) => ({ ...prev, [name]: cleanedValue }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
