@@ -1,105 +1,149 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useEffect, useState } from "react";
+import { School } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import BackButton from "@/components/ui/BackButton";
 
 type Props = {
   params: { id: string };
 };
 
 const dummyCourses = [
-  { id: 1, name: "Introduction to Computer Science", code: "CSC101" },
-  { id: 2, name: "Data Structures & Algorithms", code: "CSC201" },
-  { id: 3, name: "Computer Architecture", code: "CSC202" },
-  { id: 4, name: "Operating Systems", code: "CSC301" },
-  { id: 5, name: "Database Systems", code: "CSC302" },
-  { id: 6, name: "Computer Networks", code: "CSC303" },
-  { id: 7, name: "Software Engineering", code: "CSC304" },
-  { id: 8, name: "Artificial Intelligence", code: "CSC401" },
+  {
+    id: 1,
+    name: "Introduction to Computer Science",
+    code: "CSC101",
+    description:
+      "An introduction to computer science and programming concepts, algorithms, and problem-solving techniques.",
+  },
+  {
+    id: 2,
+    name: "Data Structures & Algorithms",
+    code: "CSC201",
+    description:
+      "Study of fundamental data structures and algorithms, including their design, analysis, and implementation.",
+  },
+  {
+    id: 3,
+    name: "Computer Architecture",
+    code: "CSC202",
+    description:
+      "Overview of computer organization and architecture, including processor design and memory systems.",
+  },
+  {
+    id: 4,
+    name: "Operating Systems",
+    code: "CSC301",
+    description:
+      "Principles and practice of operating systems design, including process management and resource allocation.",
+  },
+  {
+    id: 5,
+    name: "Database Systems",
+    code: "CSC302",
+    description:
+      "Introduction to database management systems, SQL, and database design principles.",
+  },
+  {
+    id: 6,
+    name: "Computer Networks",
+    code: "CSC303",
+    description:
+      "Fundamentals of computer networking, protocols, and distributed systems.",
+  },
+  {
+    id: 7,
+    name: "Software Engineering",
+    code: "CSC304",
+    description:
+      "Software development methodologies, project management, and software design patterns.",
+  },
+  {
+    id: 8,
+    name: "Artificial Intelligence",
+    code: "CSC401",
+    description:
+      "Introduction to artificial intelligence concepts, machine learning, and problem-solving methods.",
+  },
 ];
 
 export default function DepartmentPage({ params }: Props) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const racesRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // simulate load
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(t);
-  }, []);
-
-  useGSAP(() => {
-    const wrapper = wrapperRef.current;
-    const races = racesRef.current;
-    if (!wrapper || !races) return;
-
-    // Calculate the scroll amount for horizontal scrolling
-    function getScrollAmount() {
-      return -(races.scrollWidth - wrapper.clientWidth); // Adjust based on the width of the container
-    }
-
-    // GSAP tween animation for scrolling
-    const tween = gsap.to(races, {
-      x: getScrollAmount,
-      ease: "none",
-      duration: 1,
-    });
-
-    // ScrollTrigger setup for pinning the scroll container
-    ScrollTrigger.create({
-      trigger: wrapper,
-      start: "top top",
-      end: () => `+=${races.scrollWidth}`,
-      pin: true,
-      scrub: 1,
-      animation: tween,
-      invalidateOnRefresh: true,
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-      tween.kill();
-    };
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
-      <div className="h-[50vh] bg-gray-800" /> {/* Top spacer */}
-      <div
-        ref={wrapperRef}
-        className="racesWrapper h-screen relative overflow-hidden bg-bgMain text-white"
-      >
+    <div className="p-6 min-h-screen bg-slate-50">
+      {/* Header with Navigation */}
+      <div className="mb-6 flex items-center gap-4">
+        <BackButton />
+        <h1 className="text-2xl font-bold text-[#003666]">
+          Department of Computer Science
+        </h1>
+      </div>
+
+      {/* Department Info Card */}
+      <div className="mb-8 bg-gradient-to-br from-[#003666] to-[#0c4a8c] rounded-xl p-6 text-white">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <School className="h-6 w-6" />
+              <h2 className="text-xl font-semibold">Department Overview</h2>
+            </div>
+            <p className="max-w-2xl text-blue-100">
+              The Department of Computer Science offers comprehensive programs
+              focusing on theoretical foundations and practical applications of
+              computing. Our curriculum is designed to prepare students for
+              successful careers in technology and innovation.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Courses Section */}
+      <div>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Available Courses
+          </h2>
+          <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+            {dummyCourses.length} Courses
+          </Badge>
+        </div>
+
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <span>Loading Courses...</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="animate-pulse bg-white rounded-lg p-6 h-40"
+              ></div>
+            ))}
           </div>
         ) : (
-          <div
-            ref={racesRef}
-            className="races flex no-wrap whitespace-nowrap will-change-transform px-6 py-10"
-          >
-            {dummyCourses.map((c) => (
-              <h2
-                key={c.id}
-                className="flex-shrink-0 text-[20vw] font-bold px-4"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {dummyCourses.map((course) => (
+              <div
+                key={course.id}
+                className="bg-white hover:shadow-lg transition-shadow rounded-lg p-6 border border-gray-100"
               >
-                {c.code}
-              </h2>
+                <Badge className="mb-3 bg-blue-50 text-blue-700">
+                  {course.code}
+                </Badge>
+                <h3 className="font-medium text-gray-900 mb-2">
+                  {course.name}
+                </h3>
+                <p className="text-sm text-gray-600 line-clamp-2">
+                  {course.description}
+                </p>
+              </div>
             ))}
           </div>
         )}
-      </div>
-      <div className="h-[100vh] bg-gray-900 px-6 py-10 text-white">
-        <h2 className="text-3xl mb-4">About the Department</h2>
-        <p>
-          Once you’ve scrolled through all courses, the pin releases and you
-          continue down to this vertical content.
-        </p>
       </div>
     </div>
   );
