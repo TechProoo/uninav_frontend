@@ -1,22 +1,26 @@
 "use client";
 import React, { ReactNode, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Settings,
-  Search,
-  Megaphone,
   BookOpen,
-  PencilLine,
-  User,
-  Bookmark,
-  GraduationCap,
+  Users,
+  Settings,
+  LogOut,
+  Bell,
+  Search,
+  Menu,
+  X,
   ShieldCheck,
+  AlertCircle,
 } from "lucide-react";
+import { useAuth } from "@/contexts/authContext";
+import { useToast } from "@/components/ui/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Toaster } from "@/components/ui/toaster";
 
 import ProtectedRoute from "@/auth/ProtectedRoute";
 import { BadgeDemo } from "@/components/ui/BadgeUi";
-import { useAuth } from "@/contexts/authContext";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/blog/dashboard-sidebar";
 
@@ -53,11 +57,23 @@ interface LayoutProp {
 
 const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   const router = useRouter();
-  const { logout, isAuthenticated, user } = useAuth();
-  // const [searchValue, setSearchValue] = useState("");
+  const pathname = usePathname();
+  const { logout, isAuthenticated, user, loading } = useAuth();
+  const { toast } = useToast();
   const [modal, setModal] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/auth/login');
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -80,8 +96,20 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
     10
   )}px)`;
 
+  if (loading || !isClient) {
+    return null;
+  }
+
   return (
     <SidebarProvider>
+      {!user?.departmentId && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Please complete your profile information by setting your department in your profile settings.
+          </AlertDescription>
+        </Alert>
+      )}
       <div className="flex bg-slate-50 w-full h-screen overflow-hidden">
         <DashboardSidebar />
         <ProtectedRoute>
@@ -110,6 +138,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
           </main>
         </ProtectedRoute>
       </div>
+      <Toaster />
     </SidebarProvider>
   );
 };
