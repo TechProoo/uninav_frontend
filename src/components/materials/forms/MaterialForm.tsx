@@ -49,6 +49,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
+  const {user} = useAuth()  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -149,7 +150,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         tags: initialData.tags || [],
         visibility: initialData.visibility,
         restriction: initialData.restriction,
-        targetCourseId: initialData.targetCourseId || undefined,
+        targetCourseId: initialData.targetCourseId || user?.courses[0]?.courseId || undefined,
       });
 
       // Set collection ID separately

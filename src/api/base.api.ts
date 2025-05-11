@@ -14,8 +14,8 @@ export const api = axios.create({
 
 // Initialize token from session
 const session = getSession();
-if (session?.session) {
-  api.defaults.headers.common["Authorization"] = `Bearer ${session.session}`;
+if (session) {
+  api.defaults.headers.common["Authorization"] = `Bearer ${session}`;
 }
 
 export const setAuthToken = (token: string) => {

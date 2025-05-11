@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetClose,
 } from "../ui/sheet";
+import GoogleButton from "../ui/GoogleButton";
 
 const Navigation = () => {
   const router = useRouter();
@@ -97,7 +98,8 @@ const Navigation = () => {
             ) : isAuthenticated ? (
               <UserAvatar showName={true} />
             ) : (
-              <div className="flex justify-center items-center gap-8 nav_btn">
+              <div className="flex justify-center items-center gap-4 nav_btn">
+                {/* <GoogleButton iconOnly className="hidden md:inline-flex" title="Sign in with Google" /> */}
                 <ButtonSlider
                   onClick={() => handleNavigation("/auth/login")}
                   text="Login"
@@ -163,19 +165,6 @@ const Navigation = () => {
               </button>
             ))}
 
-            {/* {!isAuthenticated && (
-              <div className="flex flex-row gap-4 mt-4">
-                <Button
-                  onClick={() => handleNavigation("/auth/login")}
-                  text="Login"
-                />
-
-                <Button
-                  onClick={() => handleNavigation("/auth/signup")}
-                  text="Signup"
-                />
-              </div>
-            )} */}
           </div>
         </SheetContent>
       </Sheet>
