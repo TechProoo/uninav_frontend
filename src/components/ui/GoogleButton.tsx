@@ -36,7 +36,7 @@ const GoogleButton: React.FC<GoogleButtonProps> = ({
   return (
     <button
       onClick={handleGoogleLogin}
-      className={`${buttonClass} ${className}`}
+      className={` cursor-pointer ${buttonClass} ${className}`}
       aria-label="Sign in with Google"
       title={title}
       type="button"

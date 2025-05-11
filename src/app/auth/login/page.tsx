@@ -11,6 +11,7 @@ import Loader from "./loading";
 import { useAuth } from "@/contexts/authContext";
 import { fetchUserProfile } from "@/api/user.api";
 import { Eye, EyeClosed } from "lucide-react";
+import GoogleButton from '@/components/ui/GoogleButton';
 
 const page = () => {
   useEffect(() => {
@@ -160,7 +161,8 @@ const page = () => {
                   Forgot Password?
                 </Link>
               </div>
-              <div className="flex justify-center my-5">
+              <div className="flex flex-col gap-4 my-5">
+                <GoogleButton />
                 <ButtonSlider type="submit" text="Login" />
               </div>
               <div className="text-center">
