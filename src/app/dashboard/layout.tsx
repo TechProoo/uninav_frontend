@@ -102,30 +102,27 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
 
   return (
     <SidebarProvider>
-      {!user?.departmentId && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            Please complete your profile information by setting your department in your profile settings.
-          </AlertDescription>
-        </Alert>
-      )}
       <div className="flex bg-slate-50 w-full h-screen overflow-hidden">
         <DashboardSidebar />
         <ProtectedRoute>
           <main className="flex flex-col flex-1 w-full overflow-hidden">
             <header
-              className="top-0 z-50 sticky flex justify-between items-center bg-[#003462]/90 shadow-md backdrop-blur-sm p-4 border-b w-full"
+              className="top-0 z-50 sticky flex flex-col justify-between items-center bg-[#003462]/90 shadow-md backdrop-blur-sm p-4 border-b w-full"
               style={{
                 transition: "transform 0.1s ease-out",
               }}
             >
+              {!user?.departmentId && (
+                <div className="w-full bg-red-600 text-white text-xs py-1 px-2 rounded mb-2 flex items-center justify-center">
+                  <AlertCircle className="h-4 w-4 mr-2" />
+                  Please complete your profile information by setting your department in your profile settings.
+                </div>
+              )}
               <SidebarTrigger
                 style={{ color: "white", verticalAlign: "top" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
               />
-
               <div className="flex sm:flex-row flex-col-reverse sm:justify-end sm:items-center gap-3 w-full">
                 <div className="flex justify-end sm:justify-start">
                   <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
