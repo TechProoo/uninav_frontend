@@ -265,6 +265,9 @@ const VerifyEmailPage = () => {
                 <p className="mt-2 text-gray-600 dark:text-gray-300">
                   A verification code has been sent to your email address.
                   Please enter it below to verify your email.
+                  <span className="block mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Don't forget to check your spam folder if you don't see the email in your inbox.
+                  </span>
                 </p>
               )}
             </div>

@@ -45,12 +45,12 @@ export type UserProfile = {
   firstName: string;
   lastName: string;
   username: string;
-  departmentId: string;
+  departmentId?: string;
   level: number;
   role: "student" | "moderator" | "admin";
   createdAt: string;
   updatedAt: string;
-  department: {
+  department?: {
     id: string;
     name: string;
     description: string;
