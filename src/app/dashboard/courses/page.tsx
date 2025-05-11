@@ -25,6 +25,7 @@ const CoursesPage = () => {
   const { user } = useAuth();
   const [userCourses, setUserCourses] = useState<any[]>([]);
   const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -121,6 +122,11 @@ const CoursesPage = () => {
     }
   };
 
+  const filteredCourses = availableCourses.filter((course) =>
+    course.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    course.courseCode.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -200,32 +206,45 @@ const CoursesPage = () => {
               Select courses to add to your list
             </DialogDescription>
           </DialogHeader>
+          <div className="p-4 border-b">
+            <input
+              type="text"
+              placeholder="Search courses..."
+              className="w-full p-2 border rounded-md"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
           <div className="mt-4 max-h-[400px] overflow-y-auto">
-            {availableCourses.map((course) => (
-              <div
-                key={course.id}
-                className="flex items-start p-3 last:border-0 border-b"
-              >
-                <input
-                  type="checkbox"
-                  className="mt-1"
-                  checked={selectedCourses.includes(course.id)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setSelectedCourses([...selectedCourses, course.id]);
-                    } else {
-                      setSelectedCourses(
-                        selectedCourses.filter((id) => id !== course.id)
-                      );
-                    }
-                  }}
-                />
-                <div className="ml-3">
-                  <h4 className="font-medium">{course.courseName}</h4>
-                  <p className="text-gray-500 text-sm">{course.courseCode}</p>
+            {filteredCourses.length === 0 ? (
+              <p className="text-center text-gray-500 py-4">No courses found</p>
+            ) : (
+              filteredCourses.map((course) => (
+                <div
+                  key={course.id}
+                  className="flex items-start p-3 last:border-0 border-b"
+                >
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={selectedCourses.includes(course.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedCourses([...selectedCourses, course.id]);
+                      } else {
+                        setSelectedCourses(
+                          selectedCourses.filter((id) => id !== course.id)
+                        );
+                      }
+                    }}
+                  />
+                  <div className="ml-3">
+                    <h4 className="font-medium">{course.courseName}</h4>
+                    <p className="text-gray-500 text-sm">{course.courseCode}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
           <DialogFooter>
             <Button

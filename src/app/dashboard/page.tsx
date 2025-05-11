@@ -88,7 +88,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex-grow w-full min-h-screen">
+    <div className="flex-grow w-full m-screen">
       <div className="space-y-8 mx-auto px-4 py-2 max-w-7xl">
         {/* Welcome Banner with Search */}
         <div className="flex md:flex-row flex-col justify-between items-center shadow-md mb-10 p-4 md:p-8 rounded-xl text-white dashboard_gr">

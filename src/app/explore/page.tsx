@@ -21,14 +21,10 @@ import {
 } from "@/lib/types/response.type";
 import MaterialGrid from "@/components/materials/MaterialGrid";
 import BlogGrid from "@/components/blog/BlogGrid";
-import { Badge } from "@/components/ui/badge";
 import {
   Search,
   Filter,
   X,
-  ChevronLeft,
-  ChevronRight,
-  // SlidersHorizontal,
   BookOpen,
   FileText,
   Tag,
@@ -154,21 +150,233 @@ const ExploreContent = () => {
 
   // State for loading and results
   const [isLoadingMaterials, setIsLoadingMaterials] = useState<boolean>(false);
+  const [isLoadingMaterialsInfinity, setIsLoadingMaterialsInfinity] =
+    useState<boolean>(false);
   const [isLoadingBlogs, setIsLoadingBlogs] = useState<boolean>(false);
+  const [isLoadingBlogsInfinity, setIsLoadingBlogsInfinity] =
+    useState<boolean>(false);
   const [materials, setMaterials] = useState<Pagination<Material[]> | null>(
     null
   );
   const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
 
+  // Handle search for active tab with optimized resets
+  const handleSearch = () => {
+    if (advancedSearch) {
+      toast("Using advanced search - this may take longer", {
+        icon: "🔎",
+        duration: 3000,
+      });
+    }
+
+    if (activeTab === "materials") {
+      setMaterialPage(1);
+      setMaterials((prev) => (prev ? { ...prev, data: [] } : null));
+      fetchMaterials(1);
+    } else {
+      setBlogPage(1);
+      // Only reset data when starting a new search
+      setBlogs((prev) => (prev ? { ...prev, data: [] } : null));
+      fetchBlogs(1);
+    }
+  };
+
+  // Fetch materials with filters
+  const fetchMaterialInfiniteScroll = async (
+    page = materialPage,
+    query = searchQuery
+  ) => {
+    if (isLoadingMaterialsInfinity) return; // Prevent duplicate requests
+
+    try {
+      setIsLoadingMaterialsInfinity(true);
+      const response = await searchMaterialsApi({
+        query: query,
+        page,
+        limit: 5,
+        tag: materialTag || undefined,
+        courseId: materialCourse || undefined,
+        type: materialType || undefined,
+        advancedSearch: advancedSearch || undefined,
+      });
+
+      if (response && response.status === "success") {
+        // Only update the data array and pagination info, keeping other state unchanged
+        setMaterials((prev) => {
+          if (!prev) return response.data;
+          return {
+            ...prev,
+            pagination: response.data.pagination,
+            data:
+              page === 1
+                ? response.data.data
+                : [...prev.data, ...response.data.data],
+          };
+        });
+        setMaterialTotalPages(response.data.pagination?.totalPages || 1);
+      }
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+      const err = error as Error;
+      toast.error(err?.message || "Failed to fetch materials");
+    } finally {
+      setIsLoadingMaterialsInfinity(false);
+    }
+  };
+
+  const fetchMaterials = async (page = materialPage, query = searchQuery) => {
+    if (isLoadingMaterials) return; // Prevent duplicate requests
+
+    try {
+      setIsLoadingMaterials(true);
+      const response = await searchMaterialsApi({
+        query: query,
+        page,
+        limit: 5,
+        tag: materialTag || undefined,
+        courseId: materialCourse || undefined,
+        type: materialType || undefined,
+        advancedSearch: advancedSearch || undefined,
+      });
+
+      if (response && response.status === "success") {
+        // Only update the data array and pagination info, keeping other state unchanged
+        setMaterials((prev) => {
+          if (!prev) return response.data;
+          return {
+            ...prev,
+            pagination: response.data.pagination,
+            data:
+              page === 1
+                ? response.data.data
+                : [...prev.data, ...response.data.data],
+          };
+        });
+        setMaterialTotalPages(response.data.pagination?.totalPages || 1);
+      }
+    } catch (error) {
+      console.error("Error fetching materials:", error);
+      const err = error as Error;
+      toast.error(err?.message || "Failed to fetch materials");
+    } finally {
+      setIsLoadingMaterials(false);
+    }
+  };
+
+  // Fetch blogs with filters
+  const fetchBlogs = async (page = blogPage, query = searchQuery) => {
+    if (isLoadingBlogs) return; // Prevent duplicate requests
+
+    try {
+      setIsLoadingBlogs(true);
+      const response = await searchBlogs({
+        query: query,
+        page,
+        type: (blogType as BlogType) || undefined,
+      });
+
+      if (response?.data) {
+        // Only update the data array and pagination info, keeping other state unchanged
+        setBlogs((prev) => {
+          if (!prev) return response.data;
+          return {
+            ...prev,
+            pagination: response.data.pagination,
+            data:
+              page === 1
+                ? response.data.data
+                : [...prev.data, ...response.data.data],
+          };
+        });
+        setBlogTotalPages(response.data.pagination?.totalPages || 1);
+        setBlogContentLoaded(true);
+      }
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+      const err = error as Error;
+      toast.error(err?.message || "Failed to fetch blogs");
+    } finally {
+      setIsLoadingBlogs(false);
+    }
+  };
+
+  // Fetch blogs with infinite scroll
+  const fetchBlogsInfiniteScroll = async (
+    page = blogPage,
+    query = searchQuery
+  ) => {
+    if (isLoadingBlogsInfinity) return;
+
+    try {
+      setIsLoadingBlogsInfinity(true);
+      const response = await searchBlogs({
+        query: query,
+        page,
+        type: (blogType as BlogType) || undefined,
+      });
+
+      if (response?.data) {
+        setBlogs((prev) => {
+          if (!prev) return response.data;
+          return {
+            ...prev,
+            pagination: response.data.pagination,
+            data: [...prev.data, ...response.data.data],
+          };
+        });
+        setBlogTotalPages(response.data.pagination?.totalPages || 1);
+        setBlogContentLoaded(true);
+      }
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+      const err = error as Error;
+      toast.error(err?.message || "Failed to fetch blogs");
+    } finally {
+      setIsLoadingBlogsInfinity(false);
+    }
+  };
+
+  // Clear all filters for materials
+  const clearMaterialFilters = () => {
+    setMaterialType("");
+    setMaterialTag("");
+    setMaterialCourse("");
+    setMaterialVisibility("");
+    setMaterialRestriction("");
+    setMaterialPage(1);
+    // Only reset data when clearing filters
+    setMaterials((prev) => (prev ? { ...prev, data: [] } : null));
+    fetchMaterials(1);
+  };
+
+  // Clear all filters for blogs
+  const clearBlogFilters = () => {
+    setBlogType("");
+    setBlogTag("");
+    setBlogPage(1);
+    // Only reset data when clearing filters
+    setBlogs((prev) => (prev ? { ...prev, data: [] } : null));
+    fetchBlogs(1);
+  };
+
+  // Effect for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (
-          entry.isIntersecting &&
-          !isLoadingMaterials &&
-          materialPage < materialTotalPages
-        ) {
-          setMaterialPage((prev) => prev + 1);
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          if (
+            activeTab === "materials" &&
+            !isLoadingMaterialsInfinity &&
+            materialPage < materialTotalPages
+          ) {
+            setMaterialPage((prev) => prev + 1);
+          } else if (
+            activeTab === "blogs" &&
+            !isLoadingBlogsInfinity &&
+            blogPage < blogTotalPages
+          ) {
+            setBlogPage((prev) => prev + 1);
+          }
         }
       },
       {
@@ -178,19 +386,38 @@ const ExploreContent = () => {
       }
     );
 
-    const currentElement = ref.current;
-    if (currentElement) observer.observe(currentElement);
+    const loadingRef = ref.current;
+    if (loadingRef) {
+      observer.observe(loadingRef);
+    }
 
     return () => {
-      if (currentElement) observer.unobserve(currentElement);
+      if (loadingRef) {
+        observer.unobserve(loadingRef);
+      }
     };
-  }, [isLoadingMaterials, materialPage, materialTotalPages]);
+  }, [
+    isLoadingMaterialsInfinity,
+    isLoadingBlogsInfinity,
+    materialPage,
+    blogPage,
+    materialTotalPages,
+    blogTotalPages,
+    activeTab,
+  ]);
 
+  // Effect to fetch more data when page changes
   useEffect(() => {
     if (materialPage > 1) {
-      fetchMaterials(materialPage);
+      fetchMaterialInfiniteScroll(materialPage);
     }
   }, [materialPage]);
+
+  useEffect(() => {
+    if (blogPage > 1) {
+      fetchBlogsInfiniteScroll(blogPage);
+    }
+  }, [blogPage]);
 
   // Toggle view mode between grid and list
   const toggleViewMode = () => {
@@ -205,108 +432,11 @@ const ExploreContent = () => {
     setAdvancedSearch(checked);
   };
 
-  // Fetch materials with filters
-  const fetchMaterials = async (page = materialPage, query=searchQuery) => {
-    try {
-      const response = await searchMaterialsApi({
-        query: query,
-        page,
-        limit: 5,
-        tag: materialTag || undefined,
-        courseId: materialCourse || undefined,
-        type: materialType || undefined,
-        advancedSearch: advancedSearch || undefined,
-      });
-
-      if (response && response.status === "success") {
-        if (page === 1) {
-          setMaterials(response.data);
-        } else {
-          setMaterials((prev) => ({
-            ...response.data,
-            data: [...(prev?.data || []), ...response.data.data],
-          }));
-        }
-        setMaterialTotalPages(response.data.pagination?.totalPages || 1);
-        return;
-      }
-    } catch (error) {
-      console.error("Error fetching materials:", error);
-      // Only show toast from catch block, remove the duplicate toast
-      const err = error as Error;
-      toast.error(err?.message || "Failed to fetch materials");
-    }
-  };
-
-  // Fetch blogs with filters
-  const fetchBlogs = async (page = blogPage, query=searchQuery) => {
-    try {
-      const response = await searchBlogs({
-        query: query,
-        page,
-        type: (blogType as BlogType) || undefined,
-      });
-
-      if (page === 1) {
-        setBlogs(response.data);
-      } else {
-        setBlogs((prev) => ({
-          ...response.data,
-          data: [...(prev?.data || []), ...response.data.data],
-        }));
-      }
-      setBlogTotalPages(response.data.pagination?.totalPages || 1);
-      setBlogContentLoaded(true);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      // Show only one toast message
-      const err = error as Error;
-      toast.error(err?.message || "Failed to fetch blogs");
-    }
-  };
-
-  // Handle search for active tab
-  const handleSearch = () => {
-    if (advancedSearch) {
-      toast("Using advanced search - this may take longer", {
-        icon: "🔎",
-        duration: 3000,
-      });
-    }
-
-    if (activeTab === "materials") {
-      setMaterialPage(1);
-      fetchMaterials(1);
-    } else {
-      setBlogPage(1);
-      fetchBlogs(1);
-    }
-  };
-
   // Handle Enter key press in search input
   const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       handleSearch();
     }
-  };
-
-  // Clear all filters for materials
-  const clearMaterialFilters = () => {
-    setMaterialType("");
-    setMaterialTag("");
-    setMaterialCourse("");
-    setMaterialVisibility("");
-    setMaterialRestriction("");
-    setMaterialPage(1);
-    fetchMaterials(1);
-  };
-
-  // Clear all filters for blogs
-  const clearBlogFilters = () => {
-    setBlogType("");
-    setBlogTag("");
-    setBlogPage(1);
-    fetchBlogs(1);
   };
 
   // Handle material click to navigate to detail page
@@ -435,9 +565,9 @@ const ExploreContent = () => {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => {
-                        setSearchQuery(e.target.value)
-                        if(e.target.value.length === 0){
-                          fetchMaterials(1, '');
+                        setSearchQuery(e.target.value);
+                        if (e.target.value.length === 0) {
+                          fetchMaterials(1, "");
                         }
                       }}
                       onKeyPress={handleKeyPress}
@@ -663,7 +793,7 @@ const ExploreContent = () => {
 
                           {/* Infinite Scroll Loading Indicator */}
                           <div ref={ref} className="py-4 flex justify-center">
-                            {!isLoadingMaterials &&
+                            {!isLoadingMaterialsInfinity &&
                               materialPage < materialTotalPages && (
                                 <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
                               )}
@@ -698,10 +828,10 @@ const ExploreContent = () => {
                       value={searchQuery}
                       onChange={(e) => {
                         console.log(e.target.value);
-                        if(e.target.value.length === 0){
-                          fetchBlogs(1, '');
+                        if (e.target.value.length === 0) {
+                          fetchBlogs(1, "");
                         }
-                        setSearchQuery(e.target.value)
+                        setSearchQuery(e.target.value);
                       }}
                       onKeyPress={handleKeyPress}
                       placeholder="Search for blogs, articles, guides..."
@@ -864,10 +994,7 @@ const ExploreContent = () => {
                   ) : (
                     <>
                       {blogs?.data && blogs.data.length > 0 ? (
-                        <div
-                          ref={ref}
-                          className="space-y-3 sm:space-y-4 md:space-y-6"
-                        >
+                        <div className="space-y-3 sm:space-y-4 md:space-y-6">
                           <BlogGrid
                             blogs={blogs.data}
                             onBlogClick={handleBlogClick}
@@ -876,13 +1003,14 @@ const ExploreContent = () => {
 
                           {/* Infinite Scroll Loading Indicator */}
                           <div ref={ref} className="py-4 flex justify-center">
-                            {!isLoadingBlogs && blogPage < blogTotalPages && (
-                              <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
-                            )}
+                            {!isLoadingBlogsInfinity &&
+                              blogPage < blogTotalPages && (
+                                <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                              )}
                           </div>
                         </div>
                       ) : (
-                        <div className="py- sm:py-12 md:py-16 text-center 8">
+                        <div className="py-8 sm:py-12 md:py-16 text-center">
                           <p className="text-gray-500 text-sm sm:text-base md:text-lg">
                             No blogs found
                           </p>
