@@ -112,26 +112,25 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
         <ProtectedRoute>
           <main className="flex flex-col flex-1 w-full overflow-hidden">
             <header
-              className="top-0 z-50 sticky flex flex-col justify-between items-center bg-[#003462]/90 shadow-md backdrop-blur-sm p-4 border-b w-full"
+              className="top-0 z-50 sticky flex flex-col bg-[#003462]/90 shadow-md backdrop-blur-sm p-4 border-b w-full"
               style={{
                 transition: "transform 0.1s ease-out",
               }}
             >
-              <div>
-              
-              <SidebarTrigger
-                style={{ color: "white", verticalAlign: "top" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+              {/* Top bar: Sidebar toggler left, badge right */}
+              <div className="flex items-center justify-between w-full">
+                <SidebarTrigger
+                  style={{ color: "white", verticalAlign: "top" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
                 />
-              <div className="flex sm:flex-row flex-col-reverse sm:justify-end sm:items-center gap-3 w-full">
-                <div className="flex justify-end sm:justify-start">
+                <div className="flex justify-end">
                   <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
                 </div>
               </div>
-                </div>
-                {!user?.departmentId && (
-                <div className="w-full bg-red-600 text-white text-xs py-1 px-2 rounded mb-2 flex items-center justify-center">
+              {/* Red alert below the top bar */}
+              {!user?.departmentId && (
+                <div className="w-full bg-red-600 text-white text-xs py-1 px-2 rounded mb-2 flex items-center justify-center mt-2">
                   <AlertCircle className="h-4 w-4 mr-2" />
                   Please complete your profile information by setting your department in your profile settings.
                 </div>
@@ -146,6 +145,5 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
       <Toaster />
     </SidebarProvider>
   );
-};
 
 export default SidebarLayout;
