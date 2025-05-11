@@ -209,7 +209,7 @@ const ExploreContent = () => {
   const fetchMaterials = async (page = materialPage, query=searchQuery) => {
     try {
       const response = await searchMaterialsApi({
-        query: query,
+        query: query.trim(),
         page,
         limit: 5,
         tag: materialTag || undefined,
@@ -242,7 +242,7 @@ const ExploreContent = () => {
   const fetchBlogs = async (page = blogPage, query=searchQuery) => {
     try {
       const response = await searchBlogs({
-        query: query,
+        query: query.trim(),
         page,
         type: (blogType as BlogType) || undefined,
       });

@@ -118,15 +118,13 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
               }}
             >
               {/* Top bar: Sidebar toggler left, badge right */}
-              <div className="flex items-center justify-between w-full">
+              <div className="flex flex-row items-center justify-between w-full">
                 <SidebarTrigger
                   style={{ color: "white", verticalAlign: "top" }}
                   onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
                   onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
                 />
-                <div className="flex justify-end">
                   <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
-                </div>
               </div>
               {/* Red alert below the top bar */}
               {!user?.departmentId && (
@@ -145,5 +143,6 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
       <Toaster />
     </SidebarProvider>
   );
+};
 
 export default SidebarLayout;
