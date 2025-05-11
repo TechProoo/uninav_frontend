@@ -13,6 +13,11 @@ import {
   X,
   ShieldCheck,
   AlertCircle,
+  User,
+  PencilLine,
+  Megaphone,
+  GraduationCap,
+  Bookmark,
 } from "lucide-react";
 import { useAuth } from "@/contexts/authContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -112,22 +117,25 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                 transition: "transform 0.1s ease-out",
               }}
             >
-              {!user?.departmentId && (
-                <div className="w-full bg-red-600 text-white text-xs py-1 px-2 rounded mb-2 flex items-center justify-center">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  Please complete your profile information by setting your department in your profile settings.
-                </div>
-              )}
+              <div>
+              
               <SidebarTrigger
                 style={{ color: "white", verticalAlign: "top" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
-              />
+                />
               <div className="flex sm:flex-row flex-col-reverse sm:justify-end sm:items-center gap-3 w-full">
                 <div className="flex justify-end sm:justify-start">
                   <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
                 </div>
               </div>
+                </div>
+                {!user?.departmentId && (
+                <div className="w-full bg-red-600 text-white text-xs py-1 px-2 rounded mb-2 flex items-center justify-center">
+                  <AlertCircle className="h-4 w-4 mr-2" />
+                  Please complete your profile information by setting your department in your profile settings.
+                </div>
+              )}
             </header>
             <div className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 w-full overflow-y-auto">
               <div className="w-full">{children}</div>
