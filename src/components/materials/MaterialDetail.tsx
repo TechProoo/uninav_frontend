@@ -549,7 +549,12 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <Download className="w-4 h-4" />
-              <span>{material.downloads} Downloads</span>
+              <span>
+                {material.downloads}{" "}
+                {material.resource?.resourceType === ResourceType.UPLOAD
+                  ? "Downloads"
+                  : "Visits"}
+              </span>
             </div>
             <Button
               variant="ghost"

@@ -19,6 +19,7 @@ import {
   RestrictionEnum,
   Course,
   Advert,
+  ApprovalStatusEnum,
 } from "@/lib/types/response.type";
 import {
   CreateMaterialDto,
@@ -57,6 +58,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   const [includeAdvert, setIncludeAdvert] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [uploadMode, setUploadMode] = useState<"url" | "file">("file");
+  const [hasExistingResource, setHasExistingResource] = useState(false);
 
   // Define the maximum number of free adverts allowed per material
   const MAX_FREE_ADVERTS = 1;
@@ -137,6 +139,10 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       // Since we're editing an existing material, don't use multi-upload
       setIsMultiUpload(false);
 
+      // Check if material has an existing resource
+      const hasResource = initialData.resource?.resourceAddress || initialData.resource?.fileKey;
+      setHasExistingResource(!!hasResource);
+
       setSingleMaterialData({
         label: initialData.label,
         resourceAddress: initialData.resource?.resourceAddress || "",
@@ -165,10 +171,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           courseName,
           courseCode,
           description: "",
-          reviewStatus: "",
+          reviewStatus: ApprovalStatusEnum.PENDING,
           reviewedBy: null,
           departmentId: "",
           level: 100,
+          createdAt: new Date().toISOString(),
         };
         setSelectedCourse(course);
       }
@@ -689,15 +696,17 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     try {
       if (initialData) {
         // Handle single material update
-        const materialData: CreateMaterialDto = {
+        const materialData: Partial<CreateMaterialDto> = {
           ...commonFormData,
           label: singleMaterialData.label,
-          resourceAddress: singleMaterialData.resourceAddress,
           targetCourseId: selectedCourse?.id,
         };
 
+        // Only include resource data if it's being changed
         if (singleMaterialData.file) {
           materialData.file = singleMaterialData.file;
+        } else if (singleMaterialData.resourceAddress) {
+          materialData.resourceAddress = singleMaterialData.resourceAddress;
         }
 
         const response = await updateMaterial(initialData.id, materialData);
@@ -1004,117 +1013,153 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           {/* File Upload Zone - Either Single or Multi based on mode */}
           <div>
             <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
-              Upload {isMultiUpload ? "Files" : "File"} or Provide{" "}
-              {isMultiUpload ? "URLs" : "URL"} *
+              {initialData ? "Update Resource (Optional)" : `Upload ${isMultiUpload ? "Files" : "File"} or Provide ${isMultiUpload ? "URLs" : "URL"} *`}
             </label>
 
-            {/* Toggle between file/URL modes */}
-            <div className="flex gap-2 mb-2">
-              <Button
-                type="button"
-                onClick={() => setUploadMode("file")}
-                variant={uploadMode === "file" ? "default" : "outline"}
-                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-              >
-                <File className="w-3 sm:w-4 h-3 sm:h-4" />
-                {isMultiUpload ? "Files" : "File"}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => setUploadMode("url")}
-                variant={uploadMode === "url" ? "default" : "outline"}
-                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-              >
-                <Link className="w-3 sm:w-4 h-3 sm:h-4" />
-                {isMultiUpload ? "URLs" : "URL"}
-              </Button>
-            </div>
-
-            {/* Upload/URL Input Content based on mode */}
-            {isMultiUpload ? (
-              // Multi-upload mode (either files or URLs)
-              uploadMode === "file" ? (
-                <FileUploadList
-                  files={fileItems}
-                  onAddFiles={handleAddFiles}
-                  onRemoveFile={handleRemoveFile}
-                  onUpdateTitle={handleUpdateFileTitle}
-                />
-              ) : (
-                <UrlInputList
-                  urls={urlItems}
-                  onAddUrl={handleAddUrl}
-                  onRemoveUrl={handleRemoveUrl}
-                  onUpdateUrl={handleUpdateUrl}
-                  onUpdateTitle={handleUpdateUrlTitle}
-                />
-              )
-            ) : // Single upload mode (traditional)
-            uploadMode === "file" ? (
-              <div>
-                <div className="p-3 sm:p-6 border-2 border-gray-300 hover:border-gray-400 border-dashed rounded-lg text-center transition-colors cursor-pointer">
-                  <input
-                    type="file"
-                    onChange={handleSingleFileChange}
-                    className="absolute opacity-0 w-full h-full cursor-pointer"
-                  />
-                  <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-                    <Upload className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
-                    <p className="text-gray-600 text-xs sm:text-sm">
-                      Drag & drop a file here, or click to select
+            {/* Show existing resource if editing */}
+            {initialData && hasExistingResource && (
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-gray-700 text-sm">Current Resource</h4>
+                    <p className="text-gray-600 text-xs mt-1">
+                      {initialData.resource?.resourceAddress || "File Upload"}
                     </p>
-                    {singleMaterialData.file && (
-                      <p className="font-medium text-blue-600 text-xs sm:text-sm">
-                        Selected: {singleMaterialData.file.name}
-                      </p>
-                    )}
                   </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setHasExistingResource(false);
+                      setSingleMaterialData(prev => ({
+                        ...prev,
+                        resourceAddress: "",
+                        file: null,
+                        filePreview: null
+                      }));
+                    }}
+                    className="text-xs"
+                  >
+                    Change Resource
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Only show upload options if no existing resource or user wants to change it */}
+            {(!initialData || !hasExistingResource) && (
+              <>
+                {/* Toggle between file/URL modes */}
+                <div className="flex gap-2 mb-2">
+                  <Button
+                    type="button"
+                    onClick={() => setUploadMode("file")}
+                    variant={uploadMode === "file" ? "default" : "outline"}
+                    className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                  >
+                    <File className="w-3 sm:w-4 h-3 sm:h-4" />
+                    {isMultiUpload ? "Files" : "File"}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setUploadMode("url")}
+                    variant={uploadMode === "url" ? "default" : "outline"}
+                    className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                  >
+                    <Link className="w-3 sm:w-4 h-3 sm:h-4" />
+                    {isMultiUpload ? "URLs" : "URL"}
+                  </Button>
                 </div>
 
-                {/* File Preview */}
-                {singleMaterialData.filePreview && (
-                  <div className="mt-3 sm:mt-4">
-                    <p className="mb-1 sm:mb-2 font-medium text-gray-700 text-xs sm:text-sm">
-                      Preview:
-                    </p>
-                    <div className="relative w-24 sm:w-32 h-24 sm:h-32">
-                      <img
-                        src={singleMaterialData.filePreview}
-                        alt="File preview"
-                        className="rounded-lg w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSingleMaterialData((prev) => ({
-                            ...prev,
-                            file: null,
-                            filePreview: null,
-                          }))
-                        }
-                        className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
-                      >
-                        ×
-                      </button>
+                {/* Upload/URL Input Content based on mode */}
+                {isMultiUpload ? (
+                  // Multi-upload mode (either files or URLs)
+                  uploadMode === "file" ? (
+                    <FileUploadList
+                      files={fileItems}
+                      onAddFiles={handleAddFiles}
+                      onRemoveFile={handleRemoveFile}
+                      onUpdateTitle={handleUpdateFileTitle}
+                    />
+                  ) : (
+                    <UrlInputList
+                      urls={urlItems}
+                      onAddUrl={handleAddUrl}
+                      onRemoveUrl={handleRemoveUrl}
+                      onUpdateUrl={handleUpdateUrl}
+                      onUpdateTitle={handleUpdateUrlTitle}
+                    />
+                  )
+                ) : (
+                  uploadMode === "file" ? (
+                    <div>
+                      <div className="p-3 sm:p-6 border-2 border-gray-300 hover:border-gray-400 border-dashed rounded-lg text-center transition-colors cursor-pointer">
+                        <input
+                          type="file"
+                          onChange={handleSingleFileChange}
+                          className="absolute opacity-0 w-full h-full cursor-pointer"
+                        />
+                        <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+                          <Upload className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
+                          <p className="text-gray-600 text-xs sm:text-sm">
+                            Drag & drop a file here, or click to select
+                          </p>
+                          {singleMaterialData.file && (
+                            <p className="font-medium text-blue-600 text-xs sm:text-sm">
+                              Selected: {singleMaterialData.file.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* File Preview */}
+                      {singleMaterialData.filePreview && (
+                        <div className="mt-3 sm:mt-4">
+                          <p className="mb-1 sm:mb-2 font-medium text-gray-700 text-xs sm:text-sm">
+                            Preview:
+                          </p>
+                          <div className="relative w-24 sm:w-32 h-24 sm:h-32">
+                            <img
+                              src={singleMaterialData.filePreview}
+                              alt="File preview"
+                              className="rounded-lg w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSingleMaterialData((prev) => ({
+                                  ...prev,
+                                  file: null,
+                                  filePreview: null,
+                                }))
+                              }
+                              className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  ) : (
+                    <div>
+                      <input
+                        id="resourceAddress"
+                        name="resourceAddress"
+                        type="url"
+                        value={singleMaterialData.resourceAddress}
+                        onChange={handleChange}
+                        className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
+                        placeholder="https://example.com/resource"
+                      />
+                      <p className="mt-1 text-[10px] text-gray-500 sm:text-xs">
+                        You can either upload a file or provide a URL
+                      </p>
+                    </div>
+                  )
                 )}
-              </div>
-            ) : (
-              <div>
-                <input
-                  id="resourceAddress"
-                  name="resourceAddress"
-                  type="url"
-                  value={singleMaterialData.resourceAddress}
-                  onChange={handleChange}
-                  className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
-                  placeholder="https://example.com/resource"
-                />
-                <p className="mt-1 text-[10px] text-gray-500 sm:text-xs">
-                  You can either upload a file or provide a URL
-                </p>
-              </div>
+              </>
             )}
           </div>
 
