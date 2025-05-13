@@ -162,8 +162,9 @@ const page = () => {
                 </Link>
               </div>
               <div className="flex flex-col gap-4 my-5">
-                <GoogleButton />
                 <ButtonSlider type="submit" text="Login" />
+                
+                <GoogleButton />
               </div>
               <div className="text-center">
                 <p>
