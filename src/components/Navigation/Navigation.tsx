@@ -44,7 +44,7 @@ const Navigation = () => {
     { label: "About", path: "/about" },
     { label: "Contact", path: "/contact" },
     { label: "Explore", path: "/explore" },
-    { label: "University Map", path: "/university-map" },
+    { label: "Course Map", path: "/course-map" },
   ];
 
   // Add dashboard to menu items if user is logged in
