@@ -95,7 +95,7 @@ export default function DepartmentPage({ params }: Props) {
 
   const departmentId = params.id;
   const handleClick = (details: string) => {
-    router.push(`/university-map/${departmentId}/${details}`);
+    router.push(`/course-map/${departmentId}/${details}`);
   };
 
   console.log(departmentId)

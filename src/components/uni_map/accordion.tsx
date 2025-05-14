@@ -40,7 +40,7 @@ export function AccordionDemo() {
   }, []);
 
   const handleClick = (id: string) => {
-    router.push(`/university-map/${id}`);
+    router.push(`/course-map/${id}`);
   };
 
   if (loading) {

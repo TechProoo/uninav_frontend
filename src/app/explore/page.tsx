@@ -111,6 +111,7 @@ const ExploreContent = () => {
   const courseId = searchParams.get("courseId");
   const defaultTab = searchParams.get("defaultTab");
   const [isVisible, setIsVisible] = useState(false);
+  const [isSearching, setIsSearching] = useState(false); // Add loading state for search button
 
   const ref = React.useRef<HTMLDivElement>(null);
   const blogRef = React.useRef<HTMLDivElement>(null); // New ref for blog infinite scroll
@@ -325,7 +326,8 @@ const ExploreContent = () => {
   };
 
   // Handle search for active tab
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    setIsSearching(true); // Start loading
     if (advancedSearch) {
       toast("Using advanced search - this may take longer", {
         icon: "🔎",
@@ -333,12 +335,16 @@ const ExploreContent = () => {
       });
     }
 
-    if (activeTab === "materials") {
-      setMaterialPage(1);
-      fetchMaterials(1);
-    } else {
-      setBlogPage(1);
-      fetchBlogs(1);
+    try {
+      if (activeTab === "materials") {
+        setMaterialPage(1);
+        await fetchMaterials(1);
+      } else {
+        setBlogPage(1);
+        await fetchBlogs(1);
+      }
+    } finally {
+      setIsSearching(false); // Stop loading regardless of success/failure
     }
   };
 
@@ -515,9 +521,9 @@ const ExploreContent = () => {
                 className="space-y-2 sm:space-y-3 md:space-y-6"
               >
                 {/* Materials Search Bar */}
-                <div className="flex md:flex-row flex-col gap-2 md:gap-4">
-                  <div className="relative flex-1">
-                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-8 text-gray-400 -translate-y-1/2 transform" />
+                <div className="flex flex-row gap-2 md:gap-4 items-center">
+                  <div className="relative flex-1 w-full">
+                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-8 text-gray-400 -translate-y-1/2 transform pointer-events-none" />
                     <input
                       type="text"
                       value={searchQuery}
@@ -527,21 +533,30 @@ const ExploreContent = () => {
                           fetchMaterials(1, "");
                         }
                       }}
-                      onKeyPress={handleKeyPress}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearch();
+                      }}
                       placeholder="Search for study materials..."
-                      className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full text-xs sm:text-sm md:text-base"
+                      className="py-2 sm:py-2.5 md:py-3 pr-10 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full text-xs sm:text-sm md:text-base h-10 sm:h-11 md:h-12"
                     />
-
-                    {/* Advanced Search Toggle */}
+                    {/* Search icon button (right) for mobile only */}
+                    <button
+                      onClick={handleSearch}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-gray-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 md:hidden"
+                      aria-label="Search"
+                    >
+                      <Search className="w-5 h-5" />
+                    </button>
+                    {/* Advanced Search Toggle (desktop only) */}
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                            className={`absolute right-10 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
                               advancedSearch
                                 ? "text-blue-600"
                                 : "text-gray-400 hover:text-gray-600"
-                            }`}
+                            } hidden md:inline-flex`}
                             onClick={() =>
                               toggleAdvancedSearch(!advancedSearch)
                             }
@@ -551,46 +566,36 @@ const ExploreContent = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {advancedSearch ? "Disable" : "Enable"} advanced
-                            search
+                            {advancedSearch ? "Disable" : "Enable"} advanced search
                           </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleSearch}
-                      className="bg-primary hover:bg-blue-700 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg font-medium text-white text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      Search
-                    </button>
-                    <button
-                      onClick={() =>
-                        setShowMaterialFilters(!showMaterialFilters)
-                      }
-                      className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      <Filter className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      <span className="hidden xs:inline">Filters</span>
-                      {getActiveMaterialFiltersCount() > 0 && (
-                        <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
-                          {getActiveMaterialFiltersCount()}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      onClick={toggleViewMode}
-                      className="flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg transition-colors"
-                    >
-                      {viewMode === "grid" ? (
-                        <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      ) : (
-                        <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      )}
-                    </button>
-                  </div>
+                  {/* Filter icon always visible, grid/list toggle hidden on mobile */}
+                  <button
+                    onClick={() => setShowMaterialFilters(!showMaterialFilters)}
+                    className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-2 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
+                  >
+                    <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden xs:inline">Filters</span>
+                    {getActiveMaterialFiltersCount() > 0 && (
+                      <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
+                        {getActiveMaterialFiltersCount()}
+                      </span>
+                    )}
+                  </button>
+                  {/* Grid/List toggle only on md+ screens */}
+                  <button
+                    onClick={toggleViewMode}
+                    className="hidden md:flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-2 sm:py-2 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    {viewMode === "grid" ? (
+                      <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    ) : (
+                      <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    )}
+                  </button>
                 </div>
 
                 {/* Advanced Search Option */}
@@ -785,34 +790,42 @@ const ExploreContent = () => {
                 className="space-y-2 sm:space-y-3 md:space-y-6"
               >
                 {/* Blogs Search Bar */}
-                <div className="flex md:flex-row flex-col gap-2 md:gap-4">
-                  <div className="relative flex-1">
-                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-5 text-gray-400 -translate-y-1/2 transform" />
+                <div className="flex flex-row gap-2 md:gap-4 items-center">
+                  <div className="relative flex-1 w-full">
+                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-5 text-gray-400 -translate-y-1/2 transform pointer-events-none" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => {
-                        console.log(e.target.value);
                         if (e.target.value.length === 0) {
                           fetchBlogs(1, "");
                         }
                         setSearchQuery(e.target.value);
                       }}
-                      onKeyPress={handleKeyPress}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearch();
+                      }}
                       placeholder="Search for blogs, articles, guides..."
-                      className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-xs sm:text-sm md:text-base"
+                      className="py-2 sm:py-2.5 md:py-3 pr-10 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-xs sm:text-sm md:text-base h-10 sm:h-11 md:h-12"
                     />
-
-                    {/* Advanced Search Toggle */}
+                    {/* Search icon button (right) for mobile only */}
+                    <button
+                      onClick={handleSearch}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-gray-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 md:hidden"
+                      aria-label="Search"
+                    >
+                      <Search className="w-5 h-5" />
+                    </button>
+                    {/* Advanced Search Toggle (desktop only) */}
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                            className={`absolute right-10 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
                               advancedSearch
                                 ? "text-blue-600"
                                 : "text-gray-400 hover:text-gray-600"
-                            }`}
+                            } hidden md:inline-flex`}
                             onClick={() =>
                               toggleAdvancedSearch(!advancedSearch)
                             }
@@ -822,44 +835,36 @@ const ExploreContent = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {advancedSearch ? "Disable" : "Enable"} advanced
-                            search
+                            {advancedSearch ? "Disable" : "Enable"} advanced search
                           </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleSearch}
-                      className="bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg font-medium text-white text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      Search
-                    </button>
-                    <button
-                      onClick={() => setShowBlogFilters(!showBlogFilters)}
-                      className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      <Filter className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      <span className="hidden xs:inline">Filters</span>
-                      {getActiveBlogFiltersCount() > 0 && (
-                        <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
-                          {getActiveBlogFiltersCount()}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      onClick={toggleViewMode}
-                      className="flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg transition-colors"
-                    >
-                      {viewMode === "grid" ? (
-                        <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      ) : (
-                        <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      )}
-                    </button>
-                  </div>
+                  {/* Filter icon always visible, grid/list toggle hidden on mobile */}
+                  <button
+                    onClick={() => setShowBlogFilters(!showBlogFilters)}
+                    className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-2 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
+                  >
+                    <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden xs:inline">Filters</span>
+                    {getActiveBlogFiltersCount() > 0 && (
+                      <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
+                        {getActiveBlogFiltersCount()}
+                      </span>
+                    )}
+                  </button>
+                  {/* Grid/List toggle only on md+ screens */}
+                  <button
+                    onClick={toggleViewMode}
+                    className="hidden md:flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-2 sm:py-2 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    {viewMode === "grid" ? (
+                      <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    ) : (
+                      <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    )}
+                  </button>
                 </div>
 
                 {/* Advanced Search Option */}

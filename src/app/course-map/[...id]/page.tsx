@@ -94,7 +94,7 @@ export default function DepartmentPage({ params }: Props) {
 
   const handleClick = (details: string) => {
     const departmentId = params.id[0];
-    window.location.href = `/university-map/${departmentId}/${details}`;
+    window.location.href = `/course-map/${departmentId}/${details}`;
   };
 
   return (

@@ -39,7 +39,8 @@ export const ButtonSlider: React.FC<ButtonProps> = ({
               <span className="spinner"></span>
             </span>
           ) : (
-            text
+            // text 
+            ''
           )}
           &nbsp;
         </span>
@@ -52,9 +53,10 @@ const StyledWrapper = styled.div`
   .button {
     margin: 0;
     height: auto;
-    background: transparent;
-    padding: 0;
+    background: rgba(117, 191, 255, 0.1); /* Light background */
+    padding: 0.5rem 1rem; /* Add padding */
     border: none;
+    border-radius: 4px; /* Rounded corners */
     cursor: pointer;
     --border-right: 6px;
     --text-stroke-color: hsl(0, 0%, 0%);

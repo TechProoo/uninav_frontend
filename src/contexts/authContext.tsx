@@ -8,7 +8,6 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { UserProfile } from "@/lib/types/response.type";
 import { fetchUserProfile } from "@/api/user.api";
@@ -57,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error refreshing user profile:", error);
       clearAuthData();
     }
-  }, []);
+  }, [setUser, setIsAuthenticated]);
 
   const setAuthTokenAndFetchUser = useCallback(async (token: string) => {
     setLoading(true);
@@ -76,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [refreshUserProfile, setLoading]);
+  }, [refreshUserProfile]);
 
   const needsEmailVerification = () => {
     return !!user && user.auth && user.auth.emailVerified === false;
@@ -84,17 +83,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const loadUserProfileOnMount = async () => {
-      setLoading(true);
       const session = getSession()
-      if (session) {
+      if (session && !user) {
+        setLoading(true);
         setApiAuthToken(session);
         await refreshUserProfile();
+        setLoading(false);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     loadUserProfileOnMount();
-  }, [refreshUserProfile]);
+  }, []);
 
   const logout = useCallback(async () => {
     setLoading(true);
