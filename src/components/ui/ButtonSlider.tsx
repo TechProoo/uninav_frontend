@@ -80,13 +80,13 @@ const StyledWrapper = styled.div`
   .hover-text {
     position: absolute;
     box-sizing: border-box;
-    color: var(--animation-color);
     width: 0%;
     white-space: nowrap;
     inset: 0;
     border-right: var(--border-right) solid var(--animation-color);
     overflow: hidden;
     transition: 0.5s;
+    color: var(--animation-color);
     -webkit-text-stroke: 1px var(--animation-color);
   }
 

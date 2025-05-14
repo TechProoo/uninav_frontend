@@ -39,6 +39,71 @@ import UrlInputList, { UrlItem } from "./UrlInputList";
 import UploadProgressBar, { UploadProgressItem } from "./UploadProgressBar";
 import { v4 as uuidv4 } from "uuid";
 
+// Add utility function for type inference
+const inferMaterialType = (input: string | File): MaterialTypeEnum => {
+  // If input is a File
+  if (typeof input === 'function' ) {
+    input = input as File
+    const mimeType = input.type.toLowerCase();
+    
+    if (mimeType.startsWith('image/')) {
+      return MaterialTypeEnum.IMAGE;
+    }
+    if (mimeType === 'application/pdf') {
+      return MaterialTypeEnum.PDF;
+    }
+    if (mimeType.startsWith('video/')) {
+      return MaterialTypeEnum.VIDEO;
+    }
+    return MaterialTypeEnum.OTHER;
+  }
+  
+  // If input is a URL string
+  if (typeof input === 'string') {
+    try {
+      const url = new URL(input);
+      const hostname = url.hostname.toLowerCase();
+      const pathname = url.pathname.toLowerCase();
+      
+      // YouTube video
+      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+        return MaterialTypeEnum.VIDEO;
+      }
+      
+      // Vimeo video
+      if (hostname.includes('vimeo.com')) {
+        return MaterialTypeEnum.VIDEO;
+      }
+      
+      // PDF files
+      if (pathname.endsWith('.pdf')) {
+        return MaterialTypeEnum.PDF;
+      }
+      
+      // Image files
+      if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathname)) {
+        return MaterialTypeEnum.IMAGE;
+      }
+      
+      // Article/blog posts
+      if (hostname.includes('medium.com') || 
+          hostname.includes('blogspot.com') || 
+          hostname.includes('wordpress.com')) {
+        return MaterialTypeEnum.ARTICLE;
+      }
+      
+      // Default to article for other URLs
+      return MaterialTypeEnum.ARTICLE;
+    } catch {
+      // If URL parsing fails, default to OTHER
+      return MaterialTypeEnum.OTHER;
+    }
+  }
+  
+  // Fallback
+  return MaterialTypeEnum.OTHER;
+};
+
 interface MaterialFormProps {
   initialData?: Material & { collectionId?: string };
   onSuccess: (material: Material | Material[]) => void;
@@ -82,11 +147,14 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }
   >({
     description: "",
-    type: MaterialTypeEnum.PDF,
+    type: "",
     tags: [],
     visibility: VisibilityEnum.PUBLIC,
     restriction: RestrictionEnum.DOWNLOADABLE,
   });
+
+  // Track the last inferred type for display
+  const [lastInferredType, setLastInferredType] = useState<string>("");
 
   // Store collection ID separately
   const [selectedCollectionId, setSelectedCollectionId] = useState<string>(
@@ -152,7 +220,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
       setCommonFormData({
         description: initialData.description,
-        type: initialData.type,
+        type: typeof initialData.type === "string" ? initialData.type : "",
         tags: initialData.tags || [],
         visibility: initialData.visibility,
         restriction: initialData.restriction,
@@ -271,6 +339,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         file,
         title: fileNameWithoutExtension,
         preview,
+        // Only infer type if no type has been chosen
+        type: commonFormData.type || inferMaterialType(file),
       };
     });
 
@@ -302,7 +372,15 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
   const handleUpdateUrl = (id: string, url: string) => {
     setUrlItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, url } : item))
+      prev.map((item) => {
+        if (item.id === id) {
+          // Only infer type if no type has been chosen
+          const inferredType = commonFormData.type || inferMaterialType(url);
+          console.log('inferredType ', inferredType)
+          return { ...item, url, type: inferredType };
+        }
+        return item;
+      })
     );
   };
 
@@ -327,11 +405,21 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       if (!singleMaterialData.label.trim()) {
         const fileNameWithoutExtension =
           selectedFile.name.substring(0, selectedFile.name.lastIndexOf(".")) ||
-          selectedFile.name; // Fallback to full name if no extension
+          selectedFile.name;
         setSingleMaterialData((prev) => ({
           ...prev,
           label: fileNameWithoutExtension,
         }));
+      }
+
+      // Only infer type if user hasn't explicitly chosen one
+      if (!commonFormData.type) {
+        const inferredType = inferMaterialType(selectedFile);
+        setCommonFormData(prev => ({
+          ...prev,
+          type: inferredType
+        }));
+        setLastInferredType(inferredType);
       }
 
       // Create preview for images
@@ -431,6 +519,10 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         ...prev,
         [name]: value,
       }));
+      // If the user changes the type, clear the last inferred type
+      if (name === "type") {
+        setLastInferredType("");
+      }
       return;
     }
 
@@ -440,6 +532,16 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         ...prev,
         [name]: value,
       }));
+
+      // If this is a URL input and no type has been chosen, infer the material type
+      if (name === "resourceAddress" && value.trim() && !commonFormData.type) {
+        const inferredType = inferMaterialType(value);
+        setCommonFormData(prev => ({
+          ...prev,
+          type: inferredType
+        }));
+        setLastInferredType(inferredType);
+      }
     }
 
     // Auto-populate label from URL if label is empty
@@ -488,12 +590,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number
   ) => {
-    const { name, value } = e.target;
     setNewAdverts((prev) => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
-        [name]: value,
+        [e.target.name]: e.target.value,
       };
       return updated;
     });
@@ -1094,11 +1195,37 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                 ) : (
                   uploadMode === "file" ? (
                     <div>
-                      <div className="p-3 sm:p-6 border-2 border-gray-300 hover:border-gray-400 border-dashed rounded-lg text-center transition-colors cursor-pointer">
+                      <div 
+                        className="p-3 sm:p-6 border-2 border-gray-300 hover:border-gray-400 border-dashed rounded-lg text-center transition-colors cursor-pointer relative"
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.add('border-blue-400');
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-blue-400');
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-blue-400');
+                          const files = Array.from(e.dataTransfer.files);
+                          if (files.length > 0) {
+                            handleSingleFileChange({ target: { files: [files[0]] } } as any);
+                          }
+                        }}
+                        onClick={() => {
+                          const input = document.getElementById('single-file-input');
+                          if (input) input.click();
+                        }}
+                      >
                         <input
+                          id="single-file-input"
                           type="file"
                           onChange={handleSingleFileChange}
-                          className="absolute opacity-0 w-full h-full cursor-pointer"
+                          className="hidden"
                         />
                         <div className="flex flex-col items-center space-y-1 sm:space-y-2">
                           <Upload className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
@@ -1252,10 +1379,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   <select
                     id="type"
                     name="type"
-                    value={commonFormData.type}
+                    value={commonFormData.type || lastInferredType || ""}
                     onChange={handleChange}
                     className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                   >
+                    <option value="" disabled>Select type</option>
                     {Object.values(MaterialTypeEnum).map((type) => (
                       <option key={type} value={type}>
                         {type.replace("_", " ")}
@@ -1375,7 +1503,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
               {/* Advert Option - Only show in single material mode */}
 
-              <div className="mt-4 sm:mt-8 pt-3 sm:pt-4 border-t">
+              <div className="mt-4 sm:mt-8 pt-3 sm:pt-4 border-gray-200 border-t">
                 <div className="flex items-center gap-2 mb-3 sm:mb-4">
                   <input
                     type="checkbox"
