@@ -43,6 +43,61 @@ const About = () => {
 
     initializeLottie();
 
+    // Text replacement animation
+    const textElements = gsap.utils.toArray(".text-replace-animation");
+    const tl = gsap.timeline({ repeat: -1 });
+
+    textElements.forEach((text, i) => {
+      if (i === 0) {
+        tl.from(text, {
+          yPercent: 100,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        });
+      }
+
+      tl.to(text, {
+        yPercent: -100,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.in",
+        delay: 2,
+      });
+
+      if (i < textElements.length - 1) {
+        tl.fromTo(
+          textElements[i + 1],
+          {
+            yPercent: 100,
+            opacity: 0,
+          },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          "<0.8"
+        );
+      } else {
+        tl.fromTo(
+          textElements[0],
+          {
+            yPercent: 100,
+            opacity: 0,
+          },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power2.out",
+          },
+          "<0.8"
+        );
+      }
+    });
+
     // Hero text animation
     if (heroTextRef.current) {
       const splitText = new SplitText(heroTextRef.current, {
@@ -115,7 +170,50 @@ const About = () => {
   };
 
   return (
-    <div className="about_bg" ref={containerRef}>
+    <div className="about_bg relative" ref={containerRef}>
+      {/* Decorative SVGs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <svg
+          className="absolute top-20 left-10 w-16 h-16 text-blue-400 animate-float opacity-30"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"
+          />
+        </svg>
+        <svg
+          className="absolute top-40 right-20 w-12 h-12 text-purple-500 animate-float-delay-1 opacity-30"
+          viewBox="0 0 24 24"
+        >
+          <circle fill="currentColor" cx="12" cy="12" r="8" />
+        </svg>
+        <svg
+          className="absolute bottom-32 left-1/4 w-10 h-10 text-green-400 animate-float-delay-2 opacity-30"
+          viewBox="0 0 24 24"
+        >
+          <rect fill="currentColor" x="4" y="4" width="16" height="16" />
+        </svg>
+        <svg
+          className="absolute top-1/3 right-1/3 w-14 h-14 text-pink-400 animate-float-delay-3 opacity-30"
+          viewBox="0 0 24 24"
+        >
+          <polygon fill="currentColor" points="12 2 22 21 2 21" />
+        </svg>
+        <svg
+          className="absolute bottom-40 right-1/4 w-12 h-12 text-yellow-400 animate-float-delay-4 opacity-30"
+          viewBox="0 0 24 24"
+        >
+          <path fill="currentColor" d="M12 5.5l5.5 9.5H6.5L12 5.5z" />
+        </svg>
+        <svg
+          className="absolute top-1/2 left-20 w-16 h-16 text-red-400 animate-float opacity-30"
+          viewBox="0 0 24 24"
+        >
+          <circle fill="currentColor" cx="12" cy="12" r="10" />
+        </svg>
+      </div>
+
       <div className="m-auto py-1 md:py-10 w-10/12">
         <div className="items-center gap-5 grid grid-cols-12">
           <div className="col-span-12 md:col-span-6">
@@ -145,7 +243,32 @@ const About = () => {
 
           <div className="col-span-12 md:col-span-6">
             <div className="gap-5 grid grid-cols-12">
-              {[0, 1, 2, 3].map((index) => (
+              {[
+                {
+                  icon: "https://cdn.lordicon.com/xmaezqzk.json",
+                  title: "Study Material Repository",
+                  description:
+                    "Access & share lecture notes, textbooks, and past questions by Faculty, Department, and Course.",
+                },
+                {
+                  icon: "https://cdn.lordicon.com/hpxruznz.json",
+                  title: "Collaborative Learning",
+                  description:
+                    "Join study groups, share insights, and collaborate with peers across different departments.",
+                },
+                {
+                  icon: "https://cdn.lordicon.com/rxufjlal.json",
+                  title: "Smart Organization",
+                  description:
+                    "Organize your academic resources with our intelligent categorization and search system.",
+                },
+                {
+                  icon: "https://cdn.lordicon.com/dmqskzxk.json",
+                  title: "Knowledge Exchange",
+                  description:
+                    "Share your academic insights and benefit from peer contributions in our learning community.",
+                },
+              ].map((item, index) => (
                 <div
                   key={index}
                   className="col-span-12 md:col-span-6"
@@ -156,18 +279,17 @@ const About = () => {
                       <div>
                         {/* @ts-ignore */}
                         <lord-icon
-                          src="https://cdn.lordicon.com/xmaezqzk.json"
+                          src={item.icon}
                           trigger="loop"
                           style={{ width: "32px", height: "32px" }}
                           /* @ts-ignore */
                         ></lord-icon>
                       </div>
                       <h2 className="mb-3 font-semibold md:text-xl text-2xl">
-                        Study Material Repository
+                        {item.title}
                       </h2>
                       <p className="text-gray-700 md:text-md dark:text-gray-300 text-base">
-                        Access & share lecture notes, textbooks, and past
-                        questions by Faculty, Department, and Course.
+                        {item.description}
                       </p>
                     </div>
                   </div>
@@ -177,6 +299,33 @@ const About = () => {
           </div>
         </div>
         <Services />
+
+        {/* Text replace animation section */}
+        <div className="py-16 flex flex-col items-center justify-center">
+          <div className="relative h-[60px] md:h-[80px] overflow-hidden text-center w-full">
+            <h2 className="text-3xl md:text-5xl font-bold inline-flex justify-center w-full">
+              UniNav is{" "}
+              <span className="relative inline-flex justify-center min-w-[200px] md:min-w-[300px] ml-2">
+                <span className="text-replace-animation absolute">
+                  innovative
+                </span>
+                <span className="text-replace-animation absolute">
+                  collaborative
+                </span>
+                <span className="text-replace-animation absolute">
+                  transformative
+                </span>
+                <span className="text-replace-animation absolute">
+                  empowering
+                </span>
+              </span>
+            </h2>
+          </div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300 text-lg max-w-2xl text-center">
+            Discover a new way of learning and sharing academic resources
+          </p>
+        </div>
+
         <div className="relative shadow-md mt-10 rounded-lg w-full h-auto md:h-[600px] overflow-hidden about_bottom">
           <div className="z-10 relative flex flex-col justify-center items-center px-4 md:px-10 py-10 md:py-0 h-full text-center">
             <h1

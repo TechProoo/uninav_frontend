@@ -436,6 +436,41 @@ body {
   }
 }
 
+/* Floating SVG animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delay-1 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-float-delay-2 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-delay-3 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+.animate-float-delay-4 {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 4s;
+}
+
 /* EDITOR */
 .public-DraftStyleDefault-pre {
   background-color: #1e1e1e;
@@ -600,4 +635,18 @@ body {
 }
 .animate-wiggle {
   animation: wiggle 0.4s ease-in-out;
+}
+
+/* Text replacement animation styles */
+.text-replace-animation {
+  display: inline-block;
+  opacity: 0;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  left: 0;
+  right: 0;
+  text-align: center;
+  width: 100%;
 }
