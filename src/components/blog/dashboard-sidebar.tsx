@@ -62,11 +62,6 @@ const items = [
     icon: Bookmark,
   },
   {
-    title: "University Map",
-    url: "/dashboard/university_map",
-    icon: University,
-  },
-  {
     title: "Profile",
     url: "/dashboard/profile",
     icon: User,

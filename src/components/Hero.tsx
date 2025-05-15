@@ -5,6 +5,7 @@ import Bag from "../../public/Image/landing-removebg-preview.png";
 import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext"; // Import useAuth
+import GoogleButton from "@/components/ui/GoogleButton";
 
 export default function Hero() {
   const router = useRouter();
@@ -92,7 +93,8 @@ export default function Hero() {
                   />
                 </>
               ) : (
-                <>
+                <div className="flex flex-col gap-4">
+                <div className="flex flex-row gap-4">
                   <ButtonSlider
                     onClick={() => navigateTo("/auth/login")}
                     text={"Get Started"}
@@ -101,7 +103,11 @@ export default function Hero() {
                     text={"Learn More"}
                     onClick={() => navigateTo("/about")}
                   />
-                </>
+                  </div>
+                  <div className="w-full md:w-auto mt-4">
+                    <GoogleButton className="w-full md:w-auto" />
+                  </div>
+                </div>
               )}
               <div className="ml-2 w-16 md:w-20">
                 <svg

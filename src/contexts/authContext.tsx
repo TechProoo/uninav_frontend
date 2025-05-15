@@ -6,22 +6,25 @@ import {
   ReactNode,
   useState,
   useEffect,
+  useCallback,
 } from "react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { UserProfile } from "@/lib/types/response.type";
 import { fetchUserProfile } from "@/api/user.api";
-import { getSession } from "@/lib/utils";
 import { logout as logoutApi } from "@/api/auth.api";
+import { deleteSession, getSession, updateAuthToken as setApiAuthToken, storeSession } from "@/lib/utils";
+
 interface AuthContextType {
   user: UserProfile | null;
   setUser: React.Dispatch<React.SetStateAction<UserProfile | null>>;
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
-  logout: () => void;
+  logout: () => Promise<void>;
   loading: boolean;
+  setAuthLoading: React.Dispatch<React.SetStateAction<boolean>>;
   refreshUserProfile: () => Promise<void>;
   needsEmailVerification: () => boolean;
+  setAuthTokenAndFetchUser: (token: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,51 +36,79 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
-  const refreshUserProfile = async () => {
+  const clearAuthData = () => {
+    setUser(null);
+    setIsAuthenticated(false);
+    deleteSession();
+    setApiAuthToken('');
+  };
+
+  const refreshUserProfile = useCallback(async () => {
     try {
       const profileData = await fetchUserProfile();
       if (profileData) {
         setUser(profileData);
         setIsAuthenticated(true);
-        return;
+      } else {
+        clearAuthData();
       }
     } catch (error) {
-      setIsAuthenticated(false);
       console.error("Error refreshing user profile:", error);
+      clearAuthData();
     }
-  };
+  }, [setUser, setIsAuthenticated]);
 
-  // Check if user needs email verification
+  const setAuthTokenAndFetchUser = useCallback(async (token: string) => {
+    setLoading(true);
+    try {
+      storeSession(token);
+      setApiAuthToken(token);
+      await refreshUserProfile();
+      const session = getSession()
+      if (!session) {
+        throw new Error("Authentication failed after token processing.")
+      }
+    } catch (error) {
+      console.error("Failed to set auth token and fetch user:", error);
+      clearAuthData();
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, [refreshUserProfile]);
+
   const needsEmailVerification = () => {
     return !!user && user.auth && user.auth.emailVerified === false;
   };
 
   useEffect(() => {
-    const loadUserProfile = async () => {
-      try {
-        // Check for session token
-        const session = getSession();
-
-        if (session?.session) {
-          await refreshUserProfile();
-        }
-      } catch (error) {
-        console.error("Error loading user profile:", error);
-      } finally {
+    const loadUserProfileOnMount = async () => {
+      const session = getSession()
+      if (session && !user) {
+        setLoading(true);
+        setApiAuthToken(session);
+        await refreshUserProfile();
+        setLoading(false);
+      } else {
         setLoading(false);
       }
     };
 
-    loadUserProfile();
+    loadUserProfileOnMount();
   }, []);
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    Cookies.remove("session-token", { path: "/" });
-    logoutApi();
-    router.push("/auth/login");
-  };
+  const logout = useCallback(async () => {
+    setLoading(true);
+    try {
+      await logoutApi();
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+    } finally {
+      clearAuthData();
+      setLoading(false);
+      router.push("/auth/login");
+    }
+  }, [router, setLoading]);
 
   return (
     <AuthContext.Provider
@@ -88,8 +119,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated,
         logout,
         loading,
+        setAuthLoading: setLoading,
         refreshUserProfile,
         needsEmailVerification,
+        setAuthTokenAndFetchUser,
       }}
     >
       {children}

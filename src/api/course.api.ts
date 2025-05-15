@@ -25,17 +25,18 @@ export const getCourses = async (filters?: {
   departmentId?: string;
   level?: number;
   limit?: number;
+  query?: string;
   // necessary if you want to get(departmentId, and level since this will course duplicates for different departments)
   allowDepartments?: boolean;
 }): Promise<Response<Course[]>> => {
   try {
-    const { departmentId, level, limit = 10 } = filters || {};
+    const { departmentId, level, limit = 10, query } = filters || {};
     let url = `/courses?limit=${limit}`;
     if (departmentId) url += `&departmentId=${departmentId}`;
     if (level) url += `&level=${level}`;
     if (filters?.allowDepartments)
       url += `&allowDepartments=${filters.allowDepartments}`;
-
+    if (query) url += `&query=${query}`;
     const response = await api.get<Response<Course[]>>(url);
     return response.data;
   } catch (error: any) {
@@ -50,14 +51,16 @@ export const getCoursesPaginated = async (filters?: {
   level?: number;
   page?: number;
   limit?: number;
+  query?: string;
   // necessary if you want to get(departmentId, and level since this will course duplicates for different departments)
   allowDepartments?: boolean;
 }): Promise<Response<Pagination<Course[]>>> => {
   try {
-    const { departmentId, level, page = 1, limit = 10 } = filters || {};
+    const { departmentId, level, page = 1, limit = 10, query  } = filters || {};
     let url = `/courses?page=${page}&limit=${limit}`;
     if (departmentId) url += `&departmentId=${departmentId}`;
     if (level) url += `&level=${level}`;
+    if (query) url += `&query=${query}`;
     if (filters?.allowDepartments)
       url += `&allowDepartments=${filters.allowDepartments}`;
 

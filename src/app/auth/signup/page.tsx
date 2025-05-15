@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import DepartmentByFacultySelect from "@/components/ui/DepartmentByFacultySelect";
 import { getDepartments } from "@/api/department.api";
 import { Eye, EyeClosed } from "lucide-react";
+import GoogleButton from "@/components/ui/GoogleButton";
 
 const Page = () => {
   useEffect(() => {
@@ -181,6 +182,17 @@ const Page = () => {
     animateStep("back");
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (step < totalSteps) {
+        handleNext();
+      } else {
+        handleSubmit(e as any);
+      }
+    }
+  };
+
   if (loading) {
     return <Loader />;
   }
@@ -254,6 +266,7 @@ const Page = () => {
                           id="firstName"
                           value={formData.firstName}
                           onChange={handleInputChange}
+                          onKeyPress={handleKeyPress}
                           placeholder="John"
                           className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
@@ -275,6 +288,7 @@ const Page = () => {
                           id="lastName"
                           value={formData.lastName}
                           onChange={handleInputChange}
+                          onKeyPress={handleKeyPress}
                           placeholder="Doe"
                           className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
@@ -308,6 +322,7 @@ const Page = () => {
                           id="username"
                           value={formData.username}
                           onChange={handleInputChange}
+                          onKeyPress={handleKeyPress}
                           placeholder="johnd1oe"
                           className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
@@ -329,6 +344,7 @@ const Page = () => {
                           id="email"
                           value={formData.email}
                           onChange={handleInputChange}
+                          onKeyPress={handleKeyPress}
                           placeholder="example@example.com"
                           className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         />
@@ -369,6 +385,7 @@ const Page = () => {
                               id="password"
                               value={formData.password}
                               onChange={handleInputChange}
+                              onKeyPress={handleKeyPress}
                               placeholder="Enter your password"
                               className="w-full p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
@@ -424,6 +441,7 @@ const Page = () => {
                           onChange={(e) =>
                             handleLevelChange(Number(e.target.value))
                           }
+                          onKeyPress={handleKeyPress}
                           className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                         >
                           <option value="">Select Level</option>
@@ -452,6 +470,12 @@ const Page = () => {
                   )}
                 </div>
               </form>
+
+              {/* Add Google Sign Up Button */}
+              <div className="mt-6 text-center">
+                <p className="text-gray-600 mb-4">Or sign up with</p>
+                <GoogleButton variant="outline" className="w-full" />
+              </div>
             </div>
           </div>
         </div>

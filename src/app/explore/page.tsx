@@ -107,8 +107,10 @@ const ExploreContent = () => {
   const courseId = searchParams.get("courseId");
   const defaultTab = searchParams.get("defaultTab");
   const [isVisible, setIsVisible] = useState(false);
+  const [isSearching, setIsSearching] = useState(false); // Add loading state for search button
 
   const ref = React.useRef<HTMLDivElement>(null);
+  const blogRef = React.useRef<HTMLDivElement>(null); // New ref for blog infinite scroll
 
   // State for active tab
   const [activeTab, setActiveTab] = useState<string>(
@@ -160,77 +162,100 @@ const ExploreContent = () => {
   );
   const [blogs, setBlogs] = useState<Pagination<Blog[]> | null>(null);
 
-  // Handle search for active tab with optimized resets
-  const handleSearch = () => {
-    if (advancedSearch) {
-      toast("Using advanced search - this may take longer", {
-        icon: "🔎",
-        duration: 3000,
-      });
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !isLoadingMaterials && // Check against loading state
+          materialPage < materialTotalPages
+        ) {
+          setMaterialPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1,
+        rootMargin: "100px",
+      }
+    );
+
+    const currentElement = ref.current;
+    if (currentElement) observer.observe(currentElement);
+
+    return () => {
+      if (currentElement) observer.unobserve(currentElement);
+    };
+  }, [isLoadingMaterials, materialPage, materialTotalPages]);
+
+  useEffect(() => {
+    if (materialPage > 1) {
+      // Only fetch for subsequent pages
+      fetchMaterials(materialPage);
+    }
+  }, [materialPage]);
+
+  // New IntersectionObserver for blogs
+  useEffect(() => {
+    if (activeTab !== "blogs" || !blogContentLoaded) return; // Only active on blogs tab and after initial content
+
+    const blogObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (
+          entry.isIntersecting &&
+          !isLoadingBlogs && // Check against blog loading state
+          blogPage < blogTotalPages
+        ) {
+          setBlogPage((prevPage) => prevPage + 1);
+        }
+      },
+      {
+        root: null,
+        threshold: 0.1,
+        rootMargin: "100px",
+      }
+    );
+
+    const currentBlogElement = blogRef.current;
+    if (currentBlogElement) {
+      blogObserver.observe(currentBlogElement);
     }
 
-    if (activeTab === "materials") {
-      setMaterialPage(1);
-      setMaterials((prev) => (prev ? { ...prev, data: [] } : null));
-      fetchMaterials(1);
-    } else {
-      setBlogPage(1);
-      // Only reset data when starting a new search
-      setBlogs((prev) => (prev ? { ...prev, data: [] } : null));
-      fetchBlogs(1);
+    return () => {
+      if (currentBlogElement) {
+        blogObserver.unobserve(currentBlogElement);
+      }
+    };
+  }, [activeTab, isLoadingBlogs, blogPage, blogTotalPages, blogContentLoaded]);
+
+  // Effect to fetch blogs when blogPage changes (for infinite scroll)
+  useEffect(() => {
+    if (blogPage > 1 && activeTab === "blogs" && blogContentLoaded) {
+      fetchBlogs(blogPage);
     }
+  }, [blogPage, activeTab, blogContentLoaded]);
+
+  // Toggle view mode between grid and list
+  const toggleViewMode = () => {
+    setViewMode(viewMode === "grid" ? "list" : "grid");
+  };
+
+  // Toggle advanced search mode
+  const toggleAdvancedSearch = (checked: boolean) => {
+    if (checked && !advancedSearch) {
+      setShowAdvancedSearchInfo(true); // Show info dialog when enabling
+    }
+    setAdvancedSearch(checked);
   };
 
   // Fetch materials with filters
-  const fetchMaterialInfiniteScroll = async (
-    page = materialPage,
-    query = searchQuery
-  ) => {
-    if (isLoadingMaterialsInfinity) return; // Prevent duplicate requests
-
-    try {
-      setIsLoadingMaterialsInfinity(true);
-      const response = await searchMaterialsApi({
-        query: query,
-        page,
-        limit: 5,
-        tag: materialTag || undefined,
-        courseId: materialCourse || undefined,
-        type: materialType || undefined,
-        advancedSearch: advancedSearch || undefined,
-      });
-
-      if (response && response.status === "success") {
-        // Only update the data array and pagination info, keeping other state unchanged
-        setMaterials((prev) => {
-          if (!prev) return response.data;
-          return {
-            ...prev,
-            pagination: response.data.pagination,
-            data:
-              page === 1
-                ? response.data.data
-                : [...prev.data, ...response.data.data],
-          };
-        });
-        setMaterialTotalPages(response.data.pagination?.totalPages || 1);
-      }
-    } catch (error) {
-      console.error("Error fetching materials:", error);
-      const err = error as Error;
-      toast.error(err?.message || "Failed to fetch materials");
-    } finally {
-      setIsLoadingMaterialsInfinity(false);
-    }
-  };
-
   const fetchMaterials = async (page = materialPage, query = searchQuery) => {
-    if (isLoadingMaterials) return; // Prevent duplicate requests
-
+    if (isLoadingMaterials && page > 1) return; // Prevent concurrent fetches for infinite scroll
+    setIsLoadingMaterials(true);
     try {
       setIsLoadingMaterials(true);
       const response = await searchMaterialsApi({
-        query: query,
+        query: query.trim(),
         page,
         limit: 5,
         tag: materialTag || undefined,
@@ -253,6 +278,10 @@ const ExploreContent = () => {
           };
         });
         setMaterialTotalPages(response.data.pagination?.totalPages || 1);
+      } else {
+        // Error already handled by toast in catch block if API throws
+        // Or if API returns non-2xx without throwing:
+        // toast.error(response?.message || "Failed to fetch materials");
       }
     } catch (error) {
       console.error("Error fetching materials:", error);
@@ -265,31 +294,33 @@ const ExploreContent = () => {
 
   // Fetch blogs with filters
   const fetchBlogs = async (page = blogPage, query = searchQuery) => {
-    if (isLoadingBlogs) return; // Prevent duplicate requests
-
+    if (isLoadingBlogs && page > 1) return; // Prevent concurrent fetches for infinite scroll
+    setIsLoadingBlogs(true);
     try {
       setIsLoadingBlogs(true);
       const response = await searchBlogs({
-        query: query,
+        query: query.trim(),
         page,
+        // limit: 5, // Consider adding limit if your API supports it for blogs
         type: (blogType as BlogType) || undefined,
+        // advancedSearch: advancedSearch || undefined, // If applicable
       });
 
-      if (response?.data) {
-        // Only update the data array and pagination info, keeping other state unchanged
-        setBlogs((prev) => {
-          if (!prev) return response.data;
-          return {
-            ...prev,
-            pagination: response.data.pagination,
-            data:
-              page === 1
-                ? response.data.data
-                : [...prev.data, ...response.data.data],
-          };
-        });
+      if (response && response.status === "success") {
+        if (page === 1) {
+          setBlogs(response.data);
+        } else {
+          setBlogs((prev) => ({
+            ...response.data,
+            data: [...(prev?.data || []), ...response.data.data],
+          }));
+        }
         setBlogTotalPages(response.data.pagination?.totalPages || 1);
         setBlogContentLoaded(true);
+      } else {
+        // Error already handled by toast in catch block if API throws
+        // Or if API returns non-2xx without throwing:
+        // toast.error(response?.message || "Failed to fetch blogs");
       }
     } catch (error) {
       console.error("Error fetching blogs:", error);
@@ -300,39 +331,33 @@ const ExploreContent = () => {
     }
   };
 
-  // Fetch blogs with infinite scroll
-  const fetchBlogsInfiniteScroll = async (
-    page = blogPage,
-    query = searchQuery
-  ) => {
-    if (isLoadingBlogsInfinity) return;
+  // Handle search for active tab
+  const handleSearch = async () => {
+    setIsSearching(true); // Start loading
+    if (advancedSearch) {
+      toast("Using advanced search - this may take longer", {
+        icon: "🔎",
+        duration: 3000,
+      });
+    }
 
     try {
-      setIsLoadingBlogsInfinity(true);
-      const response = await searchBlogs({
-        query: query,
-        page,
-        type: (blogType as BlogType) || undefined,
-      });
-
-      if (response?.data) {
-        setBlogs((prev) => {
-          if (!prev) return response.data;
-          return {
-            ...prev,
-            pagination: response.data.pagination,
-            data: [...prev.data, ...response.data.data],
-          };
-        });
-        setBlogTotalPages(response.data.pagination?.totalPages || 1);
-        setBlogContentLoaded(true);
+      if (activeTab === "materials") {
+        setMaterialPage(1);
+        await fetchMaterials(1);
+      } else {
+        setBlogPage(1);
+        await fetchBlogs(1);
       }
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      const err = error as Error;
-      toast.error(err?.message || "Failed to fetch blogs");
     } finally {
-      setIsLoadingBlogsInfinity(false);
+      setIsSearching(false); // Stop loading regardless of success/failure
+    }
+  };
+
+  // Handle Enter key press in search input
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleSearch();
     }
   };
 
@@ -452,51 +477,79 @@ const ExploreContent = () => {
   // Initial fetch when component mounts or when URL parameters change
   useEffect(() => {
     // Set state from URL parameters
-    if (query) {
+    let needsSearch = false;
+    let newSearchQuery = searchQuery;
+    let newActiveTab = activeTab;
+
+    if (query && query !== searchQuery) {
       setSearchQuery(query);
+      newSearchQuery = query;
+      needsSearch = true;
     }
 
-    if (courseId) {
+    if (courseId && courseId !== materialCourse) {
       setMaterialCourse(courseId);
-      // If courseId is provided, automatically show the materials tab and show filters
       setActiveTab("materials");
+      newActiveTab = "materials";
       setShowMaterialFilters(true);
+      needsSearch = true;
+    } else if (query && !courseId && !needsSearch) {
+      // If only query changed, and not courseId
+      needsSearch = true;
     }
 
-    // Perform initial search if query or courseId is present
-    if (query || courseId) {
-      if (activeTab === "materials") {
-        fetchMaterials();
-      } else if (query) {
-        fetchBlogs();
+    if (needsSearch) {
+      setMaterialPage(1); // Reset page to 1 for new search/filter
+      setBlogPage(1); // Reset page to 1 for new search/filter
+      if (newActiveTab === "materials") {
+        fetchMaterials(1, newSearchQuery);
+      } else if (newActiveTab === "blogs" && newSearchQuery) {
+        // Only fetch blogs if there's a query
+        fetchBlogs(1, newSearchQuery);
       }
     }
-  }, [query, courseId]);
+  }, [query, courseId]); // Removed activeTab from here to simplify logic, setActiveTab will trigger its own effect
 
   // Effect to handle tab changes and initial data loading
   useEffect(() => {
-    if (activeTab === "blogs" && !blogContentLoaded) {
-      // Only fetch blogs if they haven't been loaded yet
-      fetchBlogs();
-    } else if (activeTab === "materials" && !materials) {
-      // Load materials if not loaded yet
-      fetchMaterials();
+    // Reset pages when tab changes if there's a search query, to ensure fresh load for the query
+    if (searchQuery) {
+      setMaterialPage(1);
+      setBlogPage(1);
     }
-  }, [activeTab]);
+
+    if (activeTab === "blogs") {
+      if (!blogContentLoaded || searchQuery) {
+        // Fetch if not loaded or if query exists (for tab switch with query)
+        fetchBlogs(1, searchQuery);
+      }
+    } else if (activeTab === "materials") {
+      if (!materials || searchQuery || materialCourse) {
+        // Fetch if not loaded or if query/courseId exists
+        fetchMaterials(1, searchQuery);
+      }
+    }
+  }, [activeTab]); // Removed blogContentLoaded and materials, simplified logic
 
   // Update when material filters change
   useEffect(() => {
-    if (activeTab === "materials") {
-      fetchMaterials();
-    }
-  }, [materialPage]);
+    // This effect was for materialPage changes, handled by a more specific effect now.
+    // If this was intended for filter changes other than page, those should call fetchMaterials(1) directly.
+    // For now, removing to avoid potential conflicts if it was re-fetching unnecessarily.
+    // if (activeTab === "materials") {
+    //   fetchMaterials(); // This would fetch current materialPage, not necessarily page 1
+    // }
+  }, []); // Empty dependency array if it's meant to be removed or re-evaluated
 
   // Update when blog filters change
   useEffect(() => {
-    if (activeTab === "blogs") {
-      fetchBlogs();
-    }
-  }, [blogPage]);
+    // This effect was for blogPage changes, handled by a more specific effect now.
+    // Similar to material filters, changes here should call fetchBlogs(1)
+    // For now, removing.
+    // if (activeTab === "blogs") {
+    //  fetchBlogs();
+    // }
+  }, []); // Empty dependency array if it's meant to be removed or re-evaluated
 
   // Active filter count helpers
   const getActiveMaterialFiltersCount = () => {
@@ -522,7 +575,7 @@ const ExploreContent = () => {
 
       <div className="mx-auto max-w-7xl">
         <div className="bg-white shadow-md mb-2 sm:mb-4 md:mb-6 p-2 sm:p-4 md:p-6 rounded-lg sm:rounded-xl">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex justify-between items-center mb-4">
             <h1 className="font-bold text-xl sm:text-2xl">Explore UniNav</h1>
             <BackButton />
           </div>
@@ -558,9 +611,9 @@ const ExploreContent = () => {
                 className="space-y-2 sm:space-y-3 md:space-y-6"
               >
                 {/* Materials Search Bar */}
-                <div className="flex md:flex-row flex-col gap-2 md:gap-4">
-                  <div className="relative flex-1">
-                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-8 text-gray-400 -translate-y-1/2 transform" />
+                <div className="flex flex-row gap-2 md:gap-4 items-center">
+                  <div className="relative flex-1 w-full">
+                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-8 text-gray-400 -translate-y-1/2 transform pointer-events-none" />
                     <input
                       type="text"
                       value={searchQuery}
@@ -570,21 +623,30 @@ const ExploreContent = () => {
                           fetchMaterials(1, "");
                         }
                       }}
-                      onKeyPress={handleKeyPress}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearch();
+                      }}
                       placeholder="Search for study materials..."
-                      className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full text-xs sm:text-sm md:text-base"
+                      className="py-2 sm:py-2.5 md:py-3 pr-10 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary w-full text-xs sm:text-sm md:text-base h-10 sm:h-11 md:h-12"
                     />
-
-                    {/* Advanced Search Toggle */}
+                    {/* Search icon button (right) for mobile only */}
+                    <button
+                      onClick={handleSearch}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-gray-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 md:hidden"
+                      aria-label="Search"
+                    >
+                      <Search className="w-5 h-5" />
+                    </button>
+                    {/* Advanced Search Toggle (desktop only) */}
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                            className={`absolute right-10 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
                               advancedSearch
                                 ? "text-blue-600"
                                 : "text-gray-400 hover:text-gray-600"
-                            }`}
+                            } hidden md:inline-flex`}
                             onClick={() =>
                               toggleAdvancedSearch(!advancedSearch)
                             }
@@ -594,46 +656,36 @@ const ExploreContent = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {advancedSearch ? "Disable" : "Enable"} advanced
-                            search
+                            {advancedSearch ? "Disable" : "Enable"} advanced search
                           </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleSearch}
-                      className="bg-primary hover:bg-blue-700 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg font-medium text-white text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      Search
-                    </button>
-                    <button
-                      onClick={() =>
-                        setShowMaterialFilters(!showMaterialFilters)
-                      }
-                      className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      <Filter className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      <span className="hidden xs:inline">Filters</span>
-                      {getActiveMaterialFiltersCount() > 0 && (
-                        <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
-                          {getActiveMaterialFiltersCount()}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      onClick={toggleViewMode}
-                      className="flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg transition-colors"
-                    >
-                      {viewMode === "grid" ? (
-                        <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      ) : (
-                        <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      )}
-                    </button>
-                  </div>
+                  {/* Filter icon always visible, grid/list toggle hidden on mobile */}
+                  <button
+                    onClick={() => setShowMaterialFilters(!showMaterialFilters)}
+                    className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-2 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
+                  >
+                    <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden xs:inline">Filters</span>
+                    {getActiveMaterialFiltersCount() > 0 && (
+                      <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
+                        {getActiveMaterialFiltersCount()}
+                      </span>
+                    )}
+                  </button>
+                  {/* Grid/List toggle only on md+ screens */}
+                  <button
+                    onClick={toggleViewMode}
+                    className="hidden md:flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-2 sm:py-2 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    {viewMode === "grid" ? (
+                      <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    ) : (
+                      <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    )}
+                  </button>
                 </div>
 
                 {/* Advanced Search Option */}
@@ -777,40 +829,48 @@ const ExploreContent = () => {
 
                 {/* Materials Results */}
                 <div className="bg-white rounded-lg">
-                  {isLoadingMaterials ? (
-                    <div className="flex justify-center items-center py-8 sm:py-12 md:py-16">
-                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 sm:w-12 h-10 sm:h-12 animate-spin"></div>
-                    </div>
-                  ) : (
-                    <>
-                      {materials?.data && materials.data.length > 0 ? (
-                        <div className="space-y-3 sm:space-y-4 md:space-y-6">
-                          <MaterialGrid
-                            materials={materials.data}
-                            onMaterialClick={handleMaterialClick}
-                            viewMode={viewMode}
-                          />
+                  {/* Initial Loading Spinner: shown if loading and no materials data yet */}
+                  {isLoadingMaterials &&
+                    (!materials || materials.data.length === 0) && (
+                      <div className="flex justify-center items-center py-8 sm:py-12 md:py-16">
+                        <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 sm:w-12 h-10 sm:h-12 animate-spin"></div>
+                      </div>
+                    )}
 
-                          {/* Infinite Scroll Loading Indicator */}
-                          <div ref={ref} className="py-4 flex justify-center">
-                            {!isLoadingMaterialsInfinity &&
-                              materialPage < materialTotalPages && (
-                                <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
-                              )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="py-8 sm:py-12 md:py-16 text-center">
-                          <p className="text-gray-500 text-sm sm:text-base md:text-lg">
-                            No materials found
-                          </p>
-                          <p className="text-gray-400 text-xs sm:text-sm">
-                            Try a different search term or adjust your filters
-                          </p>
-                        </div>
-                      )}
-                    </>
+                  {/* Display Materials List if data exists */}
+                  {materials && materials.data.length > 0 && (
+                    <div className="space-y-3 sm:space-y-4 md:space-y-6">
+                      <MaterialGrid
+                        materials={materials.data}
+                        onMaterialClick={handleMaterialClick}
+                        viewMode={viewMode}
+                      />
+                      {/* Infinite Scroll Trigger and Loading Indicator */}
+                      <div ref={ref} className="flex justify-center py-4">
+                        {/* Show spinner if loading more items (isLoadingMaterials is true), 
+                            it's a subsequent page (materialPage > 1), 
+                            and there are potentially more pages */}
+                        {isLoadingMaterials &&
+                          materialPage > 1 &&
+                          materialPage <= materialTotalPages && (
+                            <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                          )}
+                      </div>
+                    </div>
                   )}
+
+                  {/* No Materials Found Message: shown if not loading and no materials data */}
+                  {!isLoadingMaterials &&
+                    (!materials || materials.data.length === 0) && (
+                      <div className="py-8 sm:py-12 md:py-16 text-center">
+                        <p className="text-gray-500 text-sm sm:text-base md:text-lg">
+                          No materials found
+                        </p>
+                        <p className="text-gray-400 text-xs sm:text-sm">
+                          Try a different search term or adjust your filters
+                        </p>
+                      </div>
+                    )}
                 </div>
               </TabsContent>
 
@@ -820,34 +880,42 @@ const ExploreContent = () => {
                 className="space-y-2 sm:space-y-3 md:space-y-6"
               >
                 {/* Blogs Search Bar */}
-                <div className="flex md:flex-row flex-col gap-2 md:gap-4">
-                  <div className="relative flex-1">
-                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-5 text-gray-400 -translate-y-1/2 transform" />
+                <div className="flex flex-row gap-2 md:gap-4 items-center">
+                  <div className="relative flex-1 w-full">
+                    <Search className="top-1/2 left-2 sm:left-3 absolute w-4 sm:w-5 h-4 sm:h-5 text-gray-400 -translate-y-1/2 transform pointer-events-none" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => {
-                        console.log(e.target.value);
                         if (e.target.value.length === 0) {
                           fetchBlogs(1, "");
                         }
                         setSearchQuery(e.target.value);
                       }}
-                      onKeyPress={handleKeyPress}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearch();
+                      }}
                       placeholder="Search for blogs, articles, guides..."
-                      className="py-1.5 sm:py-2 md:py-3 pr-9 sm:pr-12 md:pr-14 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-xs sm:text-sm md:text-base"
+                      className="py-2 sm:py-2.5 md:py-3 pr-10 pl-7 sm:pl-9 md:pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-xs sm:text-sm md:text-base h-10 sm:h-11 md:h-12"
                     />
-
-                    {/* Advanced Search Toggle */}
+                    {/* Search icon button (right) for mobile only */}
+                    <button
+                      onClick={handleSearch}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md text-gray-400 hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 md:hidden"
+                      aria-label="Search"
+                    >
+                      <Search className="w-5 h-5" />
+                    </button>
+                    {/* Advanced Search Toggle (desktop only) */}
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button
-                            className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
+                            className={`absolute right-10 top-1/2 -translate-y-1/2 p-1 rounded-md transition-colors ${
                               advancedSearch
                                 ? "text-blue-600"
                                 : "text-gray-400 hover:text-gray-600"
-                            }`}
+                            } hidden md:inline-flex`}
                             onClick={() =>
                               toggleAdvancedSearch(!advancedSearch)
                             }
@@ -857,44 +925,36 @@ const ExploreContent = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {advancedSearch ? "Disable" : "Enable"} advanced
-                            search
+                            {advancedSearch ? "Disable" : "Enable"} advanced search
                           </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
                   </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleSearch}
-                      className="bg-blue-600 hover:bg-blue-700 px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 md:py-3 rounded-lg font-medium text-white text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      Search
-                    </button>
-                    <button
-                      onClick={() => setShowBlogFilters(!showBlogFilters)}
-                      className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
-                    >
-                      <Filter className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      <span className="hidden xs:inline">Filters</span>
-                      {getActiveBlogFiltersCount() > 0 && (
-                        <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
-                          {getActiveBlogFiltersCount()}
-                        </span>
-                      )}
-                    </button>
-                    <button
-                      onClick={toggleViewMode}
-                      className="flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-lg transition-colors"
-                    >
-                      {viewMode === "grid" ? (
-                        <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      ) : (
-                        <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
-                      )}
-                    </button>
-                  </div>
+                  {/* Filter icon always visible, grid/list toggle hidden on mobile */}
+                  <button
+                    onClick={() => setShowBlogFilters(!showBlogFilters)}
+                    className="relative flex justify-center items-center gap-1 sm:gap-2 hover:bg-gray-50 px-2 sm:px-3 md:px-4 py-2 sm:py-2 md:py-3 border border-gray-300 rounded-lg text-xs sm:text-sm md:text-base transition-colors"
+                  >
+                    <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="hidden xs:inline">Filters</span>
+                    {getActiveBlogFiltersCount() > 0 && (
+                      <span className="-top-1 sm:-top-2 -right-1 sm:-right-2 absolute flex justify-center items-center bg-blue-600 rounded-full w-4 sm:w-5 h-4 sm:h-5 text-[10px] text-white sm:text-xs">
+                        {getActiveBlogFiltersCount()}
+                      </span>
+                    )}
+                  </button>
+                  {/* Grid/List toggle only on md+ screens */}
+                  <button
+                    onClick={toggleViewMode}
+                    className="hidden md:flex justify-center items-center hover:bg-gray-50 px-2 sm:px-3 py-2 sm:py-2 border border-gray-300 rounded-lg transition-colors"
+                  >
+                    {viewMode === "grid" ? (
+                      <List className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    ) : (
+                      <Grid className="w-3 sm:w-4 md:w-5 h-3 sm:h-4 md:h-5" />
+                    )}
+                  </button>
                 </div>
 
                 {/* Advanced Search Option */}
@@ -987,39 +1047,47 @@ const ExploreContent = () => {
 
                 {/* Blogs Results */}
                 <div className="bg-white rounded-lg">
-                  {isLoadingBlogs ? (
+                  {/* Initial Loading Spinner: shown if loading and no blogs data yet */}
+                  {isLoadingBlogs && (!blogs || blogs.data.length === 0) && (
                     <div className="flex justify-center items-center py-8 sm:py-12 md:py-16">
                       <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 sm:w-12 h-10 sm:h-12 animate-spin"></div>
                     </div>
-                  ) : (
-                    <>
-                      {blogs?.data && blogs.data.length > 0 ? (
-                        <div className="space-y-3 sm:space-y-4 md:space-y-6">
-                          <BlogGrid
-                            blogs={blogs.data}
-                            onBlogClick={handleBlogClick}
-                            viewMode={viewMode}
-                          />
+                  )}
 
-                          {/* Infinite Scroll Loading Indicator */}
-                          <div ref={ref} className="py-4 flex justify-center">
-                            {!isLoadingBlogsInfinity &&
-                              blogPage < blogTotalPages && (
-                                <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
-                              )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="py-8 sm:py-12 md:py-16 text-center">
-                          <p className="text-gray-500 text-sm sm:text-base md:text-lg">
-                            No blogs found
-                          </p>
-                          <p className="text-gray-400 text-xs sm:text-sm">
-                            Try a different search term or adjust your filters
-                          </p>
-                        </div>
-                      )}
-                    </>
+                  {/* Display Blogs List if data exists */}
+                  {blogs && blogs.data.length > 0 && (
+                    <div className="space-y-3 sm:space-y-4 md:space-y-6">
+                      <BlogGrid
+                        blogs={blogs.data}
+                        onBlogClick={handleBlogClick}
+                        viewMode={viewMode}
+                      />
+                      {/* Infinite Scroll Trigger and Loading Indicator for Blogs */}
+                      <div ref={blogRef} className="flex justify-center py-4">
+                        {/* Show spinner if loading more items (isLoadingBlogs is true), 
+                            it's a subsequent page (blogPage > 1), 
+                            and there are potentially more pages */}
+                        {isLoadingBlogs &&
+                          blogPage > 1 &&
+                          blogPage <= blogTotalPages && (
+                            <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-8 h-8 animate-spin"></div>
+                          )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* No Blogs Found Message: shown if not loading and no blogs data */}
+                  {!isLoadingBlogs && (!blogs || blogs.data.length === 0) && (
+                    <div className="py-8 sm:py-12 md:py-16 text-center">
+                      {" "}
+                      {/* Corrected class: py-8 */}
+                      <p className="text-gray-500 text-sm sm:text-base md:text-lg">
+                        No blogs found
+                      </p>
+                      <p className="text-gray-400 text-xs sm:text-sm">
+                        Try a different search term or adjust your filters
+                      </p>
+                    </div>
                   )}
                 </div>
               </TabsContent>

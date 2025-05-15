@@ -95,7 +95,7 @@ export default function DepartmentPage({ params }: Props) {
 
   const departmentId = params.id;
   const handleClick = (details: string) => {
-    router.push(`/dashboard/university_map/${departmentId}/${details}`);
+    router.push(`/course-map/${departmentId}/${details}`);
   };
 
   console.log(departmentId)
@@ -200,7 +200,7 @@ export default function DepartmentPage({ params }: Props) {
               <div
                 key={course.id}
                 onClick={() => handleClick(course.id)}
-                className="bg-white hover:shadow-lg transition-shadow rounded-lg p-6 border border-gray-100"
+                className="bg-white cursor-pointer hover:shadow-lg transition-shadow rounded-lg p-6 border border-gray-100"
               >
                 <Badge className="mb-3 bg-blue-50 text-blue-700">
                   {course.courseCode}

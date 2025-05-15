@@ -19,6 +19,7 @@ import {
   RestrictionEnum,
   Course,
   Advert,
+  ApprovalStatusEnum,
 } from "@/lib/types/response.type";
 import {
   CreateMaterialDto,
@@ -38,6 +39,71 @@ import UrlInputList, { UrlItem } from "./UrlInputList";
 import UploadProgressBar, { UploadProgressItem } from "./UploadProgressBar";
 import { v4 as uuidv4 } from "uuid";
 
+// Add utility function for type inference
+const inferMaterialType = (input: string | File): MaterialTypeEnum => {
+  // If input is a File
+  if (typeof input === 'function' ) {
+    input = input as File
+    const mimeType = input.type.toLowerCase();
+    
+    if (mimeType.startsWith('image/')) {
+      return MaterialTypeEnum.IMAGE;
+    }
+    if (mimeType === 'application/pdf') {
+      return MaterialTypeEnum.PDF;
+    }
+    if (mimeType.startsWith('video/')) {
+      return MaterialTypeEnum.VIDEO;
+    }
+    return MaterialTypeEnum.OTHER;
+  }
+  
+  // If input is a URL string
+  if (typeof input === 'string') {
+    try {
+      const url = new URL(input);
+      const hostname = url.hostname.toLowerCase();
+      const pathname = url.pathname.toLowerCase();
+      
+      // YouTube video
+      if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+        return MaterialTypeEnum.VIDEO;
+      }
+      
+      // Vimeo video
+      if (hostname.includes('vimeo.com')) {
+        return MaterialTypeEnum.VIDEO;
+      }
+      
+      // PDF files
+      if (pathname.endsWith('.pdf')) {
+        return MaterialTypeEnum.PDF;
+      }
+      
+      // Image files
+      if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathname)) {
+        return MaterialTypeEnum.IMAGE;
+      }
+      
+      // Article/blog posts
+      if (hostname.includes('medium.com') || 
+          hostname.includes('blogspot.com') || 
+          hostname.includes('wordpress.com')) {
+        return MaterialTypeEnum.ARTICLE;
+      }
+      
+      // Default to article for other URLs
+      return MaterialTypeEnum.ARTICLE;
+    } catch {
+      // If URL parsing fails, default to OTHER
+      return MaterialTypeEnum.OTHER;
+    }
+  }
+  
+  // Fallback
+  return MaterialTypeEnum.OTHER;
+};
+
 interface MaterialFormProps {
   initialData?: Material & { collectionId?: string };
   onSuccess: (material: Material | Material[]) => void;
@@ -49,6 +115,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   onSuccess,
   onCancel,
 }) => {
+  const {user} = useAuth()  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -56,6 +123,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
   const [includeAdvert, setIncludeAdvert] = useState(false);
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   const [uploadMode, setUploadMode] = useState<"url" | "file">("file");
+  const [hasExistingResource, setHasExistingResource] = useState(false);
 
   // Define the maximum number of free adverts allowed per material
   const MAX_FREE_ADVERTS = 1;
@@ -79,11 +147,14 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }
   >({
     description: "",
-    type: MaterialTypeEnum.PDF,
+    type: "",
     tags: [],
     visibility: VisibilityEnum.PUBLIC,
     restriction: RestrictionEnum.DOWNLOADABLE,
   });
+
+  // Track the last inferred type for display
+  const [lastInferredType, setLastInferredType] = useState<string>("");
 
   // Store collection ID separately
   const [selectedCollectionId, setSelectedCollectionId] = useState<string>(
@@ -136,6 +207,10 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       // Since we're editing an existing material, don't use multi-upload
       setIsMultiUpload(false);
 
+      // Check if material has an existing resource
+      const hasResource = initialData.resource?.resourceAddress || initialData.resource?.fileKey;
+      setHasExistingResource(!!hasResource);
+
       setSingleMaterialData({
         label: initialData.label,
         resourceAddress: initialData.resource?.resourceAddress || "",
@@ -145,11 +220,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
       setCommonFormData({
         description: initialData.description,
-        type: initialData.type,
+        type: typeof initialData.type === "string" ? initialData.type : "",
         tags: initialData.tags || [],
         visibility: initialData.visibility,
         restriction: initialData.restriction,
-        targetCourseId: initialData.targetCourseId || undefined,
+        targetCourseId: initialData.targetCourseId || user?.courses[0]?.courseId || undefined,
       });
 
       // Set collection ID separately
@@ -164,10 +239,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           courseName,
           courseCode,
           description: "",
-          reviewStatus: "",
+          reviewStatus: ApprovalStatusEnum.PENDING,
           reviewedBy: null,
           departmentId: "",
           level: 100,
+          createdAt: new Date().toISOString(),
         };
         setSelectedCourse(course);
       }
@@ -263,6 +339,8 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         file,
         title: fileNameWithoutExtension,
         preview,
+        // Only infer type if no type has been chosen
+        type: commonFormData.type || inferMaterialType(file),
       };
     });
 
@@ -294,7 +372,15 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
   const handleUpdateUrl = (id: string, url: string) => {
     setUrlItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, url } : item))
+      prev.map((item) => {
+        if (item.id === id) {
+          // Only infer type if no type has been chosen
+          const inferredType = commonFormData.type || inferMaterialType(url);
+          console.log('inferredType ', inferredType)
+          return { ...item, url, type: inferredType };
+        }
+        return item;
+      })
     );
   };
 
@@ -319,11 +405,21 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       if (!singleMaterialData.label.trim()) {
         const fileNameWithoutExtension =
           selectedFile.name.substring(0, selectedFile.name.lastIndexOf(".")) ||
-          selectedFile.name; // Fallback to full name if no extension
+          selectedFile.name;
         setSingleMaterialData((prev) => ({
           ...prev,
           label: fileNameWithoutExtension,
         }));
+      }
+
+      // Only infer type if user hasn't explicitly chosen one
+      if (!commonFormData.type) {
+        const inferredType = inferMaterialType(selectedFile);
+        setCommonFormData(prev => ({
+          ...prev,
+          type: inferredType
+        }));
+        setLastInferredType(inferredType);
       }
 
       // Create preview for images
@@ -423,6 +519,10 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         ...prev,
         [name]: value,
       }));
+      // If the user changes the type, clear the last inferred type
+      if (name === "type") {
+        setLastInferredType("");
+      }
       return;
     }
 
@@ -432,6 +532,16 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         ...prev,
         [name]: value,
       }));
+
+      // If this is a URL input and no type has been chosen, infer the material type
+      if (name === "resourceAddress" && value.trim() && !commonFormData.type) {
+        const inferredType = inferMaterialType(value);
+        setCommonFormData(prev => ({
+          ...prev,
+          type: inferredType
+        }));
+        setLastInferredType(inferredType);
+      }
     }
 
     // Auto-populate label from URL if label is empty
@@ -480,12 +590,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     index: number
   ) => {
-    const { name, value } = e.target;
     setNewAdverts((prev) => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
-        [name]: value,
+        [e.target.name]: e.target.value,
       };
       return updated;
     });
@@ -688,15 +797,17 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     try {
       if (initialData) {
         // Handle single material update
-        const materialData: CreateMaterialDto = {
+        const materialData: Partial<CreateMaterialDto> = {
           ...commonFormData,
           label: singleMaterialData.label,
-          resourceAddress: singleMaterialData.resourceAddress,
           targetCourseId: selectedCourse?.id,
         };
 
+        // Only include resource data if it's being changed
         if (singleMaterialData.file) {
           materialData.file = singleMaterialData.file;
+        } else if (singleMaterialData.resourceAddress) {
+          materialData.resourceAddress = singleMaterialData.resourceAddress;
         }
 
         const response = await updateMaterial(initialData.id, materialData);
@@ -1003,117 +1114,179 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
           {/* File Upload Zone - Either Single or Multi based on mode */}
           <div>
             <label className="block mb-1 font-medium text-gray-700 text-xs sm:text-sm">
-              Upload {isMultiUpload ? "Files" : "File"} or Provide{" "}
-              {isMultiUpload ? "URLs" : "URL"} *
+              {initialData ? "Update Resource (Optional)" : `Upload ${isMultiUpload ? "Files" : "File"} or Provide ${isMultiUpload ? "URLs" : "URL"} *`}
             </label>
 
-            {/* Toggle between file/URL modes */}
-            <div className="flex gap-2 mb-2">
-              <Button
-                type="button"
-                onClick={() => setUploadMode("file")}
-                variant={uploadMode === "file" ? "default" : "outline"}
-                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-              >
-                <File className="w-3 sm:w-4 h-3 sm:h-4" />
-                {isMultiUpload ? "Files" : "File"}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => setUploadMode("url")}
-                variant={uploadMode === "url" ? "default" : "outline"}
-                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-              >
-                <Link className="w-3 sm:w-4 h-3 sm:h-4" />
-                {isMultiUpload ? "URLs" : "URL"}
-              </Button>
-            </div>
-
-            {/* Upload/URL Input Content based on mode */}
-            {isMultiUpload ? (
-              // Multi-upload mode (either files or URLs)
-              uploadMode === "file" ? (
-                <FileUploadList
-                  files={fileItems}
-                  onAddFiles={handleAddFiles}
-                  onRemoveFile={handleRemoveFile}
-                  onUpdateTitle={handleUpdateFileTitle}
-                />
-              ) : (
-                <UrlInputList
-                  urls={urlItems}
-                  onAddUrl={handleAddUrl}
-                  onRemoveUrl={handleRemoveUrl}
-                  onUpdateUrl={handleUpdateUrl}
-                  onUpdateTitle={handleUpdateUrlTitle}
-                />
-              )
-            ) : // Single upload mode (traditional)
-            uploadMode === "file" ? (
-              <div>
-                <div className="p-3 sm:p-6 border-2 border-gray-300 hover:border-gray-400 border-dashed rounded-lg text-center transition-colors cursor-pointer">
-                  <input
-                    type="file"
-                    onChange={handleSingleFileChange}
-                    className="absolute opacity-0 w-full h-full cursor-pointer"
-                  />
-                  <div className="flex flex-col items-center space-y-1 sm:space-y-2">
-                    <Upload className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
-                    <p className="text-gray-600 text-xs sm:text-sm">
-                      Drag & drop a file here, or click to select
+            {/* Show existing resource if editing */}
+            {initialData && hasExistingResource && (
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-medium text-gray-700 text-sm">Current Resource</h4>
+                    <p className="text-gray-600 text-xs mt-1">
+                      {initialData.resource?.resourceAddress || "File Upload"}
                     </p>
-                    {singleMaterialData.file && (
-                      <p className="font-medium text-blue-600 text-xs sm:text-sm">
-                        Selected: {singleMaterialData.file.name}
-                      </p>
-                    )}
                   </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setHasExistingResource(false);
+                      setSingleMaterialData(prev => ({
+                        ...prev,
+                        resourceAddress: "",
+                        file: null,
+                        filePreview: null
+                      }));
+                    }}
+                    className="text-xs"
+                  >
+                    Change Resource
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Only show upload options if no existing resource or user wants to change it */}
+            {(!initialData || !hasExistingResource) && (
+              <>
+                {/* Toggle between file/URL modes */}
+                <div className="flex gap-2 mb-2">
+                  <Button
+                    type="button"
+                    onClick={() => setUploadMode("file")}
+                    variant={uploadMode === "file" ? "default" : "outline"}
+                    className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                  >
+                    <File className="w-3 sm:w-4 h-3 sm:h-4" />
+                    {isMultiUpload ? "Files" : "File"}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setUploadMode("url")}
+                    variant={uploadMode === "url" ? "default" : "outline"}
+                    className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+                  >
+                    <Link className="w-3 sm:w-4 h-3 sm:h-4" />
+                    {isMultiUpload ? "URLs" : "URL"}
+                  </Button>
                 </div>
 
-                {/* File Preview */}
-                {singleMaterialData.filePreview && (
-                  <div className="mt-3 sm:mt-4">
-                    <p className="mb-1 sm:mb-2 font-medium text-gray-700 text-xs sm:text-sm">
-                      Preview:
-                    </p>
-                    <div className="relative w-24 sm:w-32 h-24 sm:h-32">
-                      <img
-                        src={singleMaterialData.filePreview}
-                        alt="File preview"
-                        className="rounded-lg w-full h-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSingleMaterialData((prev) => ({
-                            ...prev,
-                            file: null,
-                            filePreview: null,
-                          }))
-                        }
-                        className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                {/* Upload/URL Input Content based on mode */}
+                {isMultiUpload ? (
+                  // Multi-upload mode (either files or URLs)
+                  uploadMode === "file" ? (
+                    <FileUploadList
+                      files={fileItems}
+                      onAddFiles={handleAddFiles}
+                      onRemoveFile={handleRemoveFile}
+                      onUpdateTitle={handleUpdateFileTitle}
+                    />
+                  ) : (
+                    <UrlInputList
+                      urls={urlItems}
+                      onAddUrl={handleAddUrl}
+                      onRemoveUrl={handleRemoveUrl}
+                      onUpdateUrl={handleUpdateUrl}
+                      onUpdateTitle={handleUpdateUrlTitle}
+                    />
+                  )
+                ) : (
+                  uploadMode === "file" ? (
+                    <div>
+                      <div 
+                        className="p-3 sm:p-6 border-2 border-gray-300 hover:border-gray-400 border-dashed rounded-lg text-center transition-colors cursor-pointer relative"
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.add('border-blue-400');
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-blue-400');
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.currentTarget.classList.remove('border-blue-400');
+                          const files = Array.from(e.dataTransfer.files);
+                          if (files.length > 0) {
+                            handleSingleFileChange({ target: { files: [files[0]] } } as any);
+                          }
+                        }}
+                        onClick={() => {
+                          const input = document.getElementById('single-file-input');
+                          if (input) input.click();
+                        }}
                       >
-                        ×
-                      </button>
+                        <input
+                          id="single-file-input"
+                          type="file"
+                          onChange={handleSingleFileChange}
+                          className="hidden"
+                        />
+                        <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+                          <Upload className="w-6 sm:w-8 h-6 sm:h-8 text-gray-400" />
+                          <p className="text-gray-600 text-xs sm:text-sm">
+                            Drag & drop a file here, or click to select
+                          </p>
+                          {singleMaterialData.file && (
+                            <p className="font-medium text-blue-600 text-xs sm:text-sm">
+                              Selected: {singleMaterialData.file.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* File Preview */}
+                      {singleMaterialData.filePreview && (
+                        <div className="mt-3 sm:mt-4">
+                          <p className="mb-1 sm:mb-2 font-medium text-gray-700 text-xs sm:text-sm">
+                            Preview:
+                          </p>
+                          <div className="relative w-24 sm:w-32 h-24 sm:h-32">
+                            <img
+                              src={singleMaterialData.filePreview}
+                              alt="File preview"
+                              className="rounded-lg w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSingleMaterialData((prev) => ({
+                                  ...prev,
+                                  file: null,
+                                  filePreview: null,
+                                }))
+                              }
+                              className="-top-2 -right-2 absolute bg-red-500 hover:bg-red-600 p-1 rounded-full text-white"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  ) : (
+                    <div>
+                      <input
+                        id="resourceAddress"
+                        name="resourceAddress"
+                        type="url"
+                        value={singleMaterialData.resourceAddress}
+                        onChange={handleChange}
+                        className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
+                        placeholder="https://example.com/resource"
+                      />
+                      <p className="mt-1 text-[10px] text-gray-500 sm:text-xs">
+                        You can either upload a file or provide a URL
+                      </p>
+                    </div>
+                  )
                 )}
-              </div>
-            ) : (
-              <div>
-                <input
-                  id="resourceAddress"
-                  name="resourceAddress"
-                  type="url"
-                  value={singleMaterialData.resourceAddress}
-                  onChange={handleChange}
-                  className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
-                  placeholder="https://example.com/resource"
-                />
-                <p className="mt-1 text-[10px] text-gray-500 sm:text-xs">
-                  You can either upload a file or provide a URL
-                </p>
-              </div>
+              </>
             )}
           </div>
 
@@ -1206,10 +1379,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                   <select
                     id="type"
                     name="type"
-                    value={commonFormData.type}
+                    value={commonFormData.type || lastInferredType || ""}
                     onChange={handleChange}
                     className="p-1.5 sm:p-2 border border-gray-300 rounded-md w-full text-xs sm:text-sm"
                   >
+                    <option value="" disabled>Select type</option>
                     {Object.values(MaterialTypeEnum).map((type) => (
                       <option key={type} value={type}>
                         {type.replace("_", " ")}
@@ -1329,7 +1503,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
 
               {/* Advert Option - Only show in single material mode */}
 
-              <div className="mt-4 sm:mt-8 pt-3 sm:pt-4 border-t">
+              <div className="mt-4 sm:mt-8 pt-3 sm:pt-4 border-gray-200 border-t">
                 <div className="flex items-center gap-2 mb-3 sm:mb-4">
                   <input
                     type="checkbox"

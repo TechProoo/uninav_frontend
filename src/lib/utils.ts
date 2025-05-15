@@ -12,7 +12,7 @@ export function getSession() {
   if (!session) {
     return null;
   }
-  return { session };
+  return session ;
 }
 
 export function storeSession(session: string) {
@@ -27,4 +27,7 @@ export function updateAuthToken(token: string) {
   if (!token) return;
   storeSession(token);
   setAuthToken(token);
+}
+export function deleteSession() {
+  Cookies.remove("session-token", { path: "/" });
 }
