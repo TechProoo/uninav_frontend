@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
+import gsap from "gsap";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
@@ -13,15 +14,61 @@ export const ButtonSlider: React.FC<ButtonProps> = ({
   disabled,
   ...rest
 }) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!buttonRef.current || disabled || loading) return;
+
+    const button = buttonRef.current;
+    const textElement = textRef.current;
+
+    // Initial setup
+    gsap.set(button, { scale: 1 });
+    gsap.set(textElement, { y: 0 });
+
+    // Hover animation
+    const timeline = gsap.timeline({ paused: true });
+    timeline
+      .to(button, {
+        scale: 1.02,
+        duration: 0.2,
+        ease: "power2.out",
+      })
+      .to(
+        textElement,
+        {
+          y: -2,
+          duration: 0.2,
+          ease: "power2.out",
+        },
+        "-=0.2"
+      );
+
+    // Mouse enter/leave events
+    const handleMouseEnter = () => timeline.play();
+    const handleMouseLeave = () => timeline.reverse();
+
+    button.addEventListener("mouseenter", handleMouseEnter);
+    button.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      button.removeEventListener("mouseenter", handleMouseEnter);
+      button.removeEventListener("mouseleave", handleMouseLeave);
+      timeline.kill();
+    };
+  }, [disabled, loading]);
+
   return (
     <StyledWrapper>
       <button
+        ref={buttonRef}
         className="button"
         data-text={text}
         disabled={disabled || loading}
         {...rest}
       >
-        <span className="actual-text">
+        <span ref={textRef} className="actual-text">
           &nbsp;
           {loading ? (
             <span className="loading-spinner">
@@ -39,8 +86,7 @@ export const ButtonSlider: React.FC<ButtonProps> = ({
               <span className="spinner"></span>
             </span>
           ) : (
-            // text 
-            ''
+            text
           )}
           &nbsp;
         </span>
@@ -53,46 +99,82 @@ const StyledWrapper = styled.div`
   .button {
     margin: 0;
     height: auto;
-    background: rgba(117, 191, 255, 0.1); /* Light background */
-    padding: 0.5rem 1rem; /* Add padding */
-    border: none;
-    border-radius: 4px; /* Rounded corners */
+    background: rgba(0, 54, 102, 0.1);
+    padding: 0.rem 0.8rem;
+    border: 2px solid transparent;
+    border-radius: 8px;
     cursor: pointer;
-    --border-right: 6px;
-    --text-stroke-color: hsl(0, 0%, 0%);
+    --text-stroke-color: #003666;
     --animation-color: #75bfff;
-    --fs-size: 17px;
-    letter-spacing: 3px;
+    --fs-size: 15px;
+    letter-spacing: 2px;
     text-decoration: none;
     font-size: var(--fs-size);
-    font-family: "Arial";
+    font-family: "Montserrat", sans-serif;
     position: relative;
     text-transform: uppercase;
     color: transparent;
     -webkit-text-stroke: 1px var(--text-stroke-color);
+    transition: all 0.3s ease;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        45deg,
+        rgba(0, 54, 102, 0.1),
+        rgba(117, 191, 255, 0.1)
+      );
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.5s ease;
+      z-index: 1;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #003666;
+      box-shadow: 0 4px 15px rgba(0, 54, 102, 0.2);
+
+      &::before {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+    }
   }
 
   .button:disabled {
     cursor: not-allowed;
     opacity: 0.7;
+    background: rgba(0, 54, 102, 0.05);
+  }
+
+  .actual-text,
+  .hover-text {
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+    transition: transform 0.3s ease;
   }
 
   .hover-text {
     position: absolute;
-    box-sizing: border-box;
-    width: 0%;
-    white-space: nowrap;
     inset: 0;
-    border-right: var(--border-right) solid var(--animation-color);
+    width: 0%;
     overflow: hidden;
-    transition: 0.5s;
-    color: var(--animation-color);
-    -webkit-text-stroke: 1px var(--animation-color);
+    background: linear-gradient(45deg, #003666, #75bfff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    transition: 0.4s ease-out;
   }
 
   .button:hover:not(:disabled) .hover-text {
     width: 100%;
-    filter: drop-shadow(0 0 23px var(--animation-color));
+    filter: drop-shadow(0 0 12px #75bfff);
   }
 
   .loading-spinner {
@@ -103,10 +185,10 @@ const StyledWrapper = styled.div`
   }
 
   .spinner {
-    width: 20px;
-    height: 20px;
-    border: 2px solid transparent;
-    border-top-color: var(--animation-color);
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0, 54, 102, 0.3);
+    border-top-color: #003666;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     display: inline-block;
@@ -121,16 +203,15 @@ const StyledWrapper = styled.div`
     }
   }
 
-  /* Add media query for smaller screens */
   @media (max-width: 768px) {
     .button {
-      --fs-size: 14px; /* Smaller font size */
-      letter-spacing: 2px; /* Less letter spacing */
-      --border-right: 4px; /* Thinner border */
+      --fs-size: 13px;
+      padding: 0.5rem 1rem;
+      letter-spacing: 1.5px;
     }
 
     .spinner {
-      width: 16px; /* Smaller spinner */
+      width: 16px;
       height: 16px;
     }
   }
