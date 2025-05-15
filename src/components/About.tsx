@@ -29,6 +29,7 @@ const About = () => {
   const textRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const heroTextRef = useRef<HTMLHeadingElement>(null);
+  const bottomHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     // Initialize cardsRef array with null values
@@ -48,6 +49,25 @@ const About = () => {
         type: "words,chars",
       });
       gsap.from(splitText.chars, {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        stagger: 0.02,
+        ease: "back.out",
+      });
+    }
+
+    // Bottom heading text animation
+    if (bottomHeadingRef.current) {
+      const splitText = new SplitText(bottomHeadingRef.current, {
+        type: "words,chars",
+      });
+      gsap.from(splitText.chars, {
+        scrollTrigger: {
+          trigger: bottomHeadingRef.current,
+          start: "top bottom-=100",
+          toggleActions: "play none none reverse",
+        },
         opacity: 0,
         y: 50,
         duration: 1,
@@ -105,7 +125,7 @@ const About = () => {
               autoplay
             />
             <div
-              className="about_left py-5 md:py-10 border_c md:w-full fst"
+              className="about_left py-5 md:py-10 border_c md:w/full fst"
               ref={textRef}
             >
               <div className="m-auto w-11/12">
@@ -159,7 +179,10 @@ const About = () => {
         <Services />
         <div className="relative shadow-md mt-10 rounded-lg w-full h-auto md:h-[600px] overflow-hidden about_bottom">
           <div className="z-10 relative flex flex-col justify-center items-center px-4 md:px-10 py-10 md:py-0 h-full text-center">
-            <h1 className="drop-shadow-sm mb-4 md:mb-6 font-extrabold text-[var(--bg-dark)] text-3xl md:text-5xl">
+            <h1
+              ref={bottomHeadingRef}
+              className="drop-shadow-sm mb-4 md:mb-6 font-extrabold text-[var(--bg-dark)] text-3xl md:text-5xl"
+            >
               Enhancing Learning, One Resource at a Time
             </h1>
             <p className="opacity-90 mb-6 md:mb-8 max-w-2xl text-[var(--bg-dark)] text-lg md:text-xl">

@@ -57,9 +57,9 @@ const SERVICES_DATA = [
 const Card = () => {
   return (
     <StyledWrapper>
-      <div className="card-3d">
+      <div className="card-3d perspective-container">
         {SERVICES_DATA.map((service, index) => (
-          <div key={index} className="card">
+          <div key={index} className="card preserve-3d">
             <div className="card-content">
               <div className="icon">{service.icon}</div>
               <h3>{service.title}</h3>
@@ -78,31 +78,31 @@ const StyledWrapper = styled.div`
   align-items: center;
   min-height: 600px;
   padding: 6rem 2rem;
+  perspective: 2500px;
 
-  @keyframes autoRun3d {
-    from {
-      transform: perspective(2500px) rotateY(0deg);
-    }
-    to {
-      transform: perspective(2500px) rotateY(360deg);
-    }
-  }
-
-  .card-3d {
+  .perspective-container {
     position: relative;
     width: 1000px;
     height: 500px;
     transform-style: preserve-3d;
-    transform: perspective(2500px);
     animation: autoRun3d 40s linear infinite;
     will-change: transform;
   }
 
-  .card-3d:hover {
-    animation-play-state: paused;
+  .preserve-3d {
+    transform-style: preserve-3d;
   }
 
-  .card-3d .card {
+  @keyframes autoRun3d {
+    from {
+      transform: rotateY(0deg);
+    }
+    to {
+      transform: rotateY(360deg);
+    }
+  }
+
+  .card {
     position: absolute;
     width: 220px;
     height: 300px;
@@ -122,6 +122,10 @@ const StyledWrapper = styled.div`
       0 4px 6px -1px rgba(0, 0, 0, 0.2),
       0 2px 4px -1px rgba(0, 0, 0, 0.1),
       inset 0 0 80px rgba(255, 255, 255, 0.1);
+  }
+
+  .perspective-container:hover {
+    animation-play-state: paused;
   }
 
   .card-content {
@@ -167,7 +171,7 @@ const StyledWrapper = styled.div`
 
   ${SERVICES_DATA.map(
     (_, i) => `
-    .card-3d .card:nth-child(${i + 1}) {
+    .card:nth-child(${i + 1}) {
       transform: translate(-50%, -50%) rotateY(${i * 36}deg) translateZ(400px);
     }
   `
@@ -177,19 +181,19 @@ const StyledWrapper = styled.div`
     min-height: 500px;
     padding: 4rem 2rem;
 
-    .card-3d {
+    .perspective-container {
       width: 800px;
       height: 400px;
     }
 
-    .card-3d .card {
+    .card {
       width: 180px;
       height: 260px;
     }
 
     ${SERVICES_DATA.map(
       (_, i) => `
-      .card-3d .card:nth-child(${i + 1}) {
+      .card:nth-child(${i + 1}) {
         transform: translate(-50%, -50%) rotateY(${i * 36}deg) translateZ(350px);
       }
     `
@@ -213,12 +217,12 @@ const StyledWrapper = styled.div`
   }
 
   @media (max-width: 768px) {
-    .card-3d {
+    .perspective-container {
       width: 400px;
       height: 300px;
     }
 
-    .card-3d .card {
+    .card {
       width: 150px;
       height: 220px;
     }
@@ -243,7 +247,7 @@ const StyledWrapper = styled.div`
 
     ${SERVICES_DATA.map(
       (_, i) => `
-      .card-3d .card:nth-child(${i + 1}) {
+      .card:nth-child(${i + 1}) {
         transform: translate(-50%, -50%) rotateY(${i * 36}deg) translateZ(250px);
       }
     `
