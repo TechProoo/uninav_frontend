@@ -331,9 +331,33 @@ const ExploreContent = () => {
     }
   };
 
+  // Fetch materials for infinite scroll
+  const fetchMaterialInfiniteScroll = async (page: number) => {
+    if (isLoadingMaterialsInfinity) return;
+    setIsLoadingMaterialsInfinity(true);
+    try {
+      await fetchMaterials(page);
+    } finally {
+      setIsLoadingMaterialsInfinity(false);
+    }
+  };
+
+  // Fetch blogs for infinite scroll
+  const fetchBlogsInfiniteScroll = async (page: number) => {
+    if (isLoadingBlogsInfinity) return;
+    setIsLoadingBlogsInfinity(true);
+    try {
+      await fetchBlogs(page);
+    } finally {
+      setIsLoadingBlogsInfinity(false);
+    }
+  };
+
   // Handle search for active tab
   const handleSearch = async () => {
-    setIsSearching(true); // Start loading
+    if (isSearching) return; // Prevent multiple simultaneous searches
+    setIsSearching(true);
+
     if (advancedSearch) {
       toast("Using advanced search - this may take longer", {
         icon: "🔎",
@@ -342,15 +366,21 @@ const ExploreContent = () => {
     }
 
     try {
+      // Reset pages when starting a new search
       if (activeTab === "materials") {
         setMaterialPage(1);
+        setMaterials(null); // Clear existing results
         await fetchMaterials(1);
       } else {
         setBlogPage(1);
+        setBlogs(null); // Clear existing results
         await fetchBlogs(1);
       }
+    } catch (error) {
+      console.error("Search error:", error);
+      toast.error("Failed to perform search");
     } finally {
-      setIsSearching(false); // Stop loading regardless of success/failure
+      setIsSearching(false);
     }
   };
 
@@ -443,26 +473,6 @@ const ExploreContent = () => {
       fetchBlogsInfiniteScroll(blogPage);
     }
   }, [blogPage]);
-
-  // Toggle view mode between grid and list
-  const toggleViewMode = () => {
-    setViewMode(viewMode === "grid" ? "list" : "grid");
-  };
-
-  // Toggle advanced search mode
-  const toggleAdvancedSearch = (checked: boolean) => {
-    if (checked && !advancedSearch) {
-      setShowAdvancedSearchInfo(true); // Show info dialog when enabling
-    }
-    setAdvancedSearch(checked);
-  };
-
-  // Handle Enter key press in search input
-  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
 
   // Handle material click to navigate to detail page
   const handleMaterialClick = (material: Material) => {
@@ -656,7 +666,8 @@ const ExploreContent = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {advancedSearch ? "Disable" : "Enable"} advanced search
+                            {advancedSearch ? "Disable" : "Enable"} advanced
+                            search
                           </p>
                         </TooltipContent>
                       </Tooltip>
@@ -925,7 +936,8 @@ const ExploreContent = () => {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>
-                            {advancedSearch ? "Disable" : "Enable"} advanced search
+                            {advancedSearch ? "Disable" : "Enable"} advanced
+                            search
                           </p>
                         </TooltipContent>
                       </Tooltip>
