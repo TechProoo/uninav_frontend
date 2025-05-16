@@ -186,7 +186,14 @@ body {
 
 .about_right {
   height: 250px;
-  background-color: var(--bg-main);
+  /* background-color: var(--bg-main); */ /* Replaced with gradient */
+  background: linear-gradient(
+    347deg,
+    #1e5799 0%,
+    #2989d8 50%,
+    #207cca 51%,
+    #7db9e8 100%
+  );
 }
 
 .about_img {

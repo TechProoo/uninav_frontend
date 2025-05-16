@@ -49,7 +49,7 @@ const About = () => {
 
     textElements.forEach((text, i) => {
       if (i === 0) {
-        tl.from(text, {
+        tl.from(text as Element, {
           yPercent: 100,
           opacity: 0,
           duration: 0.8,
@@ -57,7 +57,7 @@ const About = () => {
         });
       }
 
-      tl.to(text, {
+      tl.to(text as Element, {
         yPercent: -100,
         opacity: 0,
         duration: 0.8,
@@ -67,7 +67,7 @@ const About = () => {
 
       if (i < textElements.length - 1) {
         tl.fromTo(
-          textElements[i + 1],
+          textElements[i + 1] as Element,
           {
             yPercent: 100,
             opacity: 0,
@@ -82,7 +82,7 @@ const About = () => {
         );
       } else {
         tl.fromTo(
-          textElements[0],
+          textElements[0] as Element,
           {
             yPercent: 100,
             opacity: 0,
@@ -231,7 +231,7 @@ const About = () => {
                   ref={heroTextRef}
                   className="font-bold text-2xl sm:text-2xl md:text-3xl lg:text-4xl md:text-left text-center"
                 >
-                  Enhancing Learning, One Resource at a Time
+                  Enhancing Academic Experience
                 </h1>
                 <p className="mt-4 text-gray-700 text-md dark:text-gray-300 md:text-xl">
                   Transforming the way students connect, learn, and grow through
@@ -272,7 +272,9 @@ const About = () => {
                 <div
                   key={index}
                   className="col-span-12 md:col-span-6"
-                  ref={(el) => (cardsRef.current[index] = el)}
+                  ref={(el) => {
+                    cardsRef.current[index] = el;
+                  }}
                 >
                   <div className="about_right py-4 md:py-6 border_c mdw-full about_first fst hover:scale-105 transition-transform duration-300">
                     <div className="m-auto w-11/12">
@@ -288,7 +290,7 @@ const About = () => {
                       <h2 className="mb-3 font-semibold md:text-xl text-2xl">
                         {item.title}
                       </h2>
-                      <p className="text-gray-700 md:text-md dark:text-gray-300 text-base">
+                      <p className="font-medium text-black md:text-md dark:text-white text-base">
                         {item.description}
                       </p>
                     </div>
@@ -332,7 +334,7 @@ const About = () => {
               ref={bottomHeadingRef}
               className="drop-shadow-sm mb-4 md:mb-6 font-extrabold text-[var(--bg-dark)] text-3xl md:text-5xl"
             >
-              Enhancing Learning, One Resource at a Time
+              Enhancing Academic Experience
             </h1>
             <p className="opacity-90 mb-6 md:mb-8 max-w-2xl text-[var(--bg-dark)] text-lg md:text-xl">
               Seamless access to academic resources, study groups, and tools
