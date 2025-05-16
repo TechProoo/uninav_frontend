@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Bag from "../../public/Image/medium-shot-students-classroom (1).jpg";
+import HeroImage from "../../public/Image/shelf-of-books.jpg";
 import { ButtonSlider } from "@/components/ui/ButtonSlider";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
@@ -364,7 +364,7 @@ export default function Hero() {
           >
             <Image
               className="w-4/5 md:w/full md:max-w-none max-w-md hero_img_main"
-              src={Bag}
+              src={HeroImage}
               alt="Person"
               priority
             />

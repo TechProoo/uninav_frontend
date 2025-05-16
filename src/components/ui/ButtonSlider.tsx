@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import gsap from "gsap";
+import * as ReactJSXRuntime from "react/jsx-runtime";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
@@ -86,7 +87,8 @@ export const ButtonSlider: React.FC<ButtonProps> = ({
               <span className="spinner"></span>
             </span>
           ) : (
-            text
+            // text
+            ""
           )}
           &nbsp;
         </span>
@@ -99,12 +101,12 @@ const StyledWrapper = styled.div`
   .button {
     margin: 0;
     height: auto;
-    background: rgba(0, 54, 102, 0.1);
-    padding: 0.rem 0.8rem;
-    border: 2px solid transparent;
-    border-radius: 8px;
+    background: #1e5799;
+    padding: 0.5rem 1rem; /* Add padding */
+    border: none;
+    border-radius: 4px; /* Rounded corners */
     cursor: pointer;
-    --text-stroke-color: #003666;
+    color: #ffff;
     --animation-color: #75bfff;
     --fs-size: 15px;
     letter-spacing: 2px;
@@ -112,8 +114,7 @@ const StyledWrapper = styled.div`
     font-size: var(--fs-size);
     font-family: "Montserrat", sans-serif;
     position: relative;
-    text-transform: uppercase;
-    color: transparent;
+    font-weight: 700; /* Changed from 300 to 700 to make text bold */
     -webkit-text-stroke: 1px var(--text-stroke-color);
     transition: all 0.3s ease;
     overflow: hidden;
@@ -159,12 +160,12 @@ const StyledWrapper = styled.div`
     z-index: 2;
     display: inline-block;
     transition: transform 0.3s ease;
+    font-weight: bold; /* Added bold font weight */
   }
 
   .hover-text {
     position: absolute;
     inset: 0;
-    width: 0%;
     overflow: hidden;
     background: linear-gradient(45deg, #003666, #75bfff);
     -webkit-background-clip: text;
