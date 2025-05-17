@@ -20,6 +20,15 @@ import {
 } from "@/api/user.api";
 import { getCourses, createCourse } from "@/api/course.api";
 import { Course } from "@/lib/types/response.type";
+import DepartmentByFacultySelectModal from "@/components/DepartmentByFacultySelectModal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 
 const CoursesPage = () => {
   const { user } = useAuth();
@@ -32,6 +41,7 @@ const CoursesPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   // Form state for creating a new course
   const [newCourse, setNewCourse] = useState({
@@ -120,6 +130,32 @@ const CoursesPage = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCourseCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Check for spaces
+    if (value.includes(" ")) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Course Code",
+        description: "Course code should not contain spaces",
+      });
+      return;
+    }
+
+    // Limit to 6 characters
+    if (value.length > 6) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Course Code",
+        description: "Course code should not exceed 6 characters",
+      });
+      return;
+    }
+
+    setNewCourse({ ...newCourse, courseCode: value });
   };
 
   const filteredCourses = availableCourses.filter((course) =>
@@ -304,12 +340,45 @@ const CoursesPage = () => {
                 <input
                   type="text"
                   required
+                  maxLength={6}
                   className="p-2 border rounded-md w-full"
                   value={newCourse.courseCode}
-                  onChange={(e) =>
-                    setNewCourse({ ...newCourse, courseCode: e.target.value })
-                  }
+                  onChange={handleCourseCodeChange}
+                  placeholder="Enter course code (max 6 characters)"
                 />
+              </div>
+              <div>
+                <label className="block mb-2 font-medium text-sm">
+                  Department
+                </label>
+                <DepartmentByFacultySelectModal
+                  onDepartmentSelect={(departmentId) =>
+                    setNewCourse({ ...newCourse, departmentId })
+                  }
+                  defaultDepartmentId={newCourse.departmentId}
+                />
+              </div>
+              <div>
+                <label className="block mb-2 font-medium text-sm">
+                  Level
+                </label>
+                <Select
+                  value={newCourse.level.toString()}
+                  onValueChange={(value) =>
+                    setNewCourse({ ...newCourse, level: parseInt(value) })
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[100, 200, 300, 400, 500, 600].map((level) => (
+                      <SelectItem key={level} value={level.toString()}>
+                        {level} Level
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="block mb-2 font-medium text-sm">
