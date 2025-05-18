@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { FacultyWithDepartments, getAllFaculties } from "@/api/faculty.api";
-import { School, ChevronDown } from "lucide-react";
+import { School, ChevronDown, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 import { Response } from "@/lib/types/response.type";
 import { useEffect, useState } from "react";
@@ -64,30 +64,33 @@ const page = () => {
     return faculties?.data.length ? (
       <Accordion
         type="multiple"
-        className="w-full max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 space-y-4"
+        className="w-full max-w-4xl mx-auto space-y-4"
       >
         {faculties.data.map((faculty) => (
           <AccordionItem
             key={faculty.id}
             value={faculty.id}
-            className="border border-borderMain rounded-md overflow-hidden"
+            className="bg-white rounded-lg shadow hover:shadow-md border border-gray-200 overflow-hidden transition-shadow duration-200"
           >
-            <AccordionTrigger className="px-4 py-3 hover:bg-bgMain/50 text-textDark font-semibold transition-colors">
-              <div className="flex items-center gap-3">
-                <School className="h-5 w-5 text-blue-600" />
-                <span>{faculty.name}</span>
+            <AccordionTrigger className="px-6 py-4 hover:bg-gray-100 text-gray-800 font-medium transition-colors w-full text-left group">
+              <div className="flex items-center justify-between gap-3 w-full">
+                <div className="flex items-center gap-3">
+                  <School className="h-6 w-6 text-blue-600" />
+                  <span className="text-base md:text-lg font-semibold text-[#003666]">{faculty.name}</span>
+                </div>
+                {/* Default chevron from shadcn/ui will appear here */}
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <ul className="space-y-2 cursor-pointer p-2">
+              <ul className="space-y-3 cursor-default py-3 px-6 bg-gray-50/50">
                 {faculty.departments.map((dept) => (
                   <li
                     key={dept.id}
                     onClick={() => handleClick(dept.id)}
-                    className="border border-borderMain/50 rounded-md px-4 py-3 hover:bg-blue-50 hover:border-blue-200 text-textDark/90 transition-all duration-200 flex items-center justify-between group"
+                    className="bg-white rounded-lg px-4 py-3 hover:bg-blue-50 hover:ring-2 hover:ring-blue-300 text-gray-700 transition-all duration-200 flex items-center justify-between group cursor-pointer shadow hover:shadow-lg border border-gray-200"
                   >
-                    <span>{dept.name}</span>
-                    <ChevronDown className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="text-sm md:text-base">{dept.name}</span>
+                    <ArrowRight className="h-5 w-5 text-blue-500 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" />
                   </li>
                 ))}
               </ul>

@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { BookOpen, School, Landmark } from "lucide-react";
+import { BookOpen, School, Landmark, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/ui/BackButton";
 import { getCourseById } from "@/api/course.api";
 import { Course } from "@/lib/types/response.type";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Props = {
   params: { courseId: string };
@@ -17,6 +18,7 @@ export default function CourseDetailsPage({ params }: Props) {
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -42,6 +44,14 @@ export default function CourseDetailsPage({ params }: Props) {
 
     fetchCourseDetails();
   }, [params.courseId]);
+
+  const handleDepartmentClick = (departmentId: string) => {
+    router.push(`/course-map/department/${departmentId}`);
+  };
+
+  const handleFacultyClick = (facultyId: string) => {
+    router.push(`/course-map/faculty/${facultyId}`);
+  };
 
   if (loading) {
     return (
@@ -111,23 +121,31 @@ export default function CourseDetailsPage({ params }: Props) {
           </p>
         </div>
 
-        {/* Department Info */}
+        {/* Department and Faculty Info */}
         {department && (
           <div className="bg-gradient-to-br from-[#003666] to-[#0c4a8c] p-6 rounded-xl text-white">
-            <div className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="mb-4 cursor-pointer hover:bg-white/10 p-2 rounded-lg transition-colors" onClick={() => handleDepartmentClick(department.id)}>
+              <div 
+                className="flex items-center gap-2 mb-2  "
+                
+              >
                 <School className="h-5 w-5" />
                 <h3 className="text-lg font-semibold">Department</h3>
+                <ArrowRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <p className="text-blue-100 mb-2">{department.name}</p>
               <p className="text-sm text-blue-100">{department.description}</p>
             </div>
 
             {department.faculty && (
-              <div>
+              <div 
+                className="cursor-pointer hover:bg-white/10 p-2 rounded-lg transition-colors"
+                onClick={() => department.faculty && handleFacultyClick(department.faculty.id)}
+              >
                 <div className="flex items-center gap-2 mb-2">
                   <Landmark className="h-5 w-5" />
                   <h3 className="text-lg font-semibold">Faculty</h3>
+                  <ArrowRight className="h-4 w-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <p className="text-blue-100 mb-2">{department.faculty.name}</p>
                 <p className="text-sm text-blue-100">
