@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import { useAuth } from "@/contexts/authContext";
+import SkeletonLoader from "@/components/ui/SkeletonLoader";
 
 interface BlogDetailProps {
   blogId: string;
@@ -73,6 +74,9 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     refetchOnWindowFocus: false,
     enabled: !!blogId,
   });
+
+  // Determine if this component is being used in a modal or standalone
+  const isModal = !!onClose;
 
   React.useEffect(() => {
     if (blog) {
@@ -168,8 +172,93 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-12 h-12 animate-spin"></div>
+      <div className="relative">
+        {/* Header Skeleton */}
+        {(isModal || showBackButton) && (
+          <div className="top-0 z-10 sticky flex justify-between items-center bg-white px-6 py-4 border-b">
+            <div className="flex items-center">
+              {showBackButton && !isModal && (
+                <SkeletonLoader width="100px" height="36px" className="mr-2" />
+              )}
+              {isModal && <SkeletonLoader width="150px" height="28px" />}
+            </div>
+            {onClose && (
+              <SkeletonLoader shape="circle" width="32px" height="32px" />
+            )}
+          </div>
+        )}
+
+        {/* Blog Content Skeleton */}
+        <div>
+          <div className="bg-gray-900 p-4 sm:p-6 md:p-8">
+            <div className="gap-4 grid grid-cols-1 md:grid-cols-12">
+              <div className="md:col-span-5 px-2 md:px-6 text-left md:text-right">
+                <SkeletonLoader
+                  width="80px"
+                  height="28px"
+                  className="mb-4 inline-block bg-gray-700"
+                />
+                <SkeletonLoader
+                  height="36px"
+                  className="mb-2 bg-gray-700 w-full"
+                />
+                <SkeletonLoader
+                  height="30px"
+                  className="mb-4 bg-gray-700 w-4/5"
+                />
+                <SkeletonLoader
+                  height="20px"
+                  className="mb-4 bg-gray-700 w-3/5"
+                />
+                <div className="flex justify-start md:justify-end items-center gap-4 mt-4">
+                  <SkeletonLoader width="60px" height="20px" className="bg-gray-700" />
+                  <SkeletonLoader width="60px" height="24px" className="bg-gray-700"/>
+                </div>
+                <SkeletonLoader
+                  width="120px"
+                  height="20px"
+                  className="mt-4 bg-gray-700"
+                />
+              </div>
+              <div className="md:col-span-7">
+                <SkeletonLoader height="300px" className="bg-gray-800" />
+              </div>
+            </div>
+          </div>
+
+          {/* Owner actions skeleton (conditional) */}
+          {isOwnerState && (
+             <div className="flex justify-end items-center gap-2 p-4 sm:px-6 md:px-8">
+                <SkeletonLoader width="100px" height="36px" />
+                <SkeletonLoader width="110px" height="36px" />
+            </div>
+          )}
+
+          <div className="p-4 sm:p-6 md:p-8">
+            <div className="mb-8 text-center">
+              <SkeletonLoader height="24px" className="w-3/4 mx-auto" />
+              <SkeletonLoader height="20px" className="w-1/2 mx-auto mt-2" />
+            </div>
+
+            <article className="max-w-none prose">
+              <SkeletonLoader height="20px" className="w-full mb-2" />
+              <SkeletonLoader height="20px" className="w-full mb-2" />
+              <SkeletonLoader height="20px" className="w-5/6 mb-2" />
+              <SkeletonLoader height="20px" className="w-full my-4" />
+              <SkeletonLoader height="20px" className="w-full mb-2" />
+              <SkeletonLoader height="20px" className="w-2/3 mb-2" />
+            </article>
+
+            <div className="flex flex-wrap items-center gap-3 mt-8 pt-4 border-t">
+              <SkeletonLoader width="50px" height="20px" />
+              <div className="flex flex-wrap gap-2">
+                <SkeletonLoader width="60px" height="28px" />
+                <SkeletonLoader width="70px" height="28px" />
+                <SkeletonLoader width="50px" height="28px" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -191,9 +280,6 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
       </div>
     );
   }
-
-  // Determine if this component is being used in a modal or standalone
-  const isModal = !!onClose;
 
   return (
     <>

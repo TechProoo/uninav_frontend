@@ -55,9 +55,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import BackButton from "../ui/BackButton";
+import SkeletonLoader from "@/components/ui/SkeletonLoader";
 
 interface MaterialDetailProps {
-  material: Material;
+  materialId: string;
   isOwner?: boolean;
   onEdit?: (material: Material) => void;
   onDelete?: (materialId: string) => void;
@@ -65,21 +66,18 @@ interface MaterialDetailProps {
 }
 
 const MaterialDetail: React.FC<MaterialDetailProps> = ({
-  material: initialMaterial,
+  materialId,
   isOwner: isOwnerProp = false,
   onEdit,
   onDelete,
   onClose,
 }) => {
-  const [material, setMaterial] = useState(
-    initialMaterial as Required<Material>
-  );
+  const [material, setMaterial] = useState<Required<Material> | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const isCurrentlyBookmarked = isBookmarked(material.id);
   const [selectedAdvert, setSelectedAdvert] = useState<Advert | null>(null);
 
   // New states for sharing functionality
@@ -97,38 +95,129 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   // Combine prop-based ownership with detected ownership
   const [detectedIsOwner, setDetectedIsOwner] = useState(false);
 
+  // Check if material is bookmarked
+  const isCurrentlyBookmarked = material ? isBookmarked(material.id) : false;
+
   useEffect(() => {
-    if (user && initialMaterial && user.id === initialMaterial.creatorId) {
+    if (user && material && user.id === material.creatorId) {
       setDetectedIsOwner(true);
     }
-  }, [user, initialMaterial]);
+  }, [user, material]);
 
   // Use either the prop or detected ownership
   const isOwner = isOwnerProp || detectedIsOwner;
 
   useEffect(() => {
-    const fetchCompleteData = async () => {
+    const fetchMaterial = async () => {
       try {
-        const response = await getMaterialById(initialMaterial.id);
+        setIsLoading(true);
+        const response = await getMaterialById(materialId);
         if (response?.status === "success") {
           setMaterial(response.data as Required<Material>);
+        } else {
+          toast.error("Failed to load material details");
         }
       } catch (error) {
-        console.error("Error fetching complete material data:", error);
+        console.error("Error fetching material data:", error);
         toast.error("Failed to load material details");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchCompleteData();
-  }, [initialMaterial.id]);
+    fetchMaterial();
+  }, [materialId]);
 
-  if (isLoading) {
+  if (isLoading || !material) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="border-b-2 border-blue-700 rounded-full w-8 h-8 animate-spin"></div>
-      </div>
+      <Card className="space-y-6 sm:space-y-8 bg-white/80 shadow-md backdrop-blur-sm mx-auto p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl max-w-4xl">
+        {/* Header Skeleton */}
+        <div className="flex justify-between items-start pt-8 sm:pt-0">
+          <div className="flex items-start gap-2 sm:gap-4">
+            <SkeletonLoader shape="rect" width="48px" height="48px" />
+            <div>
+              <SkeletonLoader width="200px" height="24px" className="mb-2" />
+              <SkeletonLoader width="150px" height="16px" />
+            </div>
+          </div>
+          <div className="flex items-end flex-col gap-2">
+            <SkeletonLoader width="80px" height="30px" />
+            <SkeletonLoader shape="circle" width="30px" height="30px" />
+          </div>
+        </div>
+
+        {/* Edit/Delete Controls Skeleton (conditionally rendered based on ownership, so might not always show) */}
+        {/* We can add a placeholder if isOwner is not determined yet, or just omit */}
+
+        {/* Advertisement Section Skeleton (conditional) */}
+        {/* For simplicity, we can show a generic placeholder if adverts are expected */}
+        <div className="space-y-2 sm:space-y-3">
+          <div className="flex items-center gap-2 mb-2 sm:mb-3">
+            <SkeletonLoader shape="circle" width="20px" height="20px" />
+            <SkeletonLoader width="150px" height="20px" />
+          </div>
+          <div className="gap-3 sm:gap-4 grid md:grid-cols-2">
+            <SkeletonLoader height="100px" />
+            <SkeletonLoader height="100px" />
+          </div>
+        </div>
+        
+
+        {/* Main Content Grid Skeleton */}
+        <div className="gap-6 sm:gap-8 grid md:grid-cols-2">
+          {/* Left Column Skeleton */}
+          <div className="space-y-4 sm:space-y-6">
+            <section>
+              <SkeletonLoader width="100px" height="20px" className="mb-2" />
+              <SkeletonLoader height="16px" />
+              <SkeletonLoader height="16px" className="mt-1 w-5/6" />
+            </section>
+            <section>
+              <SkeletonLoader width="80px" height="20px" className="mb-2" />
+              <SkeletonLoader height="16px" />
+            </section>
+            <section>
+              <SkeletonLoader width="60px" height="20px" className="mb-2" />
+              <div className="flex flex-wrap gap-1 sm:gap-2">
+                <SkeletonLoader width="50px" height="24px" />
+                <SkeletonLoader width="60px" height="24px" />
+                <SkeletonLoader width="70px" height="24px" />
+              </div>
+            </section>
+          </div>
+
+          {/* Right Column Skeleton */}
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex flex-wrap gap-3 sm:gap-4">
+              <SkeletonLoader width="80px" height="20px" />
+              <SkeletonLoader width="100px" height="20px" />
+              <SkeletonLoader width="70px" height="20px" />
+            </div>
+            <div className="space-y-1">
+              <SkeletonLoader width="120px" height="16px" />
+              <SkeletonLoader width="150px" height="16px" className="mt-1" />
+            </div>
+            <SkeletonLoader height="40px" className="mt-2" />
+          </div>
+        </div>
+
+        {/* Share Section Skeleton */}
+        <div className="space-y-2 sm:space-y-3 pt-4 sm:pt-6 border-gray-200 border-t">
+          <SkeletonLoader width="150px" height="20px" className="mb-2" />
+          <SkeletonLoader height="40px" />
+          <SkeletonLoader height="40px" className="mt-2" />
+        </div>
+
+        {/* Collections Section Skeleton (conditional) */}
+         <div className="mt-6 sm:mt-10">
+          <SkeletonLoader width="200px" height="24px" className="mb-2 sm:mb-4" />
+          <div className="gap-3 sm:gap-4 grid grid-cols-2 md:grid-cols-3">
+            <SkeletonLoader height="120px" />
+            <SkeletonLoader height="120px" />
+            <SkeletonLoader height="120px" />
+          </div>
+        </div>
+      </Card>
     );
   }
 
@@ -145,33 +234,42 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       toast.error("Please log in to like this material");
       return;
     }
-    if (isLiking) return;
+    if (isLiking || !material) return;
 
     try {
       setIsLiking(true);
       // Optimistic update
-      setMaterial((prev) => ({
-        ...prev,
-        likes: prev.likes + (prev.isLiked ? -1 : 1),
-        isLiked: !prev.isLiked,
-      }));
+      setMaterial((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          likes: prev.likes + (prev.isLiked ? -1 : 1),
+          isLiked: !prev.isLiked,
+        } as Required<Material>;
+      });
 
       const response = await likeOrUnlikeMaterial(material.id);
       if (response?.status === "success") {
         // Update with actual server state
-        setMaterial((prev) => ({
-          ...prev,
-          likes: response.data.likesCount,
-          isLiked: response.data.liked,
-        }));
+        setMaterial((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            likes: response.data.likesCount,
+            isLiked: response.data.liked,
+          } as Required<Material>;
+        });
       }
     } catch (error) {
       // Revert optimistic update on error
-      setMaterial((prev) => ({
-        ...prev,
-        likes: prev.likes + (prev.isLiked ? 1 : -1),
-        isLiked: !prev.isLiked,
-      }));
+      setMaterial((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          likes: prev.likes + (prev.isLiked ? 1 : -1),
+          isLiked: !prev.isLiked,
+        } as Required<Material>;
+      });
       console.error("Error toggling like:", error);
     } finally {
       setIsLiking(false);
@@ -231,10 +329,13 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
         await incrementDownloadCount(material.id);
 
         // Update local state optimistically
-        setMaterial((prev) => ({
-          ...prev,
-          downloads: prev.downloads + 1,
-        }));
+        setMaterial((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            downloads: prev.downloads + 1,
+          } as Required<Material>;
+        });
 
         toast.success("Download started successfully");
       } catch (error) {

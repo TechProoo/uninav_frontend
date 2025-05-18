@@ -446,7 +446,7 @@ const MaterialsReviewPage = () => {
         <div className="z-50 fixed inset-0 flex justify-center items-center bg-black/50">
           <div className="bg-white shadow-xl m-4 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <MaterialDetail
-              material={viewingMaterial}
+              materialId={viewingMaterial.id}
               isOwner={false}
               onClose={() => setViewingMaterial(null)}
             />

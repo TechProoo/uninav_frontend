@@ -96,8 +96,9 @@ const MaterialsPage = () => {
     setSelectedMaterial(null);
   };
 
-  const handleEditMaterial = (material: Material) => {
-    setSelectedMaterial(material);
+  const handleEditMaterial = (material: Material | Material[]) => {
+    const materialToEdit = Array.isArray(material) ? material[0] : material;
+    setSelectedMaterial(materialToEdit);
     setShowEditForm(true);
     setShowAddForm(false);
   };
@@ -226,7 +227,7 @@ const MaterialsPage = () => {
 
         {!showAddForm && !showEditForm && selectedMaterial && (
           <MaterialDetail
-            material={selectedMaterial}
+            materialId={selectedMaterial.id}
             isOwner={isOwner(selectedMaterial)}
             onEdit={handleEditMaterial}
             onDelete={handleDeleteMaterial}
