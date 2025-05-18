@@ -171,49 +171,6 @@ const About = () => {
 
   return (
     <div className="about_bg relative" ref={containerRef}>
-      {/* Decorative SVGs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <svg
-          className="absolute top-20 left-10 w-16 h-16 text-blue-400 animate-float opacity-30"
-          viewBox="0 0 24 24"
-        >
-          <path
-            fill="currentColor"
-            d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99z"
-          />
-        </svg>
-        <svg
-          className="absolute top-40 right-20 w-12 h-12 text-purple-500 animate-float-delay-1 opacity-30"
-          viewBox="0 0 24 24"
-        >
-          <circle fill="currentColor" cx="12" cy="12" r="8" />
-        </svg>
-        <svg
-          className="absolute bottom-32 left-1/4 w-10 h-10 text-green-400 animate-float-delay-2 opacity-30"
-          viewBox="0 0 24 24"
-        >
-          <rect fill="currentColor" x="4" y="4" width="16" height="16" />
-        </svg>
-        <svg
-          className="absolute top-1/3 right-1/3 w-14 h-14 text-pink-400 animate-float-delay-3 opacity-30"
-          viewBox="0 0 24 24"
-        >
-          <polygon fill="currentColor" points="12 2 22 21 2 21" />
-        </svg>
-        <svg
-          className="absolute bottom-40 right-1/4 w-12 h-12 text-yellow-400 animate-float-delay-4 opacity-30"
-          viewBox="0 0 24 24"
-        >
-          <path fill="currentColor" d="M12 5.5l5.5 9.5H6.5L12 5.5z" />
-        </svg>
-        <svg
-          className="absolute top-1/2 left-20 w-16 h-16 text-red-400 animate-float opacity-30"
-          viewBox="0 0 24 24"
-        >
-          <circle fill="currentColor" cx="12" cy="12" r="10" />
-        </svg>
-      </div>
-
       <div className="m-auto py-1 md:py-10 w-10/12">
         <div className="items-center gap-5 grid grid-cols-12">
           <div className="col-span-12 md:col-span-6">

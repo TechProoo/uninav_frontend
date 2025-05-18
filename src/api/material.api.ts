@@ -1,5 +1,5 @@
 import { api } from "./base.api";
-import { Response, Material, Pagination } from "@/lib/types/response.type";
+import { Response, Material, Pagination, MaterialTypeEnum } from "@/lib/types/response.type";
 
 // Types for material creation and update
 export interface CreateMaterialDto {
@@ -49,7 +49,7 @@ export const getMyMaterials = async ({
   page?: number;
   limit?: number;
   creatorId?: string;
-  type?: string;
+  type?: MaterialTypeEnum;
 }): Promise<Response<Pagination<Material[]>>> => {
   try {
     let url = `/materials/me?page=${page}&limit=${limit}`;

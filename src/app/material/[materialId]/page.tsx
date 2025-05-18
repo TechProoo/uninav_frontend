@@ -97,9 +97,7 @@ export default function MaterialPage() {
 
   return (
     <div className="mx-auto px-4 py-8 max-w-6xl">
-      <div className="mb-8">
-        <BackButton />
-      </div>
+      
 
       {isEditing ? (
         <div className="bg-white shadow-md p-6 rounded-lg">

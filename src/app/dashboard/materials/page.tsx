@@ -56,13 +56,13 @@ const MaterialsPage = () => {
           query: searchQuery,
           page,
           creatorId: user?.id,
-          type: filterType || undefined,
+          type: filterType as MaterialTypeEnum,
         });
       } else {
         response = await getMyMaterials({
           page,
           creatorId: user?.id,
-          type: filterType || undefined,
+          type: filterType as MaterialTypeEnum,
         });
       }
 

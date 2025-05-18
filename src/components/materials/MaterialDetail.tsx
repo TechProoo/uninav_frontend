@@ -26,7 +26,6 @@ import {
   Check,
   Edit,
   Trash2,
-  ChevronLeft,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -55,6 +54,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import BackButton from "../ui/BackButton";
 
 interface MaterialDetailProps {
   material: Material;
@@ -111,7 +111,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       try {
         const response = await getMaterialById(initialMaterial.id);
         if (response?.status === "success") {
-          setMaterial(response.data);
+          setMaterial(response.data as Required<Material>);
         }
       } catch (error) {
         console.error("Error fetching complete material data:", error);
@@ -399,32 +399,35 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
   const getFileIcon = (type: string) => {
     switch (type.toLowerCase()) {
       case "pdf":
-        return <FileIcon className="w-6 h-6 text-red-500" />;
+        return <FileIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />;
       case "video":
-        return <FileIcon className="w-6 h-6 text-blue-500" />;
+        return <FileIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />;
       case "image":
-        return <FileIcon className="w-6 h-6 text-green-500" />;
+        return <FileIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />;
       default:
-        return <FileIcon className="w-6 h-6 text-gray-500" />;
+        return <FileIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />;
     }
   };
 
   return (
-    <Card className="space-y-8 bg-white/80 shadow-md backdrop-blur-sm mx-auto p-8 rounded-2xl max-w-4xl">
+    <Card className="space-y-6 sm:space-y-8 bg-white/80 shadow-md backdrop-blur-sm mx-auto p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl max-w-4xl">
+      
+      
       {/* Header Section */}
-      <div className="flex justify-between items-start">
-        <div className="flex items-start gap-4">
+      <div className="flex justify-between items-start pt-8 sm:pt-0">
+        <div className="flex items-start gap-2 sm:gap-4">
           {getFileIcon(material.type)}
           <div>
-            <h1 className="font-semibold text-gray-900 text-2xl">
+            <h1 className="font-semibold text-gray-900 text-lg sm:text-xl md:text-2xl">
               {material.label}
             </h1>
-            <p className="mt-1 text-gray-500 text-sm">
+            <p className="mt-1 text-gray-500 text-xs sm:text-sm">
               by {material.creator.firstName} {material.creator.lastName}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-end flex-col">
+        <BackButton  label="Back" className="text-xs sm:text-sm" />
           <Button
             variant="ghost"
             size="icon"
@@ -435,35 +438,30 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             onClick={handleBookmarkToggle}
           >
             <Bookmark
-              className={cn("w-5 h-5", isCurrentlyBookmarked && "fill-current")}
+              className={cn("w-4 h-4 sm:w-5 sm:h-5", isCurrentlyBookmarked && "fill-current")}
             />
           </Button>
-          {onClose && (
-            <Button variant="outline" size="sm" onClick={onClose}>
-              Close
-            </Button>
-          )}
         </div>
       </div>
 
       {/* Edit/Delete Controls */}
       {isOwner && (
-        <div className="flex justify-end items-center gap-3">
+        <div className="flex justify-end items-center gap-2 sm:gap-3">
           <Button
             variant="outline"
             onClick={handleEdit}
-            className="flex items-center gap-1 hover:bg-[#003666] border-[#003666] text-[#003666] hover:text-white transition"
+            className="flex items-center gap-1 text-xs sm:text-sm hover:bg-[#003666] border-[#003666] text-[#003666] hover:text-white transition"
           >
-            <Edit className="w-4 h-4" />
+            <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
             Edit
           </Button>
           <Button
             variant="outline"
             onClick={handleDelete}
-            className="flex items-center gap-1 hover:bg-red-600 border-red-600 text-red-600 hover:text-white transition"
+            className="flex items-center gap-1 text-xs sm:text-sm hover:bg-red-600 border-red-600 text-red-600 hover:text-white transition"
             disabled={isDeleting}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
             {isDeleting ? "Deleting..." : "Delete"}
           </Button>
         </div>
@@ -472,15 +470,15 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       {/* Advertisement Section */}
       {(material.adverts ?? []).length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-3 text-blue-600">
-            <Megaphone className="w-5 h-5" />
-            <h3 className="font-semibold text-lg">
+          <div className="flex items-center gap-2 mb-2 sm:mb-3 text-blue-600">
+            <Megaphone className="w-4 h-4 sm:w-5 sm:h-5" />
+            <h3 className="font-semibold text-base sm:text-lg">
               {(material.adverts ?? []).length > 1
                 ? "Advertisements"
                 : "Advertisement"}
             </h3>
           </div>
-          <div className="gap-4 grid md:grid-cols-2">
+          <div className="gap-3 sm:gap-4 grid md:grid-cols-2">
             {(material.adverts ?? []).map((advert) => (
               <AdvertCard
                 key={advert.id}
@@ -494,25 +492,25 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       )}
 
       {/* Main Content Grid */}
-      <div className="gap-8 grid md:grid-cols-2">
+      <div className="gap-6 sm:gap-8 grid md:grid-cols-2">
         {/* Left Column: Description, Course, Tags */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <section>
-            <h3 className="mb-2 font-semibold text-gray-800 text-lg">
+            <h3 className="mb-1 sm:mb-2 font-semibold text-gray-800 text-base sm:text-lg">
               Description
             </h3>
-            <p className="text-gray-700 text-sm">
+            <p className="text-gray-700 text-xs sm:text-sm">
               {material.description || "No description available"}
             </p>
           </section>
 
           {material.targetCourse && (
             <section>
-              <h3 className="mb-2 font-semibold text-gray-800 text-lg">
+              <h3 className="mb-1 sm:mb-2 font-semibold text-gray-800 text-base sm:text-lg">
                 Course
               </h3>
-              <div className="flex items-center gap-2 text-gray-700">
-                <Book className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-gray-700 text-xs sm:text-sm">
+                <Book className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>
                   {material.targetCourse.courseCode} -{" "}
                   {material.targetCourse.courseName}
@@ -523,15 +521,15 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
           {material.tags?.length > 0 && (
             <section>
-              <h3 className="mb-2 font-semibold text-gray-800 text-lg">Tags</h3>
-              <div className="flex flex-wrap gap-2">
+              <h3 className="mb-1 sm:mb-2 font-semibold text-gray-800 text-base sm:text-lg">Tags</h3>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {material.tags.map((tag) => (
                   <Badge
                     key={tag}
                     variant="secondary"
-                    className="flex items-center gap-1 text-sm"
+                    className="flex items-center gap-1 text-xs sm:text-sm"
                   >
-                    <Tag className="w-3 h-3" />
+                    <Tag className="w-2 h-2 sm:w-3 sm:h-3" />
                     {tag}
                   </Badge>
                 ))}
@@ -541,14 +539,14 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
         </div>
 
         {/* Right Column: Stats, Visibility, Download */}
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-4 text-gray-600 text-sm">
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4" />
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex flex-wrap gap-3 sm:gap-4 text-gray-600 text-xs sm:text-sm">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>{material.views} Views</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Download className="w-4 h-4" />
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Download className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>
                 {material.downloads}{" "}
                 {material.resource?.resourceType === ResourceType.UPLOAD
@@ -562,28 +560,28 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
               onClick={handleLikeToggle}
               disabled={isLiking}
               className={cn(
-                "flex items-center gap-2",
+                "flex items-center gap-1 sm:gap-2 p-1 h-auto",
                 material.isLiked && "text-blue-600"
               )}
             >
               <ThumbsUp
-                className={cn("w-4 h-4", material.isLiked && "fill-current")}
+                className={cn("w-3 h-3 sm:w-4 sm:h-4", material.isLiked && "fill-current")}
               />
               <span>{material.likes}</span>
             </Button>
           </div>
 
-          <div className="space-y-1 text-gray-600 text-sm">
-            <div className="flex items-center gap-2">
-              <Globe className="w-4 h-4" />
+          <div className="space-y-1 text-gray-600 text-xs sm:text-sm">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>
                 {material.visibility === VisibilityEnum.PUBLIC
                   ? "Public"
                   : "Private"}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4" />
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Lock className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>
                 {material.restriction === RestrictionEnum.DOWNLOADABLE
                   ? "Downloadable"
@@ -597,18 +595,18 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             <div className="space-y-2">
               <Button
                 onClick={handleDownload}
-                className="bg-blue-600 hover:bg-blue-700 w-full text-white"
+                className="bg-blue-600 hover:bg-blue-700 w-full text-white text-xs sm:text-sm py-2 h-auto"
                 disabled={isDownloading}
               >
                 {material.resource?.resourceType === "url" ||
                 material.resource?.resourceType === "GDrive" ? (
                   <>
-                    <Eye className="mr-2 w-4 h-4" />
+                    <Eye className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                     Visit Resource
                   </>
                 ) : (
                   <>
-                    <Download className="mr-2 w-4 h-4" />
+                    <Download className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                     {isDownloading ? "Downloading..." : "Download Material"}
                   </>
                 )}
@@ -618,9 +616,9 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
                   <Button
                     variant="outline"
                     onClick={handleFallbackDownload}
-                    className="w-full text-xs"
+                    className="w-full text-xs h-auto py-1.5"
                   >
-                    If download hasn’t started, click here
+                    If download hasn't started, click here
                   </Button>
                 )}
             </div>
@@ -629,21 +627,21 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
       </div>
 
       {/* Share Section */}
-      <div className="space-y-3 pt-6 border-gray-200 border-t">
-        <h3 className="font-semibold text-gray-800">Share Material</h3>
+      <div className="space-y-2 sm:space-y-3 pt-4 sm:pt-6 border-gray-200 border-t">
+        <h3 className="font-semibold text-gray-800 text-base sm:text-lg">Share Material</h3>
 
         <Button
           onClick={handleShareMaterial}
           variant="outline"
-          className="flex items-center gap-2 w-full"
+          className="flex items-center gap-1 sm:gap-2 w-full text-xs sm:text-sm h-auto py-2"
           disabled={shareLoading}
         >
           {shareLoading ? (
-            <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
+            <div className="border-2 border-t-blue-600 rounded-full w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
           ) : copySuccess === "Material link copied to clipboard!" ? (
-            <Check className="w-4 h-4 text-green-600" />
+            <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
           ) : (
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
           )}
           <span>Share this material </span>
         </Button>
@@ -653,15 +651,15 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             <Button
               onClick={handleGetDownloadLink}
               variant="outline"
-              className="flex items-center gap-2 w-full"
+              className="flex items-center gap-1 sm:gap-2 w-full text-xs sm:text-sm h-auto py-2"
               disabled={downloadLinkLoading}
             >
               {downloadLinkLoading ? (
-                <div className="border-2 border-t-blue-600 rounded-full w-4 h-4 animate-spin" />
+                <div className="border-2 border-t-blue-600 rounded-full w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
               ) : copySuccess === "Download link copied to clipboard!" ? (
-                <Check className="w-4 h-4 text-green-600" />
+                <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
               ) : (
-                <LinkIcon className="w-4 h-4" />
+                <LinkIcon className="w-3 h-3 sm:w-4 sm:h-4" />
               )}
               <span>Copy download link (expires in 2 days)</span>
             </Button>
@@ -670,8 +668,8 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
       {/* Collections Section */}
       {(material.collections ?? []).length > 0 && (
-        <div className="mt-10">
-          <h2 className="mb-4 font-medium text-gray-800 text-lg">
+        <div className="mt-6 sm:mt-10">
+          <h2 className="mb-2 sm:mb-4 font-medium text-gray-800 text-base sm:text-lg">
             Featured in Collections
           </h2>
           <CollectionGrid

@@ -117,6 +117,26 @@ const ExploreContent = () => {
     defaultTab === "blogs" ? "blogs" : "materials"
   );
 
+  // Function to update URL with current tab selection
+  const updateTabInURL = (newTab: string) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set('defaultTab', newTab);
+    
+    // Preserve other query params
+    if (query) params.set('query', query);
+    if (courseId) params.set('courseId', courseId);
+    
+    // Update URL without refreshing the page
+    const newUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.pushState({}, '', newUrl);
+  };
+
+  // Modified tab change handler
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    updateTabInURL(value);
+  };
+
   // State for view mode (grid or list)
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
@@ -595,7 +615,7 @@ const ExploreContent = () => {
             <Tabs
               defaultValue={activeTab}
               value={activeTab}
-              onValueChange={setActiveTab}
+              onValueChange={handleTabChange}
               className="w-full"
             >
               <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 md:mb-6 w-full h-max">
