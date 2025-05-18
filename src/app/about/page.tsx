@@ -21,6 +21,7 @@ import {
   Award,
   Sparkles, // Added for potential use
 } from "lucide-react";
+import Features3DCarousel from "@/components/Features3DCarousel"; // Added import
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -215,6 +216,16 @@ const AboutPage = () => {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* FEATURES Section - New Section for 3D Carousel */}
+      <section className="bg-slate-100 py-16">
+        <div className="mx-auto max-w-7xl px-4 md:px-8 lg:px-16">
+          <h2 className="mb-12 font-bold text-3xl md:text-4xl text-center section-heading">
+            Explore Our <span className="text-blue-600">Features</span>
+          </h2>
+          <Features3DCarousel />
         </div>
       </section>
 

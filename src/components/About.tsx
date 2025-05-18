@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-import Services from "./Services";
 import Image from "next/image";
 import Logo from "../../public/Image/uninav-logo-image.png";
 import { ButtonSlider } from "./ui/ButtonSlider";
@@ -171,8 +170,8 @@ const About = () => {
 
   return (
     <div className="about_bg relative" ref={containerRef}>
-      <div className="m-auto py-1 md:py-10 w-10/12">
-        <div className="items-center gap-5 grid grid-cols-12">
+      <div className="m-auto py-1 md:py-6 w-10/12">
+        <div className="items-center gap-3 grid grid-cols-12">
           <div className="col-span-12 md:col-span-6">
             <DotLottieReact
               src="https://lottie.host/77c6b78c-2671-41a6-9206-2870569a2fcb/xhS9lOc3bC.lottie"
@@ -180,7 +179,7 @@ const About = () => {
               autoplay
             />
             <div
-              className="about_left py-5 md:py-10 border_c md:w/full fst"
+              className="about_left py-3 md:py-6 border_c md:w/full fst"
               ref={textRef}
             >
               <div className="m-auto w-11/12">
@@ -233,7 +232,7 @@ const About = () => {
                     cardsRef.current[index] = el;
                   }}
                 >
-                  <div className="about_right py-4 md:py-6 border_c mdw-full about_first fst hover:scale-105 transition-transform duration-300">
+                  <div className="about_right py-3 md:py-4 border_c mdw-full about_first fst hover:scale-105 transition-transform duration-300">
                     <div className="m-auto w-11/12">
                       <div>
                         {/* @ts-ignore */}
@@ -257,11 +256,10 @@ const About = () => {
             </div>
           </div>
         </div>
-        <Services />
 
         {/* Text replace animation section */}
-        <div className="py-16 flex flex-col items-center justify-center">
-          <div className="relative h-[60px] md:h-[80px] overflow-hidden text-center w-full">
+        <div className="py-12 flex flex-col items-center justify-center">
+          <div className="relative h-[50px] md:h-[70px] overflow-hidden text-center w-full">
             <h2 className="text-3xl md:text-5xl font-bold inline-flex justify-center w-full">
               UniNav is{" "}
               <span className="relative inline-flex justify-center min-w-[200px] md:min-w-[300px] ml-2">
@@ -285,15 +283,15 @@ const About = () => {
           </p>
         </div>
 
-        <div className="relative shadow-md mt-10 rounded-lg w-full h-auto md:h-[600px] overflow-hidden about_bottom">
-          <div className="z-10 relative flex flex-col justify-center items-center px-4 md:px-10 py-10 md:py-0 h-full text-center">
+        <div className="relative shadow-md mt-8 rounded-lg w-full h-auto md:h-[550px] overflow-hidden about_bottom">
+          <div className="z-10 relative flex flex-col justify-center items-center px-4 md:px-8 py-8 md:py-0 h-full text-center">
             <h1
               ref={bottomHeadingRef}
-              className="drop-shadow-sm mb-4 md:mb-6 font-extrabold text-[var(--bg-dark)] text-3xl md:text-5xl"
+              className="drop-shadow-sm mb-3 md:mb-4 font-extrabold text-[var(--bg-dark)] text-3xl md:text-5xl"
             >
               Enhancing Academic Experience
             </h1>
-            <p className="opacity-90 mb-6 md:mb-8 max-w-2xl text-[var(--bg-dark)] text-lg md:text-xl">
+            <p className="opacity-90 mb-4 md:mb-6 max-w-2xl text-[var(--bg-dark)] text-lg md:text-xl">
               Seamless access to academic resources, study groups, and tools
               that help you grow.
             </p>

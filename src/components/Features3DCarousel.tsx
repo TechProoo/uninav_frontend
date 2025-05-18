@@ -54,7 +54,7 @@ const SERVICES_DATA = [
   },
 ];
 
-const Card = () => {
+const Features3DCarousel = () => {
   return (
     <StyledWrapper>
       <div className="card-3d perspective-container">
@@ -72,6 +72,8 @@ const Card = () => {
   );
 };
 
+export default Features3DCarousel;
+
 const StyledWrapper = styled.div`
   display: flex;
   justify-content: center;
@@ -79,6 +81,7 @@ const StyledWrapper = styled.div`
   min-height: 600px;
   padding: 6rem 2rem;
   perspective: 2500px;
+  background-color: #f0f4f8; // Added a light background for better visibility on about page
 
   .perspective-container {
     position: relative;
@@ -150,7 +153,7 @@ const StyledWrapper = styled.div`
     font-size: 1.4rem;
     font-weight: 700;
     margin: 0;
-    color: #75bfff;
+    color: #75bfff; /* Light blue for heading */
     text-shadow:
       0 1px 1px rgba(0, 0, 0, 0.4),
       0 2px 4px rgba(0, 0, 0, 0.2);
@@ -159,10 +162,10 @@ const StyledWrapper = styled.div`
 
   .card-content p {
     font-size: 1rem;
-    opacity: 1;
+    opacity: 1; /* Ensured full opacity */
     margin: 0;
     line-height: 1.5;
-    color: #f0f8ff;
+    color: #f0f8ff; /* AliceBlue for description - very light */
     font-weight: 500;
     text-shadow:
       0 1px 1px rgba(0, 0, 0, 0.4),
@@ -172,7 +175,7 @@ const StyledWrapper = styled.div`
   ${SERVICES_DATA.map(
     (_, i) => `
     .card:nth-child(${i + 1}) {
-      transform: translate(-50%, -50%) rotateY(${i * 36}deg) translateZ(400px);
+      transform: translate(-50%, -50%) rotateY(${i * (360 / SERVICES_DATA.length)}deg) translateZ(400px);
     }
   `
   ).join("")}
@@ -194,7 +197,7 @@ const StyledWrapper = styled.div`
     ${SERVICES_DATA.map(
       (_, i) => `
       .card:nth-child(${i + 1}) {
-        transform: translate(-50%, -50%) rotateY(${i * 36}deg) translateZ(350px);
+        transform: translate(-50%, -50%) rotateY(${i * (360 / SERVICES_DATA.length)}deg) translateZ(350px);
       }
     `
     ).join("")}
@@ -216,9 +219,30 @@ const StyledWrapper = styled.div`
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) { /* Added specific breakpoint for tablets */
     .perspective-container {
-      width: 400px;
+      width: 600px; /* Adjusted for typical tablet view */
+      height: 350px;
+    }
+    .card {
+      width: 160px; /* Smaller cards */
+      height: 240px;
+    }
+    ${SERVICES_DATA.map(
+      (_, i) => `
+      .card:nth-child(${i + 1}) {
+        transform: translate(-50%, -50%) rotateY(${i * (360 / SERVICES_DATA.length)}deg) translateZ(300px); /* Reduced translateZ */
+      }
+    `
+    ).join("")}
+  }
+
+
+  @media (max-width: 768px) {
+     min-height: 450px; /* Adjusted min-height */
+    .perspective-container {
+      width: 90vw; /* Use viewport width for better responsiveness */
+      max-width: 400px; /* Max width to prevent it from becoming too large on wide small screens */
       height: 300px;
     }
 
@@ -226,8 +250,7 @@ const StyledWrapper = styled.div`
       width: 150px;
       height: 220px;
     }
-
-    .card-content {
+     .card-content {
       padding: 1.2rem;
     }
 
@@ -244,15 +267,44 @@ const StyledWrapper = styled.div`
       font-size: 0.85rem;
       line-height: 1.4;
     }
-
     ${SERVICES_DATA.map(
       (_, i) => `
       .card:nth-child(${i + 1}) {
-        transform: translate(-50%, -50%) rotateY(${i * 36}deg) translateZ(250px);
+        transform: translate(-50%, -50%) rotateY(${i * (360 / SERVICES_DATA.length)}deg) translateZ(250px);
       }
     `
     ).join("")}
   }
-`;
 
-export default Card;
+   @media (max-width: 480px) { /* Added specific breakpoint for mobile phones */
+    min-height: 400px;
+    padding: 2rem 1rem;
+    .perspective-container {
+      width: 90vw;
+      height: 280px; /* Further reduce height */
+    }
+    .card {
+      width: 130px; /* Smaller cards for mobile */
+      height: 200px;
+    }
+     .card-content {
+      padding: 1rem;
+    }
+    .icon {
+      font-size: 1.8rem;
+    }
+    .card-content h3 {
+      font-size: 0.9rem;
+    }
+    .card-content p {
+      font-size: 0.75rem;
+    }
+    ${SERVICES_DATA.map(
+      (_, i) => `
+      .card:nth-child(${i + 1}) {
+        transform: translate(-50%, -50%) rotateY(${i * (360 / SERVICES_DATA.length)}deg) translateZ(200px); /* Reduced translateZ for mobile */
+      }
+    `
+    ).join("")}
+  }
+`; 
