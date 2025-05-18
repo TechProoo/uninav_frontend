@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 type Props = {
-  params: { id: string };
+  params: { departmentId: string };
 };
 
 // Group courses by level based on course code
@@ -39,7 +39,7 @@ export default function DepartmentPage({ params }: Props) {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const departmentId = params.id;
+        const departmentId = params.departmentId;
 
         // Fetch department details
         const departmentResponse = await getDepartmentById(departmentId);
@@ -86,16 +86,16 @@ export default function DepartmentPage({ params }: Props) {
     };
 
     fetchData();
-  }, [params.id]);
+  }, [params.departmentId]);
 
   const levels = [100, 200, 300, 400, 500];
   const hasAnyCourses = Object.values(groupedCourses).some(
     (courses) => courses.length > 0
   );
 
-  const departmentId = params.id;
-  const handleClick = (details: string) => {
-    router.push(`/course-map/${departmentId}/${details}`);
+  const departmentId = params.departmentId;
+  const handleClick = (courseId: string) => {
+    router.push(`/course-map/course/${courseId}`);
   };
 
   console.log(departmentId)

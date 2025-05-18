@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 
 type Props = {
-  params: { detail: string };
+  params: { courseId: string };
 };
 
 export default function CourseDetailsPage({ params }: Props) {
@@ -22,7 +22,7 @@ export default function CourseDetailsPage({ params }: Props) {
     const fetchCourseDetails = async () => {
       try {
         setLoading(true);
-        const courseId = params.detail;
+        const courseId = params.courseId;
         const response = await getCourseById(courseId);
 
         if (response?.status === "success") {
@@ -41,7 +41,7 @@ export default function CourseDetailsPage({ params }: Props) {
     };
 
     fetchCourseDetails();
-  }, [params.detail]);
+  }, [params.courseId]);
 
   if (loading) {
     return (

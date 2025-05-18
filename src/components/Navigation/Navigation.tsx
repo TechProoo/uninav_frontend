@@ -41,10 +41,10 @@ const Navigation = () => {
   };
 
   const menuItems = [
-    { label: "About", path: "/about" },
-    { label: "Contact", path: "/contact" },
     { label: "Explore", path: "/explore" },
     { label: "Course Map", path: "/course-map" },
+    { label: "About", path: "/about" },
+    { label: "Contact", path: "/contact" },
   ];
 
   // Add dashboard to menu items if user is logged in
