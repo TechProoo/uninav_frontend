@@ -108,43 +108,21 @@ const ExploreContent = () => {
   const courseId = searchParams.get("courseId");
   const defaultTab = searchParams.get("defaultTab");
   const [isVisible, setIsVisible] = useState(false);
-  const [isSearching, setIsSearching] = useState(false); // Add loading state for search button
+  const [isSearching, setIsSearching] = useState(false);
 
   const ref = React.useRef<HTMLDivElement>(null);
-  const blogRef = React.useRef<HTMLDivElement>(null); // New ref for blog infinite scroll
+  const blogRef = React.useRef<HTMLDivElement>(null);
 
   // State for active tab
   const [activeTab, setActiveTab] = useState<string>(
     defaultTab === "blogs" ? "blogs" : "materials"
   );
 
-  // Function to update URL with current tab selection
-  const updateTabInURL = (newTab: string) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('defaultTab', newTab);
-    
-    // Preserve other query params
-    if (query) params.set('query', query);
-    if (courseId) params.set('courseId', courseId);
-    
-    // Update URL without refreshing the page
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.pushState({}, '', newUrl);
-  };
-
-  // Modified tab change handler
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    updateTabInURL(value);
-  };
-
   // State for view mode (grid or list)
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
   // Add state for advanced search
   const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
-  const [showAdvancedSearchInfo, setShowAdvancedSearchInfo] =
-    useState<boolean>(false);
 
   // State for search inputs
   const [searchQuery, setSearchQuery] = useState<string>(query || "");
@@ -263,9 +241,6 @@ const ExploreContent = () => {
 
   // Toggle advanced search mode
   const toggleAdvancedSearch = (checked: boolean) => {
-    if (checked && !advancedSearch) {
-      setShowAdvancedSearchInfo(true); // Show info dialog when enabling
-    }
     setAdvancedSearch(checked);
   };
 
@@ -378,13 +353,6 @@ const ExploreContent = () => {
   const handleSearch = async () => {
     if (isSearching) return; // Prevent multiple simultaneous searches
     setIsSearching(true);
-
-    if (advancedSearch) {
-      toast("Using advanced search - this may take longer", {
-        icon: "🔎",
-        duration: 3000,
-      });
-    }
 
     try {
       // Reset pages when starting a new search
@@ -628,7 +596,7 @@ const ExploreContent = () => {
             <Tabs
               defaultValue={activeTab}
               value={activeTab}
-              onValueChange={handleTabChange}
+              onValueChange={setActiveTab}
               className="w-full"
             >
               <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 md:mb-6 w-full h-max">
@@ -745,12 +713,6 @@ const ExploreContent = () => {
                   >
                     <Wand2 className="mr-1 w-3 sm:w-4 h-3 sm:h-4 text-blue-600" />
                     Advanced Search
-                    <button
-                      onClick={() => setShowAdvancedSearchInfo(true)}
-                      className="ml-1 text-gray-400 hover:text-gray-600"
-                    >
-                      <Info className="w-3 sm:w-4 h-3 sm:h-4" />
-                    </button>
                   </Label>
                 </div>
 
@@ -1017,12 +979,6 @@ const ExploreContent = () => {
                   >
                     <Wand2 className="mr-1 w-3 sm:w-4 h-3 sm:h-4 text-blue-600" />
                     Advanced Search
-                    <button
-                      onClick={() => setShowAdvancedSearchInfo(true)}
-                      className="ml-1 text-gray-400 hover:text-gray-600"
-                    >
-                      <Info className="w-3 sm:w-4 h-3 sm:h-4" />
-                    </button>
                   </Label>
                 </div>
 
@@ -1142,42 +1098,6 @@ const ExploreContent = () => {
           </div>
         </div>
       </div>
-
-      {/* Advanced Search Information Dialog */}
-      <Dialog
-        open={showAdvancedSearchInfo}
-        onOpenChange={setShowAdvancedSearchInfo}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Wand2 className="w-5 h-5 text-blue-500" />
-              Advanced Search
-            </DialogTitle>
-            <DialogDescription>
-              <p className="py-2">
-                Advanced search uses more sophisticated algorithms to find
-                relevant results but may take longer to complete.
-              </p>
-              <div className="bg-amber-50 mt-2 p-3 border border-amber-200 rounded-md">
-                <div className="flex items-start gap-2">
-                  <Info className="mt-0.5 w-5 h-5 text-amber-500" />
-                  <div>
-                    <p className="font-medium text-amber-800">
-                      Performance Note
-                    </p>
-                    <p className="text-amber-700 text-sm">
-                      This feature performs in-depth analysis which may slow
-                      down search results. Use it only when standard search
-                      doesn't yield helpful results.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
