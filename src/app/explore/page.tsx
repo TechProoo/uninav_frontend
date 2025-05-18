@@ -50,6 +50,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import BackButton from "@/components/ui/BackButton";
+import ExplorePageSkeleton from "@/components/skeletons/ExplorePageSkeleton";
 
 // Blog type options for filtering
 const blogTypeOptions = [
@@ -599,6 +600,18 @@ const ExploreContent = () => {
     return count;
   };
 
+  // Show skeleton if loading initial data for the active tab
+  if (
+    (activeTab === "materials" && isLoadingMaterials && (!materials || materials.data.length === 0)) ||
+    (activeTab === "blogs" && isLoadingBlogs && (!blogs || blogs.data.length === 0))
+  ) {
+    return (
+      <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
+        <ExplorePageSkeleton />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
       <Toaster />
@@ -864,7 +877,9 @@ const ExploreContent = () => {
                   {isLoadingMaterials &&
                     (!materials || materials.data.length === 0) && (
                       <div className="flex justify-center items-center py-8 sm:py-12 md:py-16">
-                        <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 sm:w-12 h-10 sm:h-12 animate-spin"></div>
+                        {/* This part is now handled by the ExplorePageSkeleton above for initial load */}
+                        {/* For subsequent loads (e.g. after clearing filters), a smaller spinner might be desired */}
+                        {/* Or simply rely on the skeleton if we consider any "empty & loading" as initial */}
                       </div>
                     )}
 
@@ -1082,7 +1097,7 @@ const ExploreContent = () => {
                   {/* Initial Loading Spinner: shown if loading and no blogs data yet */}
                   {isLoadingBlogs && (!blogs || blogs.data.length === 0) && (
                     <div className="flex justify-center items-center py-8 sm:py-12 md:py-16">
-                      <div className="border-t-2 border-b-2 border-blue-500 rounded-full w-10 sm:w-12 h-10 sm:h-12 animate-spin"></div>
+                       {/* This part is now handled by the ExplorePageSkeleton above for initial load */}
                     </div>
                   )}
 
