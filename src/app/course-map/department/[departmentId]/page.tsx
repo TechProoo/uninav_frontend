@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { School, BookOpen } from "lucide-react";
+import { School, BookOpen, Landmark, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import BackButton from "@/components/ui/BackButton";
 import { getDepartmentById } from "@/api/department.api";
@@ -98,6 +98,10 @@ export default function DepartmentPage({ params }: Props) {
     router.push(`/course-map/course/${courseId}`);
   };
 
+  const handleFacultyClick = (facultyId: string) => {
+    router.push(`/course-map/faculty/${facultyId}`);
+  };
+
   console.log(departmentId)
 
   return (
@@ -113,14 +117,37 @@ export default function DepartmentPage({ params }: Props) {
       {/* Department Info Card */}
       <div className="mb-8 bg-gradient-to-br from-[#003666] to-[#0c4a8c] rounded-xl p-6 text-white">
         <div className="flex items-start justify-between">
-          <div>
+          <div className="w-full">
             <div className="flex items-center gap-2 mb-4">
               <School className="h-6 w-6" />
               <h2 className="text-xl font-semibold">Department Overview</h2>
             </div>
-            <p className="max-w-2xl text-blue-100">
+            <p className="max-w-2xl text-blue-100 mb-6">
               {department?.description || "Loading department description..."}
             </p>
+
+            {/* Faculty Information */}
+            {department?.faculty && (
+              <div 
+                className="mt-6 p-4 bg-white/10 rounded-lg cursor-pointer hover:bg-white/20 transition-colors"
+                onClick={() => handleFacultyClick(department.faculty.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Landmark className="h-6 w-6 text-blue-200" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">
+                        {department.faculty.name}
+                      </h3>
+                      <p className="text-sm text-blue-100 mt-1">
+                        {department.faculty.description}
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-blue-200 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
