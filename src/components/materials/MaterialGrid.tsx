@@ -9,12 +9,14 @@ interface MaterialGridProps {
   materials: Material[];
   onMaterialClick: (material: Material) => void;
   viewMode?: "grid" | "list";
+  onDelete?: (material: Material) => void;
 }
 
 const MaterialGrid: React.FC<MaterialGridProps> = ({
   materials,
   onMaterialClick,
   viewMode = "grid",
+  onDelete,
 }) => {
   const { user } = useAuth();
   // Check which materials have ads
@@ -35,6 +37,7 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
             hasAdvert={materialsWithAds.has(material.id)}
             viewMode="list"
             isOwner={!!user && material.creator.id === user.id}
+            onDelete={onDelete}
           />
         ))}
       </div>
@@ -51,6 +54,7 @@ const MaterialGrid: React.FC<MaterialGridProps> = ({
           hasAdvert={materialsWithAds.has(material.id)}
           viewMode="grid"
           isOwner={!!user && material.creator.id === user.id}
+          onDelete={onDelete}
         />
       ))}
     </div>

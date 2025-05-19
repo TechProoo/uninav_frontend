@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "@/contexts/authContext";
 import { PlusCircle, Search, Filter, BookOpen, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BackButton from "@/components/ui/BackButton";
 import MaterialForm from "@/components/materials/forms/MaterialForm";
 import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialGrid from "@/components/materials/MaterialGrid";
@@ -103,8 +104,8 @@ const MaterialsPage = () => {
     setShowAddForm(false);
   };
 
-  const handleDeleteMaterial = (materialId: string) => {
-    setMaterials(materials.filter((m) => m.id !== materialId));
+  const handleDeleteMaterial = (material: Material) => {
+    setMaterials((prevMaterials) => prevMaterials.filter((m) => m.id !== material.id));
     setSelectedMaterial(null);
     setShowEditForm(false);
   };
@@ -139,14 +140,10 @@ const MaterialsPage = () => {
     <div className="mx-auto px-2 sm:px-4 container">
       <div className="flex flex-wrap justify-between items-center gap-2 mb-3 sm:mb-6">
         {showAddForm || showEditForm || selectedMaterial ? (
-          <Button
-            variant="ghost"
-            className="gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-2 h-auto text-xs sm:text-sm"
+          <BackButton
             onClick={handleBackNavigation}
-          >
-            <ArrowLeft className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
-            Back
-          </Button>
+            className="text-xs sm:text-sm"
+          />
         ) : null}
         <h1 className="section-heading">Manage My Materials</h1>
         <Button
@@ -230,7 +227,7 @@ const MaterialsPage = () => {
             materialId={selectedMaterial.id}
             isOwner={isOwner(selectedMaterial)}
             onEdit={handleEditMaterial}
-            onDelete={handleDeleteMaterial}
+            onDelete={() => handleDeleteMaterial(selectedMaterial)}
           />
         )}
 
@@ -271,6 +268,7 @@ const MaterialsPage = () => {
                   materials={materials}
                   onMaterialClick={handleMaterialClick}
                   viewMode={viewMode}
+                  onDelete={handleDeleteMaterial}
                 />
 
                 {totalPages > 1 && (

@@ -124,9 +124,9 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
     try {
       setIsDeleting(true);
       const response = await deleteMaterial(material.id);
+      onDelete?.(material);
       if (response?.status === "success") {
         toast.success("Material deleted successfully");
-        onDelete?.(material);
       } else {
         toast.error("Failed to delete material");
       }
