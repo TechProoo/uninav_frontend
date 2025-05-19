@@ -16,6 +16,7 @@ interface UrlInputListProps {
   onRemoveUrl: (id: string) => void;
   onUpdateUrl: (id: string, url: string) => void;
   onUpdateTitle: (id: string, title: string) => void;
+  onUpdateMaterialType?: (id: string, type: string) => void;
   maxUrls?: number;
 }
 
@@ -25,6 +26,7 @@ const UrlInputList: React.FC<UrlInputListProps> = ({
   onRemoveUrl,
   onUpdateUrl,
   onUpdateTitle,
+  onUpdateMaterialType,
   maxUrls = Infinity,
 }) => {
   // Try to extract a descriptive title from a URL
@@ -50,8 +52,46 @@ const UrlInputList: React.FC<UrlInputListProps> = ({
             onUpdateTitle(id, labelFromUrl);
           }
         }
+
+        // Try to infer material type from URL
+        if (onUpdateMaterialType) {
+          // Use the provided algorithm to infer material type
+          const inferMaterialTypeFromUrl = (inputUrl: string): string => {
+            try {
+              const parsedUrl = new URL(inputUrl);
+              const hostname = parsedUrl.hostname.toLowerCase();
+              const pathname = parsedUrl.pathname.toLowerCase();
+              if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+                return "video"; // Corresponds to MaterialTypeEnum.VIDEO
+              }
+              if (hostname.includes('vimeo.com')) {
+                return "video"; // Corresponds to MaterialTypeEnum.VIDEO
+              }
+              if (pathname.endsWith('.pdf')) {
+                return "pdf"; // Corresponds to MaterialTypeEnum.PDF
+              }
+              if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathname)) {
+                return "image"; // Corresponds to MaterialTypeEnum.IMAGE
+              }
+              if (hostname.includes('medium.com') ||
+                  hostname.includes('blogspot.com') ||
+                  hostname.includes('wordpress.com')) {
+                return "article"; // Corresponds to MaterialTypeEnum.ARTICLE
+              }
+
+              return "article"; // Corresponds to MaterialTypeEnum.ARTICLE
+            } catch {
+              return "other"; // Corresponds to MaterialTypeEnum.OTHER
+            }
+          };
+          
+          const materialType = inferMaterialTypeFromUrl(newUrl);
+          onUpdateMaterialType(id, materialType);
+        }
       } catch (error) {
-        // Invalid URL, do nothing
+        if (onUpdateMaterialType) {
+          onUpdateMaterialType(id, 'other');
+        }
       }
     }
   };
