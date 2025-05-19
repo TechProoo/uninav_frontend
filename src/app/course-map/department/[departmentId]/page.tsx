@@ -132,7 +132,7 @@ export default function DepartmentPage({ params }: Props) {
                 className="mt-6 p-4 bg-white/10 rounded-lg cursor-pointer hover:bg-white/20 transition-colors"
                 onClick={() => handleFacultyClick(department.faculty.id)}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">z
                   <div className="flex items-center gap-3">
                     <Landmark className="h-6 w-6 text-blue-200" />
                     <div>

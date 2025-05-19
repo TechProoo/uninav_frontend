@@ -3,11 +3,13 @@
 import React from "react";
 import { PlusCircle, X, Link } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MaterialTypeEnum } from "@/lib/types/response.type";
 
 export interface UrlItem {
   id: string;
   url: string;
   title: string;
+  type: MaterialTypeEnum;
 }
 
 interface UrlInputListProps {
@@ -27,7 +29,7 @@ const UrlInputList: React.FC<UrlInputListProps> = ({
   onUpdateUrl,
   onUpdateTitle,
   onUpdateMaterialType,
-  maxUrls = Infinity,
+  maxUrls = 10,
 }) => {
   // Try to extract a descriptive title from a URL
   const handleUrlChange = (id: string, newUrl: string) => {
@@ -54,43 +56,45 @@ const UrlInputList: React.FC<UrlInputListProps> = ({
         }
 
         // Try to infer material type from URL
-        if (onUpdateMaterialType) {
-          // Use the provided algorithm to infer material type
-          const inferMaterialTypeFromUrl = (inputUrl: string): string => {
-            try {
-              const parsedUrl = new URL(inputUrl);
-              const hostname = parsedUrl.hostname.toLowerCase();
-              const pathname = parsedUrl.pathname.toLowerCase();
-              if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
-                return "video"; // Corresponds to MaterialTypeEnum.VIDEO
-              }
-              if (hostname.includes('vimeo.com')) {
-                return "video"; // Corresponds to MaterialTypeEnum.VIDEO
-              }
-              if (pathname.endsWith('.pdf')) {
-                return "pdf"; // Corresponds to MaterialTypeEnum.PDF
-              }
-              if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathname)) {
-                return "image"; // Corresponds to MaterialTypeEnum.IMAGE
-              }
-              if (hostname.includes('medium.com') ||
-                  hostname.includes('blogspot.com') ||
-                  hostname.includes('wordpress.com')) {
-                return "article"; // Corresponds to MaterialTypeEnum.ARTICLE
-              }
+        // if (onUpdateMaterialType) {
+        //   // Use the provided algorithm to infer material type
+        //   const inferMaterialTypeFromUrl = (inputUrl: string): string => {
+        //     try {
+        //       const parsedUrl = new URL(inputUrl);
+        //       const hostname = parsedUrl.hostname.toLowerCase();
+        //       const pathname = parsedUrl.pathname.toLowerCase();
+        //       if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) {
+        //         return MaterialTypeEnum.VIDEO;
+        //       }
+        //       if (hostname.includes('vimeo.com')) {
+        //         return MaterialTypeEnum.VIDEO;
+        //       }
+        //       if (pathname.endsWith('.pdf')) {
+        //         return MaterialTypeEnum.PDF;
+        //       }
+        //       if (/\.(jpg|jpeg|png|gif|webp|svg)$/i.test(pathname)) {
+        //         return MaterialTypeEnum.IMAGE;
+        //       }
+        //       if (
+        //         hostname.includes("medium.com") ||
+        //         hostname.includes("blogspot.com") ||
+        //         hostname.includes("wordpress.com")
+        //       ) {
+        //         return MaterialTypeEnum.ARTICLE;
+        //       }
 
-              return "article"; // Corresponds to MaterialTypeEnum.ARTICLE
-            } catch {
-              return "other"; // Corresponds to MaterialTypeEnum.OTHER
-            }
-          };
-          
-          const materialType = inferMaterialTypeFromUrl(newUrl);
-          onUpdateMaterialType(id, materialType);
-        }
+        //       return MaterialTypeEnum.OTHER;
+        //     } catch {
+        //       return MaterialTypeEnum.OTHER;
+        //     }
+        //   };
+        //   const materialType = inferMaterialTypeFromUrl(newUrl);
+        //   console.log("inferMaterialTypeFromUrl", materialType);
+        //   onUpdateMaterialType(id, materialType);
+        // }
       } catch (error) {
         if (onUpdateMaterialType) {
-          onUpdateMaterialType(id, 'other');
+          onUpdateMaterialType(id, MaterialTypeEnum.OTHER);
         }
       }
     }

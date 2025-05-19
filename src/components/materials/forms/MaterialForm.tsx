@@ -147,7 +147,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }
   >({
     description: "",
-    type: "",
+    type: MaterialTypeEnum.OTHER,
     tags: [],
     visibility: VisibilityEnum.PUBLIC,
     restriction: RestrictionEnum.DOWNLOADABLE,
@@ -362,6 +362,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
       id: uuidv4(),
       url: "",
       title: "",
+      type: MaterialTypeEnum.OTHER,
     };
     setUrlItems((prev) => [...prev, newUrl]);
   };
@@ -376,8 +377,11 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
         if (item.id === id) {
           // Only infer type if no type has been chosen
           const inferredType = commonFormData.type || inferMaterialType(url);
-          console.log('inferredType ', inferredType)
-          return { ...item, url, type: inferredType };
+          setCommonFormData((prev) => ({
+            ...prev,
+            type: inferredType,
+          }));
+          return { ...item, url };
         }
         return item;
       })
@@ -874,6 +878,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
               label: fileItem.title,
               file: fileItem.file,
               targetCourseId: selectedCourse?.id,
+              type:  commonFormData.type,
             };
             materialPromises.push(
               (async () => {
@@ -913,6 +918,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
               label: urlItem.title || "URL Material",
               resourceAddress: urlItem.url,
               targetCourseId: selectedCourse?.id,
+              type: urlItem.type || commonFormData.type,
             };
             materialPromises.push(
               (async () => {
@@ -1030,6 +1036,13 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
     }
   };
 
+  const handleUpdateUrlMaterialType = (id: string, type: string) => {
+    setUrlItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, materialType: type } : item
+      )
+    );
+  };  
   // Update the total progress whenever individual progress changes
   useEffect(() => {
     const newTotalProgress = calculateTotalProgress(uploadProgress);
@@ -1190,6 +1203,7 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
                       onRemoveUrl={handleRemoveUrl}
                       onUpdateUrl={handleUpdateUrl}
                       onUpdateTitle={handleUpdateUrlTitle}
+                      onUpdateMaterialType={handleUpdateUrlMaterialType}
                     />
                   )
                 ) : (
