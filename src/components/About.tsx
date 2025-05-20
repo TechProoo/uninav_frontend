@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
-// import Services from "./Services";
+
 import Image from "next/image";
 import Logo from "../../public/Image/uninav-logo-image.png";
 import { ButtonSlider } from "./ui/ButtonSlider";
@@ -298,7 +298,6 @@ const About = () => {
             </div>
           </div>
         </div>
-        <Services />
 
         {/* Text replace animation section */}
         <div className="py-16 flex flex-col items-center justify-center">
