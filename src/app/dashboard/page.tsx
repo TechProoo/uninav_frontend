@@ -17,6 +17,7 @@ export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterQuery, setFilterQuery] = useState("");
 
   // State for recommendations
   const [recommendations, setRecommendations] = useState<Material[]>([]);
@@ -82,6 +83,20 @@ export default function Dashboard() {
   const handleMaterialClick = (material: Material) => {
     router.push(`/material/${material.id}`);
   };
+
+  // Filter materials based on search query
+  const filteredMaterials = recommendations.filter(
+    (material) =>
+      (material.label?.toLowerCase() || "").includes(
+        filterQuery.toLowerCase()
+      ) ||
+      (material.description?.toLowerCase() || "").includes(
+        filterQuery.toLowerCase()
+      ) ||
+      (material.targetCourse?.courseName?.toLowerCase() || "").includes(
+        filterQuery.toLowerCase()
+      )
+  );
 
   if (loading || !user) {
     return null;
@@ -155,9 +170,21 @@ export default function Dashboard() {
 
         {/* Recommendations Section */}
         <section className="mb-8">
-          <h2 className="section-heading">Recommended Materials</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="section-heading">Recommended Materials</h2>
+            <div className="relative max-w-xs w-full">
+              <input
+                type="text"
+                value={filterQuery}
+                onChange={(e) => setFilterQuery(e.target.value)}
+                placeholder="Filter materials..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            </div>
+          </div>
           <MaterialGrid
-            materials={recommendations}
+            materials={filteredMaterials}
             onMaterialClick={handleMaterialClick}
             viewMode="grid"
           />
