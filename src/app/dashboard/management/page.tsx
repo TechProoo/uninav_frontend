@@ -14,6 +14,7 @@ import {
   CheckCircle,
   XCircle,
   School,
+  UsersRound,
 } from "lucide-react";
 
 // Define card data with icons and paths
@@ -67,6 +68,14 @@ const managementCards = [
     icon: Megaphone,
     path: "/dashboard/management/adverts",
     color: "bg-rose-50 text-rose-600",
+  },
+  {
+    title: "User Management",
+    description: "View and manage all users",
+    icon: UsersRound,
+    path: "/dashboard/management/users",
+    color: "bg-sky-50 text-sky-600",
+    adminOnly: true,
   },
 ];
 

@@ -146,3 +146,22 @@ export const getUserBlogs = async (creatorId: string | undefined) => {
     throw error;
   }
 };
+
+
+export const fetchAllUsers = async (page: number, limit: number): Promise< { data: UserProfile[], total: number, page: number, limit: number} | null> => {
+  try {
+    const response = await api.get<Response<{ data: UserProfile[], total: number, page: number, limit: number}>>('/user', {
+      params: {
+        page,
+        limit,
+      },
+    });
+    if (response.data.status === "success") {
+      return response.data.data;
+    }
+    return null;
+  } catch (error: any) {
+    console.error("Error fetching all users:", error);
+    throw error;
+  }
+};

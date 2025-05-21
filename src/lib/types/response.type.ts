@@ -1,4 +1,3 @@
-
 export type Response<T> = {
   status: "success" | "error";
   message: string;
@@ -351,3 +350,10 @@ export type DLC = {
 //     };
 //   };
 // };
+
+export enum DocumentTypeEnum {
+  ADMISSION_LETTER = "admission_letter",
+}
+
+
+
