@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "@/contexts/authContext";
 import { useRouter } from "next/navigation";
 import {
@@ -20,7 +20,9 @@ interface UserAvatarProps {
 const UserAvatar: React.FC<UserAvatarProps> = ({ showName = false }) => {
   const { user, logout } = useAuth();
   const router = useRouter();
-
+  useEffect(() => {
+    console.log("user profile, ", user);
+  }, [user]);
   if (!user) return null;
 
   const initials = `${user.firstName?.charAt(0) || ""}${

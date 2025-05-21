@@ -69,8 +69,6 @@ const Page = () => {
 
   const {
     isAuthenticated,
-    setIsAuthenticated,
-    setUser,
     needsEmailVerification,
   } = useAuth();
 

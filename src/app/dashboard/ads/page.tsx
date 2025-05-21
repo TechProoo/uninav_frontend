@@ -32,7 +32,6 @@ import {
 
 const ManageAdsPage = () => {
   const router = useRouter();
-  const { user } = useContext(AuthContext) ?? { user: null };
   const [adverts, setAdverts] = useState<Advert[]>([]);
   const [selectedAdvert, setSelectedAdvert] = useState<Advert | null>(null);
   const [isLoading, setIsLoading] = useState(true);

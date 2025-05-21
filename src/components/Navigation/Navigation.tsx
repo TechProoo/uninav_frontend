@@ -13,9 +13,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetClose,
 } from "../ui/sheet";
-import GoogleButton from "../ui/GoogleButton";
 
 const Navigation = () => {
   const router = useRouter();

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { UserProfile } from "@/lib/types/response.type";
 import { fetchUserProfile } from "@/api/user.api";
 import { logout as logoutApi } from "@/api/auth.api";
-import { deleteSession, getSession, updateAuthToken as setApiAuthToken, storeSession } from "@/lib/utils";
+import { deleteSession, getSession,  updateAuthToken, storeSession } from "@/lib/utils";
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setIsAuthenticated(false);
     deleteSession();
-    setApiAuthToken('');
+    updateAuthToken('');
   };
 
   const refreshUserProfile = useCallback(async () => {
@@ -49,9 +49,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (profileData) {
         setUser(profileData);
         setIsAuthenticated(true);
+        storeSession({profile:profileData});
       } else {
         clearAuthData();
       }
+      return profileData
     } catch (error) {
       console.error("Error refreshing user profile:", error);
       clearAuthData();
@@ -61,11 +63,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const setAuthTokenAndFetchUser = useCallback(async (token: string) => {
     setLoading(true);
     try {
-      storeSession(token);
-      setApiAuthToken(token);
+      const sessionToken = token;
+      storeSession({token: sessionToken});
+      updateAuthToken(sessionToken);
       await refreshUserProfile();
-      const session = getSession()
-      if (!session) {
+      const {token: storedToken} = getSession();
+      if (!storedToken) {
         throw new Error("Authentication failed after token processing.")
       }
     } catch (error) {
@@ -83,10 +86,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const loadUserProfileOnMount = async () => {
-      const session = getSession()
-      if (session && !user) {
+      const {token, profile} = getSession()
+      if(token && profile){
+        console.log('profile found in cookies', profile )
+        setUser(profile);
+        setIsAuthenticated(true);
+        setLoading(false);
+      } else if (token ) {
+        console.log('loading user profile on mount', token, profile)
         setLoading(true);
-        setApiAuthToken(session);
+        updateAuthToken(token);
         await refreshUserProfile();
         setLoading(false);
       } else {

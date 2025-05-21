@@ -11,6 +11,7 @@ import Loader from "./loading";
 import { useAuth } from "@/contexts/authContext";
 import { fetchUserProfile } from "@/api/user.api";
 import { Eye, EyeClosed } from "lucide-react";
+import { storeSession } from "@/lib/utils";
 import GoogleButton from '@/components/ui/GoogleButton';
 
 const page = () => {
@@ -37,9 +38,8 @@ const page = () => {
 
   const {
     isAuthenticated,
-    setUser,
-    setIsAuthenticated,
     needsEmailVerification,
+    setAuthTokenAndFetchUser,
   } = useAuth();
 
   useEffect(() => {
@@ -64,15 +64,11 @@ const page = () => {
       const { token, data } = await login(formData);
 
       toast.success(data.message || "Login successful");
-
       // Fetch user profile after successful login (email needs to be verified before login else it returns error)
-      const userProfile = await fetchUserProfile();
-      if (userProfile) {
-        setUser(userProfile);
-        setIsAuthenticated(true);
-
+      setAuthTokenAndFetchUser(token).then(() => {
         router.push(redirectTo);
-      }
+      });
+
     } catch (error: any) {
       toast.error(error?.message || "Invalid credentials");
       if (error?.message?.toLowerCase().startsWith("email not verified")) {
