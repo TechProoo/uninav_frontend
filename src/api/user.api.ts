@@ -147,14 +147,17 @@ export const getUserBlogs = async (creatorId: string | undefined) => {
   }
 };
 
-
-export const fetchAllUsers = async (page: number, limit: number): Promise< { data: UserProfile[], total: number, page: number, limit: number} | null> => {
+export const fetchAllUsers = async (page: number, limit: number, query?: string): Promise< { data: UserProfile[], total: number, page: number, limit: number} | null> => {
   try {
+    const params: { page: number; limit: number; query?: string } = {
+      page,
+      limit,
+    };
+    if (query) {
+      params.query = query;
+    }
     const response = await api.get<Response<{ data: UserProfile[], total: number, page: number, limit: number}>>('/user', {
-      params: {
-        page,
-        limit,
-      },
+      params,
     });
     if (response.data.status === "success") {
       return response.data.data;
