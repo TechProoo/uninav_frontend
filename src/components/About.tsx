@@ -52,7 +52,7 @@ const About = () => {
         tl.from(text, {
           yPercent: 100,
           opacity: 0,
-          duration: 0.8,
+          duration: 0.4,
           ease: "power2.out",
         });
       }
@@ -60,9 +60,9 @@ const About = () => {
       tl.to(text, {
         yPercent: -100,
         opacity: 0,
-        duration: 0.8,
+        duration: 0.4,
         ease: "power2.in",
-        delay: 2,
+        delay: 0.5,
       });
 
       if (i < textElements.length - 1) {
@@ -75,10 +75,10 @@ const About = () => {
           {
             yPercent: 0,
             opacity: 1,
-            duration: 0.8,
+            duration: 0.5,
             ease: "power2.out",
           },
-          "<0.8"
+          "<0.5"
         );
       } else {
         tl.fromTo(
@@ -90,10 +90,10 @@ const About = () => {
           {
             yPercent: 0,
             opacity: 1,
-            duration: 0.8,
+            duration: 0.5,
             ease: "power2.out",
           },
-          "<0.8"
+          "<0.5"
         );
       }
     });
