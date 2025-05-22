@@ -106,7 +106,7 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
   }
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="flex bg-slate-50 w-full h-screen overflow-hidden">
         <DashboardSidebar />
         <ProtectedRoute>

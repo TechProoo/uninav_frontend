@@ -63,10 +63,10 @@ export const ButtonSlider: React.FC<ButtonProps> = ({
   }, [disabled, loading]);
 
   return (
-    <StyledWrapper>
+    <StyledWrapper className={className}>
       <button
         ref={buttonRef}
-        className={`button ${className}`}
+        className="button"
         data-text={text}
         disabled={disabled || loading}
         {...rest}

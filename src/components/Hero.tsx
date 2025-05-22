@@ -11,9 +11,10 @@ import { Search } from "lucide-react";
 export default function Hero() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
-  const [searchExpanded, setSearchExpanded] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchFormRef = useRef<HTMLFormElement>(null);
 
   const navigateTo = (path: string) => {
     router.push(path);
@@ -26,34 +27,15 @@ export default function Hero() {
     }
   };
 
-  const expandSearch = () => {
-    setSearchExpanded(true);
-    // Focus the input after expanding
-    setTimeout(() => {
-      if (searchInputRef.current) {
-        searchInputRef.current.focus();
-      }
-    }, 100);
+  const handleSearchFocus = () => {
+    setSearchFocused(true);
   };
 
-  // Handle clicks outside the search box
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchExpanded &&
-        searchInputRef.current &&
-        !searchInputRef.current.contains(event.target as Node) &&
-        !searchQuery
-      ) {
-        setSearchExpanded(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [searchExpanded, searchQuery]);
+  const handleSearchBlur = () => {
+    if (!searchQuery.trim()) {
+      setSearchFocused(false);
+    }
+  };
 
   return (
     <div className="relative w-full min-h-[85vh] overflow-hidden">
@@ -72,65 +54,69 @@ export default function Hero() {
 
       {/* Content Layer */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full py-16 md:py-24 flex flex-col justify-center">
-        <div className="w-full max-w-xl">
-          {/* Interactive Decorative Element */}
-          <div className="mb-4 flex items-center">
-            <div className="h-1 w-8 bg-blue-400 rounded-full mr-3"></div>
-            <span className="text-blue-300 font-medium">Start Learning Today</span>
+        <div className="w-full">
+          <div className="max-w-xl">
+            {/* Interactive Decorative Element */}
+            <div className="mb-4 flex items-center">
+              <div className="h-1 w-8 bg-blue-400 rounded-full mr-3"></div>
+              <span className="text-blue-300 font-medium">Start Learning Today</span>
+            </div>
+
+            {/* Main Heading */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+              The Ultimate <span className="text-blue-300">Study Platform</span> for <span className='text-nowrap'>  University Students</span>
+            </h1>
+
+            {/* Description */}
+            <p className="text-lg md:text-xl text-gray-100 mb-8 max-w-md">
+              {isAuthenticated && user
+                ? `Welcome back, ${user.firstName}! Ready to continue your learning journey?`
+                : "Access, Share & Discover Academic Resources Organized by Faculty, Department, and Course."}
+            </p>
           </div>
 
-          {/* Main Heading */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-            The Ultimate <span className="text-blue-300">Study Platform</span> for <span className='text-nowrap'>  University Students</span>
-          </h1>
-
-          {/* Description */}
-          <p className="text-lg md:text-xl text-gray-100 mb-8 max-w-md">
-            {isAuthenticated && user
-              ? `Welcome back, ${user.firstName}! Ready to continue your learning journey?`
-              : "Access, Share & Discover Academic Resources Organized by Faculty, Department, and Course."}
-          </p>
-
-          {/* Search Bar */}
-          <div className="mb-8 relative">
-            <form onSubmit={handleSearch} className="relative">
+          {/* Search Bar - Fully Expanded By Default */}
+          <div className="mb-8 flex justify-center w-full">
+            <form 
+              ref={searchFormRef}
+              onSubmit={handleSearch} 
+              className="relative w-full max-w-3xl mx-auto"
+            >
               <div
-                className={`flex items-center bg-white/95 rounded-full overflow-hidden transition-all duration-300 shadow-lg ${
-                  searchExpanded ? "w-full" : "w-12 h-12 md:w-64"
+                className={`flex items-center bg-white/95 rounded-full overflow-hidden transition-all duration-300 shadow-lg w-full ${
+                  searchFocused ? "scale-105 shadow-xl" : ""
                 }`}
               >
-                <button
-                  type="button"
-                  className={`p-3 text-gray-600 ${searchExpanded ? "" : "w-full"}`}
-                  onClick={expandSearch}
-                >
-                  <Search size={searchExpanded ? 20 : 24} placeholder="Find anything" />
-                </button>
+                <div className="p-3 text-gray-600">
+                  <Search size={20} />
+                </div>
                 <input
                   ref={searchInputRef}
                   type="text"
                   placeholder="Search courses, materials, blogs..."
-                  className={`py-3 w-full outline-none px-2 bg-transparent ${
-                    searchExpanded ? "opacity-100" : "opacity-0 w-0"
-                  }`}
+                  className="py-3 w-full outline-none px-2 bg-transparent"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
                 />
               </div>
             </form>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 md:mb-8">
+          {/* CTA Buttons - Attractive Center Layout */}
+          <div className="flex flex-wrap justify-center gap-6 md:mb-8 mx-auto w-full">
             {isAuthenticated && user ? (
               <>
                 <ButtonSlider
                   onClick={() => navigateTo("/dashboard")}
                   text={"Visit Dashboard"}
+                  className="min-w-[180px] text-center"
                 />
                 <ButtonSlider
                   onClick={() => navigateTo("/dashboard/materials?action=create")}
                   text={"Upload Material"}
+                  className="min-w-[180px] text-center"
                 />
               </>
             ) : (
@@ -138,10 +124,12 @@ export default function Hero() {
                 <ButtonSlider
                   onClick={() => navigateTo("/auth/login")}
                   text={"Get Started"}
+                  className="min-w-[150px] text-center"
                 />
                 <ButtonSlider
                   text={"Learn More"}
                   onClick={() => navigateTo("/about")}
+                  className="min-w-[150px] text-center"
                 />
               </>
             )}
@@ -181,22 +169,3 @@ export default function Hero() {
     </div>
   );
 }
-
-// Add these animations to your globals.css or create a new CSS module
-// @keyframes float {
-//   0%, 100% { transform: translateY(0); }
-//   50% { transform: translateY(-10px); }
-// }
-// 
-// @keyframes float-delay {
-//   0%, 100% { transform: translateY(0); }
-//   50% { transform: translateY(-15px); }
-// }
-// 
-// .animate-float {
-//   animation: float 6s ease-in-out infinite;
-// }
-// 
-// .animate-float-delay {
-//   animation: float-delay 8s ease-in-out infinite;
-// }

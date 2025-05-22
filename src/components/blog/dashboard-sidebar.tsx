@@ -24,6 +24,9 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/authContext";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Menu items.
 const items = [
@@ -72,6 +75,8 @@ const items = [
 export function DashboardSidebar() {
   const { user } = useAuth();
   const pathname = usePathname();
+  const { state, isMobile } = useSidebar();
+  const isCollapsed = state === "collapsed" && !isMobile;
 
   // Add management item if user is admin
   const sidebarItems = [...items];
@@ -84,14 +89,14 @@ export function DashboardSidebar() {
   }
 
   return (
-    <Sidebar className="w-64 min-w-[4rem]">
+    <Sidebar className="w-64 min-w-[4rem]" collapsible="icon">
       <SidebarHeader className="flex items-center justify-center py-4">
         <Link href="/" className="flex items-center justify-center">
           <Image
             src="/Image/uninav-logo.svg"
             alt="UniNav Logo"
-            width={80}
-            height={28}
+            width={isCollapsed ? 32 : 60}
+            height={isCollapsed ? 32 : 20}
             className="hover:opacity-80 transition-opacity"
             priority
           />
@@ -101,20 +106,46 @@ export function DashboardSidebar() {
         <SidebarMenu className="space-y-1 px-3">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.url;
+            
+            // For mobile, always show the text
+            // For desktop, show text only when expanded
+            const showText = isMobile || !isCollapsed;
+            
             return (
               <SidebarMenuItem key={item.title}>
-                <Link
-                  href={item.url}
-                  className={cn(
-                    "flex items-center space-x-2 p-2 rounded-md",
-                    isActive
-                      ? "bg-blue-100 text-primar hover:bg-blue-200"
-                      : "hover:bg-gray-100"
-                  )}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.title}</span>
-                </Link>
+                {isCollapsed ? (
+                  <Tooltip delayDuration={100}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={item.url}
+                        className={cn(
+                          "flex items-center justify-center p-2 rounded-md transition-all",
+                          isActive
+                            ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                            : "hover:bg-gray-100"
+                        )}
+                      >
+                        <item.icon className="w-5 h-5 flex-shrink-0" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={10}>
+                      {item.title}
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Link
+                    href={item.url}
+                    className={cn(
+                      "flex items-center space-x-2 p-2 rounded-md transition-all",
+                      isActive
+                        ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                        : "hover:bg-gray-100"
+                    )}
+                  >
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    <span>{item.title}</span>
+                  </Link>
+                )}
               </SidebarMenuItem>
             );
           })}

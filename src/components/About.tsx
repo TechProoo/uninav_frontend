@@ -278,9 +278,9 @@ const About = () => {
         {/* Text replace animation section */}
         <div className="py-16 flex flex-col items-center justify-center bg-blue-50 rounded-2xl mb-24 px-4">
           <div className="relative h-[60px] md:h-[80px] overflow-hidden text-center w-full">
-            <h2 className="text-3xl md:text-5xl font-bold inline-flex justify-center w-full text-[#003666]">
+            <h2 className="text-3xl md:text-4xl font-bold inline-flex justify-center w-full text-[#003666]">
               UniNav is{" "}
-              <span className="relative inline-flex justify-center min-w-[200px] md:min-w-[300px] ml-2">
+              <span className="relative inline-flex justify-center min-w-[200px] md:min-w-[300px] ml-2 text-2xl md:text-3xl">
                 <span className="text-replace-animation absolute text-blue-600">
                   community-driven
                 </span>
