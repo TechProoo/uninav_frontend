@@ -4,11 +4,13 @@
 import { usePathname } from "next/navigation";
 import Navigation from "./Navigation/Navigation";
 
-const hiddenRoutes = ["/verify-email"];
+const hiddenRoutes = ["/verify-email", "/dashboard"];
 
 export default function ConditionalNavbar() {
   const pathname = usePathname();
-  const shouldHide = hiddenRoutes.includes(pathname);
+  const shouldHide = hiddenRoutes.some(route => 
+    pathname === route || (route === "/dashboard" && pathname?.startsWith("/dashboard"))
+  );
 
   if (shouldHide) return null;
   return <Navigation />;

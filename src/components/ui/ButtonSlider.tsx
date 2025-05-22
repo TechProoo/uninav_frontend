@@ -7,12 +7,14 @@ import * as ReactJSXRuntime from "react/jsx-runtime";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   loading?: boolean;
+  className?: string;
 }
 
 export const ButtonSlider: React.FC<ButtonProps> = ({
   text,
   loading = false,
   disabled,
+  className = "",
   ...rest
 }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -64,7 +66,7 @@ export const ButtonSlider: React.FC<ButtonProps> = ({
     <StyledWrapper>
       <button
         ref={buttonRef}
-        className="button"
+        className={`button ${className}`}
         data-text={text}
         disabled={disabled || loading}
         {...rest}
