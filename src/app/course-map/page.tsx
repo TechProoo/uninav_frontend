@@ -62,6 +62,7 @@ const page = () => {
     }
 
     return faculties?.data.length ? (
+      
       <Accordion
         type="multiple"
         className="w-full max-w-4xl mx-auto space-y-4"
@@ -112,7 +113,7 @@ const page = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 !pt-24">
       <h1 className="text-3xl font-bold mb-8 text-[#003666]">Course Map</h1>
       <div className="bg-white rounded-lg shadow-md p-6">
         {renderFacultiesAndDepartments()}
