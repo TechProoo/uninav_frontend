@@ -81,7 +81,7 @@ export default function Hero() {
 
           {/* Main Heading */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
-            The Ultimate <span className="text-blue-300">Study Platform</span> for University Students
+            The Ultimate <span className="text-blue-300">Study Platform</span> for <span className='text-nowrap'>  University Students</span>
           </h1>
 
           {/* Description */}
@@ -121,7 +121,7 @@ export default function Hero() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 md:mb-8">
             {isAuthenticated && user ? (
               <>
                 <ButtonSlider
@@ -161,19 +161,19 @@ export default function Hero() {
       <div className="absolute bottom-0 left-0 right-0 bg-white/10 backdrop-blur-md z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white">5000+</div>
+            <div className="text-2xl md:text-3xl font-bold text-white">50+</div>
             <div className="text-blue-300 text-sm">Students</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white">200+</div>
+            <div className="text-2xl md:text-3xl font-bold text-white">100+</div>
             <div className="text-blue-300 text-sm">Courses</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white">10+</div>
-            <div className="text-blue-300 text-sm">Universities</div>
+            <div className="text-2xl md:text-3xl font-bold text-white">3+</div>
+            <div className="text-blue-300 text-sm">Departments</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl md:text-3xl font-bold text-white">1000+</div>
+            <div className="text-2xl md:text-3xl font-bold text-white">100+</div>
             <div className="text-blue-300 text-sm">Resources</div>
           </div>
         </div>

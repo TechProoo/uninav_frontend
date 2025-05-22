@@ -44,7 +44,7 @@ const About = () => {
     initializeLottie();
 
     // Text replacement animation
-    const textElements = gsap.utils.toArray(".text-replace-animation");
+    const textElements = document.querySelectorAll(".text-replace-animation");
     const tl = gsap.timeline({ repeat: -1 });
 
     textElements.forEach((text, i) => {
@@ -170,143 +170,171 @@ const About = () => {
   };
 
   return (
-    <div className="about_bg relative" ref={containerRef}>
-      <div className="m-auto py-1 md:py-10 w-10/12">
-        <div className="items-center gap-5 grid grid-cols-12">
-          <div className="col-span-12 md:col-span-6">
-            <DotLottieReact
-              src="https://lottie.host/77c6b78c-2671-41a6-9206-2870569a2fcb/xhS9lOc3bC.lottie"
-              loop
-              autoplay
-            />
-            <div
-              className="about_left py-5 md:py-10 border_c md:w/full fst"
-              ref={textRef}
+    <div className="relative bg-gradient-to-b from-blue-50 to-white py-16 md:py-24" ref={containerRef}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        {/* Main Section */}
+        <div className="flex flex-col md:flex-row gap-12 md:gap-16 lg:gap-24 mb-24">
+          {/* Left Column */}
+          <div className="w-full md:w-1/2 flex flex-col justify-center">
+            <h2 className="text-sm sm:text-base font-semibold text-blue-600 mb-4 uppercase tracking-wider">About UniNav</h2>
+            <h1 
+              ref={heroTextRef} 
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#003666] mb-6"
             >
-              <div className="m-auto w-11/12">
-                <h1
-                  ref={heroTextRef}
-                  className="font-bold text-2xl sm:text-2xl md:text-3xl lg:text-4xl md:text-left text-center"
-                >
-                  Enhancing Learning, One Resource at a Time
-                </h1>
-                <p className="mt-4 text-gray-700 text-md dark:text-gray-300 md:text-xl">
-                  Transforming the way students connect, learn, and grow through
-                  seamless access to academic resources and collaborative tools.
-                </p>
-              </div>
-            </div>
+              Enhancing Learning, One Resource at a Time
+            </h1>
+            <p className="text-lg text-gray-700 mb-8 leading-relaxed">
+              Transforming the way students connect, learn, and grow through
+              seamless access to academic resources and collaborative tools.
+            </p>
+            <ButtonSlider
+              onClick={() => navigateTo("/auth/login")}
+              text="Join Our Community"
+            />
           </div>
 
-          <div className="col-span-12 md:col-span-6">
-            <div className="gap-5 grid grid-cols-12">
-              {[
-                {
-                  icon: "https://cdn.lordicon.com/xmaezqzk.json",
-                  title: "Study Material Repository",
-                  description:
-                    "Access & share lecture notes, textbooks, and past questions by Faculty, Department, and Course.",
-                },
-                {
-                  icon: "https://cdn.lordicon.com/hpxruznz.json",
-                  title: "Collaborative Learning",
-                  description:
-                    "Join study groups, share insights, and collaborate with peers across different departments.",
-                },
-                {
-                  icon: "https://cdn.lordicon.com/rxufjlal.json",
-                  title: "Smart Organization",
-                  description:
-                    "Organize your academic resources with our intelligent categorization and search system.",
-                },
-                {
-                  icon: "https://cdn.lordicon.com/dmqskzxk.json",
-                  title: "Knowledge Exchange",
-                  description:
-                    "Share your academic insights and benefit from peer contributions in our learning community.",
-                },
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="col-span-12 md:col-span-6"
-                  ref={(el) => (cardsRef.current[index] = el)}
-                >
-                  <div className="about_right py-4 md:py-6 border_c mdw-full about_first fst hover:scale-105 transition-transform duration-300">
-                    <div className="m-auto w-11/12">
-                      <div>
-                        {/* @ts-ignore */}
-                        <lord-icon
-                          src={item.icon}
-                          trigger="loop"
-                          style={{ width: "32px", height: "32px" }}
-                          /* @ts-ignore */
-                        ></lord-icon>
-                      </div>
-                      <h2 className="mb-3 font-semibold md:text-xl text-2xl">
-                        {item.title}
-                      </h2>
-                      <p className="text-gray-700 md:text-md dark:text-gray-300 text-base">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {/* Right Column - Animation */}
+          <div className="w-full md:w-1/2 flex items-center justify-center">
+            <div className="w-full max-w-md">
+              <DotLottieReact
+                src="https://lottie.host/77c6b78c-2671-41a6-9206-2870569a2fcb/xhS9lOc3bC.lottie"
+                loop
+                autoplay
+              />
             </div>
           </div>
         </div>
 
+        {/* Feature Cards */}
+        <div className="mb-24">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-12 text-[#003666]">
+            What Makes UniNav Special
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {[
+              {
+                icon: "https://cdn.lordicon.com/xmaezqzk.json",
+                iconColor: "primary:#003666,secondary:#75bfff",
+                title: "Study Material Repository",
+                description:
+                  "Access & share lecture notes, textbooks, and past questions by Faculty, Department, and Course.",
+              },
+              {
+                icon: "https://cdn.lordicon.com/hpxruznz.json",
+                iconColor: "primary:#003666,secondary:#75bfff",
+                title: "Collaborative Learning",
+                description:
+                  "Join study groups, share insights, and collaborate with peers across different departments.",
+              },
+              {
+                icon: "https://cdn.lordicon.com/rxufjlal.json",
+                iconColor: "primary:#003666,secondary:#75bfff",
+                title: "Smart Organization",
+                description:
+                  "Organize your academic resources with our intelligent categorization and search system.",
+              },
+              {
+                icon: "https://cdn.lordicon.com/dmqskzxk.json",
+                iconColor: "primary:#003666,secondary:#75bfff",
+                title: "Knowledge Exchange",
+                description:
+                  "Share your academic insights and benefit from peer contributions in our learning community.",
+              },
+            ].map((item, index) => (
+              <div
+                key={index}
+                className="feature-card"
+                ref={(el) => {
+                  if (cardsRef.current) {
+                    cardsRef.current[index] = el;
+                  }
+                }}
+              >
+                <div className="bg-white rounded-xl shadow-lg p-6 h-full border border-blue-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      {/* @ts-ignore */}
+                      <lord-icon
+                        src={item.icon}
+                        trigger="hover"
+                        colors={item.iconColor}
+                        style={{ width: "40px", height: "40px" }}
+                        /* @ts-ignore */
+                      ></lord-icon>
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-[#003666]">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Text replace animation section */}
-        <div className="py-16 flex flex-col items-center justify-center">
+        <div className="py-16 flex flex-col items-center justify-center bg-blue-50 rounded-2xl mb-24 px-4">
           <div className="relative h-[60px] md:h-[80px] overflow-hidden text-center w-full">
-            <h2 className="text-3xl md:text-5xl font-bold inline-flex justify-center w-full">
+            <h2 className="text-3xl md:text-5xl font-bold inline-flex justify-center w-full text-[#003666]">
               UniNav is{" "}
               <span className="relative inline-flex justify-center min-w-[200px] md:min-w-[300px] ml-2">
-                <span className="text-replace-animation absolute">
+                <span className="text-replace-animation absolute text-blue-600">
                   innovative
                 </span>
-                <span className="text-replace-animation absolute">
+                <span className="text-replace-animation absolute text-blue-600">
                   collaborative
                 </span>
-                <span className="text-replace-animation absolute">
+                <span className="text-replace-animation absolute text-blue-600">
                   transformative
                 </span>
-                <span className="text-replace-animation absolute">
+                <span className="text-replace-animation absolute text-blue-600">
                   empowering
                 </span>
               </span>
             </h2>
           </div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300 text-lg max-w-2xl text-center">
-            Discover a new way of learning and sharing academic resources
+          <p className="mt-8 text-gray-700 text-lg max-w-2xl text-center">
+            Discover a new way of learning and sharing academic resources that empowers your academic journey
           </p>
         </div>
 
-        <div className="relative shadow-md mt-10 rounded-lg w-full h-auto md:h-[600px] overflow-hidden about_bottom">
-          <div className="z-10 relative flex flex-col justify-center items-center px-4 md:px-10 py-10 md:py-0 h-full text-center">
+        {/* Bottom CTA section */}
+        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#003666] to-[#0066b3] shadow-lg about_bottom">
+          <div className="absolute inset-0 bg-pattern opacity-10"></div>
+          <div className="z-10 relative flex flex-col justify-center items-center px-6 py-16 sm:py-20 h-full text-center">
             <h1
               ref={bottomHeadingRef}
-              className="drop-shadow-sm mb-4 md:mb-6 font-extrabold text-[var(--bg-dark)] text-3xl md:text-5xl"
+              className="text-white mb-6 font-bold text-3xl md:text-4xl lg:text-5xl"
             >
-              Enhancing Learning, One Resource at a Time
+              Ready to Transform Your Learning Experience?
             </h1>
-            <p className="opacity-90 mb-6 md:mb-8 max-w-2xl text-[var(--bg-dark)] text-lg md:text-xl">
-              Seamless access to academic resources, study groups, and tools
-              that help you grow.
+            <p className="opacity-90 mb-8 max-w-2xl text-blue-100 text-lg">
+              Join thousands of students who are already benefiting from our platform.
             </p>
-            <ButtonSlider
-              onClick={() => navigateTo("/auth/signup")}
-              text={"Get Started"}
-            />
+            <div className="flex flex-col sm:flex-row gap-4">
+              <ButtonSlider
+                onClick={() => navigateTo("/auth/signup")}
+                text={"Get Started"}
+                className="bg-white text-[#003666] hover:bg-blue-50"
+              />
+              <ButtonSlider
+                onClick={() => navigateTo("/explore")}
+                text={"Explore Resources"}
+                className="bg-transparent border border-white text-white hover:bg-white/10"
+              />
+            </div>
           </div>
 
-          <div className="hidden md:block right-0 bottom-0 absolute opacity-90 w-[220px] md:w-[280px]">
+          <div className="hidden md:block absolute right-0 bottom-0 w-[300px] opacity-80">
             <Image
               src={Logo}
-              alt="Study Illustration"
+              alt="UniNav Logo"
               className="object-contain"
-              width={280}
-              height={280}
+              width={300}
+              height={300}
             />
           </div>
         </div>

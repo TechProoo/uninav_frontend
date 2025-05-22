@@ -251,7 +251,7 @@ const Navigation = () => {
                 {/* Quick Search Suggestions */}
                 <div className="mt-6 flex flex-wrap gap-2 justify-center">
                   <span className="text-sm text-blue-200 mr-2">Popular:</span>
-                  {["PDF Materials", "Mathematics", "Physics", "Programming", "Biology"].map((term) => (
+                  {["MAT", "PHY", "STA", "GES", "BIO"].map((term) => (
                     <button
                       key={term}
                       type="button"

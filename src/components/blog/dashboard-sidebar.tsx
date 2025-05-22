@@ -17,6 +17,7 @@ import {
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarHeader,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,7 +85,19 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar className="w-64 min-w-[4rem]">
-      <SidebarContent className="flex flex-col pt-[7rem] h-full">
+      <SidebarHeader className="flex items-center justify-center py-4">
+        <Link href="/" className="flex items-center justify-center">
+          <Image
+            src="/Image/uninav-logo.svg"
+            alt="UniNav Logo"
+            width={120}
+            height={40}
+            className="hover:opacity-80 transition-opacity"
+            priority
+          />
+        </Link>
+      </SidebarHeader>
+      <SidebarContent className="flex flex-col h-full">
         <SidebarMenu className="space-y-1 px-3">
           {sidebarItems.map((item) => {
             const isActive = pathname === item.url;
