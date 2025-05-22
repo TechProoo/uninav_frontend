@@ -90,8 +90,8 @@ export function DashboardSidebar() {
           <Image
             src="/Image/uninav-logo.svg"
             alt="UniNav Logo"
-            width={120}
-            height={40}
+            width={80}
+            height={28}
             className="hover:opacity-80 transition-opacity"
             priority
           />
