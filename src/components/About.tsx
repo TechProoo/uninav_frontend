@@ -282,16 +282,16 @@ const About = () => {
               UniNav is{" "}
               <span className="relative inline-flex justify-center min-w-[200px] md:min-w-[300px] ml-2">
                 <span className="text-replace-animation absolute text-blue-600">
-                  innovative
+                  community-driven
                 </span>
                 <span className="text-replace-animation absolute text-blue-600">
-                  collaborative
+                  structured
                 </span>
                 <span className="text-replace-animation absolute text-blue-600">
-                  transformative
+                  essential
                 </span>
                 <span className="text-replace-animation absolute text-blue-600">
-                  empowering
+                  what you need
                 </span>
               </span>
             </h2>
