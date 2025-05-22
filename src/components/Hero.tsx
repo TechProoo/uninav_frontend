@@ -104,7 +104,7 @@ export default function Hero() {
                   className={`p-3 text-gray-600 ${searchExpanded ? "" : "w-full"}`}
                   onClick={expandSearch}
                 >
-                  <Search size={searchExpanded ? 20 : 24} />
+                  <Search size={searchExpanded ? 20 : 24} placeholder="Find anything" />
                 </button>
                 <input
                   ref={searchInputRef}

@@ -13,5 +13,7 @@ export default function ConditionalNavbar() {
   );
 
   if (shouldHide) return null;
-  return <Navigation />;
+  return (
+      <Navigation />
+  );
 }

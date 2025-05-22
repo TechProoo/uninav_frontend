@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ButtonSlider } from "../ui/ButtonSlider";
@@ -26,6 +26,7 @@ const Navigation = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [lastScrollY, setLastScrollY] = useState(0);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
   // Handle scroll for navbar appearance and hide/show behavior
   useEffect(() => {
@@ -57,6 +58,25 @@ const Navigation = () => {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
+
+  // Handle clicks outside the search container
+  useEffect(() => {
+    if (!searchOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchContainerRef.current && 
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
+        setSearchOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [searchOpen]);
 
   // Helper function to check if a link is active
   const isActive = (path: string) => {
@@ -105,7 +125,7 @@ const Navigation = () => {
       <nav className="mx-auto px-4 py-3 max-w-[1400px]">
         <div className="flex justify-between items-center h-14">
           <Link href={"/"} className="flex items-center nav_logo">
-            <div className={`relative overflow-hidden rounded-lg ${isScrolled ? "" : "bg-white/10 backdrop-blur-sm p-1"}`}>
+            <div className={`relative overflow-hidden rounded-lg `}>
               <Image
                 className="mr-2 w-10 h-auto"
                 src="/Image/uninav-logo.svg"
@@ -143,47 +163,21 @@ const Navigation = () => {
                 </Link>
               ))}
             </ul>
-            
-            {/* Search Icon for Desktop */}
-            <button 
-              onClick={() => setSearchOpen(true)}
-              className={`ml-4 p-2 rounded-full ${
-                isScrolled || !isHomePage ? "text-gray-600 hover:bg-gray-100" : "text-white hover:bg-white/10"
-              }`}
-            >
-              <Search size={18} />
-            </button>
           </div>
 
           <div className="flex items-center gap-4">
-            {/* Search Overlay - Full Screen Search */}
-            {searchOpen && (
-              <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
-                <div className="w-full max-w-2xl px-4">
-                  <form onSubmit={handleSearch} className="relative">
-                    <div className="flex items-center bg-white rounded-lg overflow-hidden">
-                      <input
-                        type="text"
-                        placeholder="Search courses, materials, blogs..."
-                        className="w-full py-4 px-5 outline-none text-lg"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        autoFocus
-                      />
-                      <button type="submit" className="px-5 py-4 bg-blue-600 text-white">
-                        <Search size={20} />
-                      </button>
-                    </div>
-                  </form>
-                  <button 
-                    onClick={() => setSearchOpen(false)}
-                    className="absolute top-10 right-10 text-white p-2 rounded-full hover:bg-white/20"
-                  >
-                    <X size={30} />
-                  </button>
-                </div>
-              </div>
-            )}
+            {/* Search Icon - Moved to right side */}
+            <button 
+              onClick={() => setSearchOpen(true)}
+              className={`p-2 rounded-full transition-all hover:scale-105 ${
+                isScrolled || !isHomePage 
+                  ? "text-gray-600 hover:bg-gray-100" 
+                  : "text-white hover:bg-white/10"
+              }`}
+              aria-label="Open search"
+            >
+              <Search size={20} />
+            </button>
 
             {/* User Authentication Status */}
             {loading ? (
@@ -217,6 +211,65 @@ const Navigation = () => {
         </div>
       </nav>
 
+      {/* Enhanced Search Overlay */}
+      {searchOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-32 sm:pt-40 transition-all duration-300">
+          {/* Invisible backdrop - only for click handling - now handled by useEffect */}
+          
+          {/* Search Container */}
+          <div ref={searchContainerRef} className="relative w-full max-w-3xl px-4 z-10 animate-fade-in-down">
+            {/* Close Button with enhanced visibility */}
+            <button 
+              onClick={() => setSearchOpen(false)}
+              className="absolute -top-16 right-4 bg-white/20 text-white p-2.5 rounded-full hover:bg-white/30 transition-all shadow-lg backdrop-blur-sm"
+            >
+              <X size={24} strokeWidth={3} className="text-blue-900" />
+            </button>
+            
+            {/* Search Form */}
+            <form onSubmit={handleSearch} className="relative">
+              <div className="flex flex-col">
+                {/* Removed title for cleaner look */}
+                
+                <div className="flex items-center bg-white rounded-2xl overflow-hidden shadow-2xl border border-blue-100">
+                  <input
+                    type="text"
+                    placeholder="Search courses, materials, blogs..."
+                    className="w-full py-4 sm:py-5 px-6 outline-none text-base sm:text-lg text-gray-700"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                  />
+                  <button 
+                    type="submit" 
+                    className="h-full px-6 py-4 sm:py-5 bg-gradient-to-r from-[#003666] to-[#0055a4] text-white transition-all hover:from-[#004680] hover:to-[#0066c2]"
+                  >
+                    <Search size={22} />
+                  </button>
+                </div>
+                
+                {/* Quick Search Suggestions */}
+                <div className="mt-6 flex flex-wrap gap-2 justify-center">
+                  <span className="text-sm text-blue-200 mr-2">Popular:</span>
+                  {["PDF Materials", "Mathematics", "Physics", "Programming", "Biology"].map((term) => (
+                    <button
+                      key={term}
+                      type="button"
+                      className="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-600/30 text-blue-900 text-sm rounded-full transition-colors border border-blue-200/50"
+                      onClick={() => {
+                        setSearchQuery(term);
+                      }}
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Sidebar as Sheet */}
       <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetContent side="right" className="p-0 w-[300px] sm:w-[350px]">
@@ -240,19 +293,21 @@ const Navigation = () => {
             {/* Search Field for Mobile */}
             <div className="mb-6">
               <form onSubmit={handleSearch} className="relative">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full py-2 px-4 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <button 
-                  type="submit"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
-                >
-                  <Search size={18} />
-                </button>
+                <div className="flex items-center overflow-hidden rounded-lg border border-gray-300">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="w-full py-3 px-4 outline-none text-sm"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <button 
+                    type="submit"
+                    className="p-3 bg-[#003666] text-white"
+                  >
+                    <Search size={18} />
+                  </button>
+                </div>
               </form>
             </div>
 
@@ -269,7 +324,6 @@ const Navigation = () => {
                 {item.label}
               </button>
             ))}
-
           </div>
         </SheetContent>
       </Sheet>
@@ -278,3 +332,18 @@ const Navigation = () => {
 };
 
 export default Navigation;
+
+// Add this to globals.css if not already present
+// @keyframes fade-in-down {
+//   0% {
+//     opacity: 0;
+//     transform: translateY(-20px);
+//   }
+//   100% {
+//     opacity: 1;
+//     transform: translateY(0);
+//   }
+// }
+// .animate-fade-in-down {
+//   animation: fade-in-down 0.3s ease-out forwards;
+// }

@@ -581,7 +581,7 @@ const ExploreContent = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
+    <div className="!pt-[5rem] bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
       <Toaster />
 
       <div className="mx-auto max-w-7xl">
