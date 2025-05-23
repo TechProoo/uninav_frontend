@@ -105,7 +105,7 @@ export default function Hero() {
           </div>
 
           {/* CTA Buttons - Attractive Center Layout */}
-          {/* <div className="flex flex-wrap justify-center gap-6 md:mb-8 mx-auto w-full">
+          <div className="flex flex-wrap justify-center gap-6 md:mb-8 mx-auto w-full">
             {isAuthenticated && user ? (
               <>
                 <ButtonSlider
@@ -133,7 +133,7 @@ export default function Hero() {
                 />
               </>
             )}
-          </div> */}
+          </div>
         </div>
       </div>
 
