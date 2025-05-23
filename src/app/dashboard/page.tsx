@@ -12,6 +12,7 @@ import MaterialGrid from "@/components/materials/MaterialGrid";
 import CourseSlider from "@/components/dashboard/CourseSlider";
 import BookmarkSlider from "@/components/materials/BookmarkSlider";
 import { Search } from "lucide-react";
+import PdfViewer from "@/components/materials/Pdf_viewer";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -164,6 +165,11 @@ export default function Dashboard() {
             viewMode="grid"
           />
         </section>
+
+        <section> 
+          <h1>PDF Viewer</h1>
+          <PdfViewer fileUrl="https://uninav-docs.c8c3.va01.idrivee2-92.com/bb2e7114-9f15-4c02-a2f2-17a372086c47-Lecture_1_-_BASIC_CIRCUIT_THEORY.pptx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=moxoTkL9woPGDyu33V5Q%2F20250522%2FVirginia%2Fs3%2Faws4_request&X-Amz-Date=20250522T122154Z&X-Amz-Expires=604800&X-Amz-Signature=15b8596181d569f6cd06b099a9ce01f91f0cb601fef68ad5214cce190d7d1638&X-Amz-SignedHeaders=host&response-content-disposition=attachment&x-amz-checksum-mode=ENABLED&x-id=GetObject" />
+        </section> 
       </div>
     </div>
   );
