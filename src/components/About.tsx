@@ -187,10 +187,15 @@ const About = () => {
               Transforming the way students connect, learn, and grow through
               seamless access to academic resources and collaborative tools.
             </p>
-            <ButtonSlider
+            {/* <ButtonSlider
               onClick={() => navigateTo("/auth/login")}
               text="Join Our Community"
-            />
+            /> */}
+            <ButtonSlider
+                              onClick={() => navigateTo("/auth/login")}
+                              text={"Get Started"}
+                              className="min-w-[150px] text-center"
+                            />
           </div>
 
           {/* Right Column - Animation */}

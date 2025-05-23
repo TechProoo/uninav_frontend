@@ -57,13 +57,13 @@ export default function Hero() {
         <div className="w-full">
           <div className="max-w-xl">
             {/* Interactive Decorative Element */}
-            <div className="mb-4 flex items-center">
+            {/* <div className="mb-4 flex items-center">
               <div className="h-1 w-8 bg-blue-400 rounded-full mr-3"></div>
               <span className="text-blue-300 font-medium">Start Learning Today</span>
-            </div>
+            </div> */}
 
             {/* Main Heading */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl py-4 font-bold text-white mb-4 leading-tight">
               The Ultimate <span className="text-blue-300">Study Platform</span> for <span className='text-nowrap'>  University Students</span>
             </h1>
 
@@ -94,7 +94,7 @@ export default function Hero() {
                   ref={searchInputRef}
                   type="text"
                   placeholder="Search courses, materials, blogs..."
-                  className="py-3 w-full outline-none px-2 bg-transparent"
+                  className="py-3 h-[5vw] w-full outline-none px-2 bg-transparent"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={handleSearchFocus}
@@ -105,7 +105,7 @@ export default function Hero() {
           </div>
 
           {/* CTA Buttons - Attractive Center Layout */}
-          <div className="flex flex-wrap justify-center gap-6 md:mb-8 mx-auto w-full">
+          {/* <div className="flex flex-wrap justify-center gap-6 md:mb-8 mx-auto w-full">
             {isAuthenticated && user ? (
               <>
                 <ButtonSlider
@@ -133,7 +133,7 @@ export default function Hero() {
                 />
               </>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
 

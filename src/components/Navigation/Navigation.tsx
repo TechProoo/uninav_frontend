@@ -116,11 +116,7 @@ const Navigation = () => {
 
   return (
     <div
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled 
-          ? "bg-white/90 backdrop-blur-md shadow-md rounded-b-xl" 
-          : "bg-transparent"
-      } ${isHidden && isScrolled ? "-translate-y-full" : "translate-y-0"}`}
+      className={"fixed top-0 z-50 w-full transition-all duration-300 bg-white backdrop-blur-md shadow-md mb-3"}
     >
       <nav className="mx-auto px-4 py-3 max-w-[1400px]">
         <div className="flex justify-between items-center h-14">
@@ -134,7 +130,7 @@ const Navigation = () => {
                 alt="UniNav Logo"
               />
             </div>
-            <span className={`hidden sm:block font-semibold text-xl ml-2 transition-colors ${isScrolled || !isHomePage ? "text-[#003666]" : "text-white"}`}>
+            <span className={`hidden sm:block font-semibold text-xl ml-2 transition-colors text-[#003666]`}>
               UniNav
             </span>
           </Link>
@@ -146,16 +142,7 @@ const Navigation = () => {
                 <Link
                   key={item.path}
                   href={item.path}
-                  className={`relative px-4 py-2 mx-1 rounded-full font-medium transition-all ${
-                    isActive(item.path)
-                      ? isScrolled || !isHomePage 
-                        ? "text-blue-600 bg-blue-50" 
-                        : "text-white bg-white/10 backdrop-blur-sm"
-                      : isScrolled || !isHomePage 
-                        ? "text-gray-700 hover:bg-gray-100" 
-                        : "text-white/95 hover:text-white hover:bg-white/10"
-                  }`}
-                >
+                  className={`relative px-4 py-2 mx-1 rounded-full font-medium transition-all text-[#003666]`}>
                   {item.label}
                   {isActive(item.path) && (
                     <span className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></span>
