@@ -5,6 +5,10 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 import Image from "next/image";
 import Logo from "../../public/Image/uninav-logo-image.png";
+import FileExchange from "../../public/Image/icons/file-exchange.gif";
+import OpenBook from "../../public/Image/icons/open-book.gif";
+import Collaboration from "../../public/Image/icons/collaboration.gif";
+import Organization from "../../public/Image/icons/organization.gif";
 import { ButtonSlider } from "./ui/ButtonSlider";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
@@ -218,29 +222,25 @@ const About = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {[
               {
-                icon: "https://cdn.lordicon.com/xmaezqzk.json",
-                iconColor: "primary:#003666,secondary:#75bfff",
+                icon: FileExchange,
                 title: "Study Material Repository",
                 description:
                   "Access & share lecture notes, textbooks, and past questions by Faculty, Department, and Course.",
               },
               {
-                icon: "https://cdn.lordicon.com/hpxruznz.json",
-                iconColor: "primary:#003666,secondary:#75bfff",
+                icon: Collaboration,
                 title: "Collaborative Learning",
                 description:
                   "Join study groups, share insights, and collaborate with peers across different departments.",
               },
               {
-                icon: "https://cdn.lordicon.com/rxufjlal.json",
-                iconColor: "primary:#003666,secondary:#75bfff",
+                icon: Organization,
                 title: "Smart Organization",
                 description:
                   "Organize your academic resources with our intelligent categorization and search system.",
               },
               {
-                icon: "https://cdn.lordicon.com/dmqskzxk.json",
-                iconColor: "primary:#003666,secondary:#75bfff",
+                icon: OpenBook,
                 title: "Knowledge Exchange",
                 description:
                   "Share your academic insights and benefit from peer contributions in our learning community.",
@@ -258,14 +258,13 @@ const About = () => {
                 <div className="bg-white rounded-xl shadow-lg p-6 h-full border border-blue-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                   <div className="flex items-center mb-4">
                     <div className="bg-blue-50 p-3 rounded-lg">
-                      {/* @ts-ignore */}
-                      <lord-icon
+                      <Image
                         src={item.icon}
-                        trigger="hover"
-                        colors={item.iconColor}
-                        style={{ width: "40px", height: "40px" }}
-                        /* @ts-ignore */
-                      ></lord-icon>
+                        alt={item.title}
+                        width={40}
+                        height={40}
+                        className="object-contain"
+                      />
                     </div>
                   </div>
                   <h3 className="text-xl font-bold mb-3 text-[#003666]">
