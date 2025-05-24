@@ -14,15 +14,16 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../ui/sheet";
+import { usePageConfig } from "@/config/pageConfig";
 
 const Navigation = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { isAuthenticated, loading, user } = useAuth();
+  const pageConfig = usePageConfig();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
-  const isHomePage = pathname === "/";
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -88,6 +89,38 @@ const Navigation = () => {
     return pathname === path;
   };
 
+  // Determine navbar styling based on page config and scroll state
+  const getNavbarStyling = () => {
+    const { navbarStyle, transparentOnTop } = pageConfig;
+    
+    switch (navbarStyle) {
+      case 'light':
+        // Always light text
+        return {
+          isDark: false,
+          shouldBeTransparent: transparentOnTop && !isScrolled,
+        };
+      
+      case 'dark':
+        // Always dark text
+        return {
+          isDark: true,
+          shouldBeTransparent: false,
+        };
+      
+      case 'adaptive':
+      default:
+        // Adaptive: light when transparent, dark when scrolled or not transparent
+        const shouldBeTransparent = transparentOnTop && !isScrolled;
+        return {
+          isDark: !shouldBeTransparent,
+          shouldBeTransparent,
+        };
+    }
+  };
+
+  const { isDark, shouldBeTransparent } = getNavbarStyling();
+
   const handleNavigation = (path: string) => {
     router.push(path);
     setIsMobileMenuOpen(false);
@@ -117,9 +150,9 @@ const Navigation = () => {
   return (
     <div
       className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        isScrolled 
-          ? "bg-white/90 backdrop-blur-md shadow-md rounded-b-xl" 
-          : "bg-transparent"
+        shouldBeTransparent 
+          ? "bg-transparent" 
+          : "bg-white/90 backdrop-blur-md shadow-md rounded-b-xl"
       } ${isHidden && isScrolled ? "-translate-y-full" : "translate-y-0"}`}
     >
       <nav className="mx-auto px-4 py-3 max-w-[1400px]">
@@ -134,7 +167,9 @@ const Navigation = () => {
                 alt="UniNav Logo"
               />
             </div>
-            <span className={`hidden sm:block font-semibold text-xl ml-2 transition-colors ${isScrolled || !isHomePage ? "text-[#003666]" : "text-white"}`}>
+            <span className={`hidden sm:block font-semibold text-xl ml-2 transition-colors ${
+              isDark ? "text-[#003666]" : "text-white"
+            }`}>
               UniNav
             </span>
           </Link>
@@ -148,10 +183,10 @@ const Navigation = () => {
                   href={item.path}
                   className={`relative px-4 py-2 mx-1 rounded-full font-medium transition-all ${
                     isActive(item.path)
-                      ? isScrolled || !isHomePage 
+                      ? isDark 
                         ? "text-blue-600 bg-blue-50" 
                         : "text-white bg-white/10 backdrop-blur-sm"
-                      : isScrolled || !isHomePage 
+                      : isDark 
                         ? "text-gray-700 hover:bg-gray-100" 
                         : "text-white/95 hover:text-white hover:bg-white/10"
                   }`}
@@ -170,7 +205,7 @@ const Navigation = () => {
             <button 
               onClick={() => setSearchOpen(true)}
               className={`p-2 rounded-full transition-all hover:scale-105 ${
-                isScrolled || !isHomePage 
+                isDark 
                   ? "text-gray-600 hover:bg-gray-100" 
                   : "text-white hover:bg-white/10"
               }`}
@@ -189,12 +224,12 @@ const Navigation = () => {
                 <ButtonSlider
                   onClick={() => handleNavigation("/auth/login")}
                   text="Login"
-                  className={isScrolled || !isHomePage ? "" : "bg-white/10 text-white hover:bg-white/20"}
+                  className={isDark ? "" : "bg-white/10 text-white hover:bg-white/20"}
                 />
                 <ButtonSlider
                   onClick={() => handleNavigation("/auth/signup")}
                   text="SignUp"
-                  className={isScrolled || !isHomePage ? "" : "bg-blue-500 text-white hover:bg-blue-600"}
+                  className={isDark ? "" : "bg-blue-500 text-white hover:bg-blue-600"}
                 />
               </div>
             )}
@@ -205,7 +240,7 @@ const Navigation = () => {
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label="Open mobile menu"
             >
-              <Menu size={24} className={isScrolled || !isHomePage ? "text-gray-700" : "text-white"} />
+              <Menu size={24} className={isDark ? "text-gray-700" : "text-white"} />
             </button>
           </div>
         </div>

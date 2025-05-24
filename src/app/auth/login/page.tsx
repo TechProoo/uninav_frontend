@@ -86,7 +86,7 @@ const page = () => {
   }
 
   return (
-    <div className="login_container">
+    <div className="login_container pt-16">
       <div className="items-center grid grid-cols-12">
         <div className="col-span-12 md:col-span-6 my-auto md:pt-1 h-vh md:h-auto">
           <div className="m-auto p-3 md:p-5 md:px-10 md:rounded-lg w-full md:w-10/12 form_cover">
