@@ -445,6 +445,10 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
     setSelectedAdvert(null);
   };
 
+  const handleUsernameClick = () => {
+    router.push(`/profile/${material.creator.username}`);
+  };
+
   // Copy to clipboard helper function
   const copyToClipboard = async (text: string, successMessage: string) => {
     try {
@@ -523,7 +527,13 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
               {material.label}
             </h1>
             <p className="mt-1 text-gray-500 text-xs sm:text-sm">
-              by {material.creator.firstName} {material.creator.lastName}
+              by{" "}
+              <span 
+                className="text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted underline-offset-2"
+                onClick={handleUsernameClick}
+              >
+                {material.creator.firstName} {material.creator.lastName}
+              </span>
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   ArrowBigRight,
   CalendarIcon,
@@ -25,8 +26,14 @@ type BlogCardProps = {
 
 const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
   const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
   if (!data) return null;
+
+  const handleUsernameClick = (e: React.MouseEvent, username: string) => {
+    e.stopPropagation();
+    router.push(`/profile/${username}`);
+  };
 
   if (deleting) {
     return (
@@ -113,7 +120,12 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
               <div className="flex flex-wrap items-center gap-2 mt-1.5">
                 <div className="flex items-center text-gray-500 text-sm">
                   <User className="mr-1 w-3 h-3" />
-                  {data.creator?.username || "Anonymous"}
+                  <span 
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted underline-offset-2"
+                    onClick={(e) => handleUsernameClick(e, data.creator?.username || "")}
+                  >
+                    {data.creator?.username || "Anonymous"}
+                  </span>
                 </div>
                 <span className="text-gray-400">•</span>
                 <div className="flex items-center text-gray-500 text-xs">
@@ -211,7 +223,8 @@ const BlogCard = ({ data, viewMode = "grid" }: BlogCardProps) => {
         <span className="flex items-center gap-1 bg-orange-200 px-3 py-1 rounded-full font-medium text-orange-800 text-xs">
           <CalendarIcon className="w-3 h-3" /> {formatDate(data.createdAt)}
         </span>
-        <span className="flex items-center gap-1 bg-green-200 px-3 py-1 rounded-full font-medium text-green-800 text-xs">
+        <span className="flex items-center gap-1 bg-green-200 px-3 py-1 rounded-full font-medium text-green-800 text-xs cursor-pointer hover:bg-green-300 transition-colors"
+              onClick={(e) => handleUsernameClick(e, data.creator?.username || "")}>
           <User className="w-3 h-3" /> {data.creator?.username || "Anonymous"}
         </span>
 

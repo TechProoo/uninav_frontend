@@ -37,7 +37,7 @@ export default function MaterialPage() {
   };
 
   return (
-    <div className="mx-auto px-4 py-8 max-w-6xl">
+    <div className="mx-auto px-4 py-8 max-w-6xl pt-16">
       {isEditing && material ? (
         <div className="bg-white shadow-md p-6 rounded-lg">
           <h2 className="mb-4 font-medium text-2xl">Edit Material</h2>

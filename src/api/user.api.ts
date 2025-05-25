@@ -168,3 +168,13 @@ export const fetchAllUsers = async (page: number, limit: number, query?: string)
     throw error;
   }
 };
+
+export const getUserProfile = async (username: string) => {
+  try {
+    const response = await api.get<Response<Omit<UserProfile, "email"| "auth">>>(`/user/user-profile?username=${username}`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    throw error;
+  }
+};

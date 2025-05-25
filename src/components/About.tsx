@@ -222,7 +222,7 @@ const About = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {[
               {
-                icon: FileExchange,
+                icon: OpenBook,
                 title: "Study Material Repository",
                 description:
                   "Access & share lecture notes, textbooks, and past questions by Faculty, Department, and Course.",
@@ -240,7 +240,7 @@ const About = () => {
                   "Organize your academic resources with our intelligent categorization and search system.",
               },
               {
-                icon: OpenBook,
+                icon: FileExchange,
                 title: "Knowledge Exchange",
                 description:
                   "Share your academic insights and benefit from peer contributions in our learning community.",

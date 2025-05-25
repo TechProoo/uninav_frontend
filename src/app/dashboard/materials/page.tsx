@@ -62,7 +62,6 @@ const MaterialsPage = () => {
       } else {
         response = await getMyMaterials({
           page,
-          creatorId: user?.id,
           type: filterType as MaterialTypeEnum,
         });
       }

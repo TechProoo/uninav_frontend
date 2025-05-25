@@ -95,6 +95,16 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
     }
   };
 
+  const handleCourseClick = (e: React.MouseEvent, courseId: string) => {
+    e.stopPropagation();
+    router.push(`/course-map/course/${courseId}`);
+  };
+
+  const handleUsernameClick = (e: React.MouseEvent, username: string) => {
+    e.stopPropagation();
+    router.push(`/profile/${username}`);
+  };
+
   const handleRemoveFromCollection = async (e: React.MouseEvent) => {
     e.stopPropagation();
     try {
@@ -191,7 +201,8 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
                 {material.targetCourse && (
                   <Badge
                     variant="secondary"
-                    className="flex items-center gap-1 rounded-md text-xs"
+                    className="flex items-center gap-1 rounded-md text-xs cursor-pointer hover:bg-blue-100 hover:text-blue-700 transition-colors"
+                    onClick={(e) => handleCourseClick(e, material.targetCourse!.id)}
                   >
                     <BookOpen className="w-3 h-3" />
                     {material.targetCourse.courseCode}
@@ -213,7 +224,13 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
               </h3>
               <div className="flex flex-wrap items-center gap-2 mt-1">
                 <p className="text-gray-500 text-xs sm:text-sm">
-                  by @{material.creator.username}
+                  by{" "}
+                  <span 
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted underline-offset-2"
+                    onClick={(e) => handleUsernameClick(e, material.creator.username)}
+                  >
+                    @{material.creator.username}
+                  </span>
                 </p>
                 <span className="hidden sm:inline text-gray-400 text-xs">
                   •
@@ -225,9 +242,12 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
               </div>
 
               {material.targetCourse && (
-                <p className="mt-2 text-gray-600 text-xs sm:text-sm truncate">
+                <p className="mt-2 text-gray-600 text-xs sm:text-sm truncate cursor-pointer hover:text-blue-600 transition-colors"
+                   onClick={(e) => handleCourseClick(e, material.targetCourse!.id)}>
                   <span className="font-medium">Course:</span>{" "}
-                  {material.targetCourse.courseName}
+                  <span className="underline decoration-dotted underline-offset-2">
+                    {material.targetCourse.courseName}
+                  </span>
                 </p>
               )}
 
@@ -438,7 +458,13 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
                   {material.label}
                 </h3>
                 <p className="text-gray-500 text-xs sm:text-sm truncate">
-                  by @{material.creator.username}
+                  by{" "}
+                  <span 
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer underline decoration-dotted underline-offset-2"
+                    onClick={(e) => handleUsernameClick(e, material.creator.username)}
+                  >
+                    @{material.creator.username}
+                  </span>
                 </p>
               </div>
             </div>
@@ -450,6 +476,17 @@ const MaterialCard: React.FC<MaterialCardProps> = ({
               >
                 {material.type}
               </Badge>
+
+              {material.targetCourse && (
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 px-1.5 sm:px-2 py-0 sm:py-0.5 text-xs cursor-pointer hover:bg-blue-100 hover:text-blue-700 transition-colors border-blue-200"
+                  onClick={(e) => handleCourseClick(e, material.targetCourse!.id)}
+                >
+                  <BookOpen className="w-2.5 sm:w-3 h-2.5 sm:h-3" />
+                  {material.targetCourse.courseCode}
+                </Badge>
+              )}
 
               <div className="flex items-center gap-1 ml-auto text-gray-400">
                 {material.visibility === VisibilityEnum.PUBLIC ? (

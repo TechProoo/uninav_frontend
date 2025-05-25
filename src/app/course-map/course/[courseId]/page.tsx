@@ -83,10 +83,9 @@ export default function CourseDetailsPage({ params }: Props) {
   const level = course.departments?.[0]?.level;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
-      <div className="mb-6 flex items-center gap-4">
-        <BackButton />
-        <h1 className="text-2xl font-bold text-[#003666]">
+    <div className="min-h-screen bg-slate-50 p-6 pt-24">
+      <div className="mb-6 flex flex-col md:flex-row md:justify-between items-center gap-4">
+        <h1 className="text-xl  md:text-2xl font-bold text-[#003666]">
           {course.courseName}
         </h1>
         <Badge className="bg-blue-100 text-blue-800">{course.courseCode}</Badge>

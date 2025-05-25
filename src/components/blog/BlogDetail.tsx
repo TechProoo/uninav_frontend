@@ -170,9 +170,15 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
     }
   };
 
+  const handleUsernameClick = () => {
+    if (localBlog?.creator?.username) {
+      router.push(`/profile/${localBlog.creator.username}`);
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="relative">
+      <div className="relative pt-16">
         {/* Header Skeleton */}
         {(isModal || showBackButton) && (
           <div className="top-0 z-10 sticky flex justify-between items-center bg-white px-6 py-4 border-b">
@@ -265,7 +271,7 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
 
   if (error || !localBlog) {
     return (
-      <div className="p-8">
+      <div className="p-8 pt-16">
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-bold text-red-600 text-xl">Error</h2>
           {onClose && (
@@ -322,7 +328,10 @@ const BlogDetail: React.FC<BlogDetailProps> = ({
                 <div className="mt-4 text-gray-400 text-sm">
                   <b>
                     Author -{" "}
-                    <span className="font-semibold text-white">
+                    <span 
+                      className="font-semibold text-blue-400 hover:text-blue-300 cursor-pointer underline decoration-dotted underline-offset-2"
+                      onClick={handleUsernameClick}
+                    >
                       {localBlog.creator.username}
                     </span>
                   </b>

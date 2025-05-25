@@ -530,25 +530,7 @@ const ExploreContent = () => {
     }
   }, [activeTab]); // Removed blogContentLoaded and materials, simplified logic
 
-  // Update when material filters change
-  useEffect(() => {
-    // This effect was for materialPage changes, handled by a more specific effect now.
-    // If this was intended for filter changes other than page, those should call fetchMaterials(1) directly.
-    // For now, removing to avoid potential conflicts if it was re-fetching unnecessarily.
-    // if (activeTab === "materials") {
-    //   fetchMaterials(); // This would fetch current materialPage, not necessarily page 1
-    // }
-  }, []); // Empty dependency array if it's meant to be removed or re-evaluated
 
-  // Update when blog filters change
-  useEffect(() => {
-    // This effect was for blogPage changes, handled by a more specific effect now.
-    // Similar to material filters, changes here should call fetchBlogs(1)
-    // For now, removing.
-    // if (activeTab === "blogs") {
-    //  fetchBlogs();
-    // }
-  }, []); // Empty dependency array if it's meant to be removed or re-evaluated
 
   // Active filter count helpers
   const getActiveMaterialFiltersCount = () => {
@@ -574,14 +556,14 @@ const ExploreContent = () => {
     (activeTab === "blogs" && isLoadingBlogs && (!blogs || blogs.data.length === 0))
   ) {
     return (
-      <div className="bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
+      <div className="!pt-24 bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
         <ExplorePageSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="!pt-[5rem] bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
+    <div className="!pt-24 bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0] px-1 sm:px-3 md:px-4 py-2 sm:py-4 md:py-6 min-h-screen text-gray-900">
       <Toaster />
 
       <div className="mx-auto max-w-7xl">

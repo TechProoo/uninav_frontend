@@ -43,17 +43,14 @@ export const fetchRecommendedMaterials = async ({
 export const getMyMaterials = async ({
   page = 1,
   limit = 10,
-  creatorId,
   type,
 }: {
   page?: number;
   limit?: number;
-  creatorId?: string;
   type?: MaterialTypeEnum;
 }): Promise<Response<Pagination<Material[]>>> => {
   try {
     let url = `/materials/me?page=${page}&limit=${limit}`;
-    if (creatorId) url += `&creatorId=${creatorId}`;
     if (type) url += `&type=${type}`;
 
     const response = await api.get<Response<Pagination<Material[]>>>(url);
@@ -65,6 +62,15 @@ export const getMyMaterials = async ({
   } catch (error: any) {
     console.error("Error fetching my materials:", error);
     throw new Error(error?.response?.data?.message || "Something went wrong");
+  }
+};
+export const getMaterialsByCreator = async (creatorId: string, page: number=1) => {
+  try {
+    const response = await api.get<Response<Pagination<Material[]>>>(`/materials/user/${creatorId}?page=${page}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching materials by creator:", error);
+    throw error;  
   }
 };
 
@@ -170,7 +176,6 @@ export const getMaterialById = async (
     throw new Error(error?.response?.data?.message || "Something went wrong");
   }
 };
-
 // Create Material
 export const createMaterial = async (
   materialData: CreateMaterialDto
