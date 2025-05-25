@@ -29,9 +29,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const CoursesPage = () => {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [userCourses, setUserCourses] = useState<any[]>([]);
   const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -55,6 +58,18 @@ const CoursesPage = () => {
   useEffect(() => {
     fetchCourses();
   }, [user]);
+
+  // Check for action=create query parameter to open create course modal
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "create") {
+      setIsCreateDialogOpen(true);
+      // Clear the action parameter from URL without causing a page reload
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("action");
+      router.replace(newUrl.pathname + newUrl.search, { scroll: false });
+    }
+  }, [searchParams, router]);
 
   const fetchCourses = async () => {
     try {
@@ -173,12 +188,24 @@ const CoursesPage = () => {
 
   return (
     <div className="mx-auto container">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h1 className="section-heading">Manage Courses</h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
-          <Plus className="mr-2 w-4 h-4" />
-          Add Courses
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button 
+            onClick={() => setIsAddDialogOpen(true)}
+            className="w-full sm:w-auto"
+          >
+            <Plus className="mr-2 w-4 h-4" />
+            Add Courses
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setIsCreateDialogOpen(true)}
+            className="w-full sm:w-auto"
+          >
+            Create  Course
+          </Button>
+        </div>
       </div>
 
       {error && (
@@ -220,17 +247,6 @@ const CoursesPage = () => {
             ))}
           </div>
         )}
-
-        <div className="mt-8 text-center">
-          <p className="text-gray-500 text-sm">Can't find your course?</p>
-          <Button
-            variant="link"
-            onClick={() => setIsCreateDialogOpen(true)}
-            className="text-blue-600"
-          >
-            Create Specific Course
-          </Button>
-        </div>
       </div>
 
       {/* Add Courses Dialog */}

@@ -38,6 +38,7 @@ import FileUploadList, { FileItem } from "./FileUploadList";
 import UrlInputList, { UrlItem } from "./UrlInputList";
 import UploadProgressBar, { UploadProgressItem } from "./UploadProgressBar";
 import { v4 as uuidv4 } from "uuid";
+import NextLink from "next/link";
 
 // Add utility function for type inference
 const inferMaterialType = (input: string | File): MaterialTypeEnum => {
@@ -1342,6 +1343,15 @@ const MaterialForm: React.FC<MaterialFormProps> = ({
               }}
               currentValue={commonFormData.targetCourseId}
             />
+            <div className="mt-2 text-center">
+              <p className="text-gray-500 text-xs">Can't find your course?</p>
+              <NextLink
+                href="/dashboard/courses?action=create"
+                className="text-blue-600 hover:text-blue-700 text-xs underline"
+              >
+                Create Course
+              </NextLink>
+            </div>
           </div>
           {/* More Options Toggle */}
           <button

@@ -40,7 +40,7 @@ export default function BlogPage() {
   };
 
   return (
-    <div className="mx-auto px-4 py-8 max-w-6xl">
+    <div className="mx-auto px-4 py-8 max-w-6xl pt-24">
       {isEditing && blog ? (
         <div className="bg-white shadow-md p-6 rounded-lg">
           <h2 className="mb-4 font-medium text-2xl">Edit Blog</h2>
