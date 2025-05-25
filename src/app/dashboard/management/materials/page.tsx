@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
+import BackButton from "@/components/ui/BackButton";
 import {
   AlertTriangle,
   BookOpen,
@@ -223,6 +224,14 @@ const MaterialsReviewPage = () => {
 
   return (
     <div className="mx-auto max-w-full">
+      <div className="mb-4">
+        <BackButton 
+          onClick={() => router.push("/dashboard/management")} 
+          label="Back to Management"
+          className="mb-4"
+        />
+      </div>
+      
       <div className="flex justify-between items-center mb-3 sm:mb-6">
         <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
           Materials Review

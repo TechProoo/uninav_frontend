@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
+import BackButton from "@/components/ui/BackButton";
 import {
   GraduationCap,
   ChevronLeft,
@@ -215,28 +216,32 @@ const CoursesReviewPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 container">
-      <div className="flex items-center mb-6">
-        <Button variant="ghost" size="sm" className="mr-2" asChild>
-          <Link href="/dashboard/management">
-            <ChevronLeft className="w-5 h-5" />
-            <span>Back</span>
-          </Link>
-        </Button>
-        <h1 className="section-heading">Courses Review</h1>
+    <div className="mx-auto max-w-full">
+      <div className="mb-4">
+        <BackButton 
+          onClick={() => router.push("/dashboard/management")} 
+          label="Back to Management"
+          className="mb-4"
+        />
+      </div>
+      
+      <div className="flex justify-between items-center mb-3 sm:mb-6">
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
+          Courses Review
+        </h1>
       </div>
 
-      <div className="mb-6">
-        <form onSubmit={handleSearch} className="flex gap-2">
+      <div className="mb-4">
+        <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
           <Input
-            type="search"
-            placeholder="Search by course name or code..."
+            type="text"
+            placeholder="Search courses..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
+            className="flex-1 max-w-full md:max-w-md"
           />
-          <Button type="submit">
-            <Search className="mr-2 w-4 h-4" />
+          <Button type="submit" size="sm" className="whitespace-nowrap">
+            <Search className="mr-1 w-4 h-4" />
             Search
           </Button>
         </form>

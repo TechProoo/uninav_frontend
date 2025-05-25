@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
+import BackButton from "@/components/ui/BackButton";
 import {
   ChevronLeft,
   Loader2,
@@ -112,19 +113,18 @@ const CourseManagementPage = () => {
 
   return (
     <div className="mx-auto px-3 sm:px-4 container">
-      <div className="flex items-center mb-4 sm:mb-6">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mr-1 sm:mr-2 p-1 sm:p-2"
-          asChild
-        >
-          <Link href="/dashboard/management">
-            <ChevronLeft className="w-4 sm:w-5 h-4 sm:h-5" />
-            <span className="hidden sm:inline ml-1">Back</span>
-          </Link>
-        </Button>
-        <h1 className="section-heading">Course Management</h1>
+      <div className="mb-4">
+        <BackButton 
+          onClick={() => router.push("/dashboard/management")} 
+          label="Back to Management"
+          className="mb-4"
+        />
+      </div>
+      
+      <div className="flex justify-between items-center mb-3 sm:mb-6">
+        <h1 className="font-bold text-xl sm:text-2xl md:text-3xl">
+          Course Management
+        </h1>
       </div>
 
       <div className="flex sm:flex-row flex-col justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">

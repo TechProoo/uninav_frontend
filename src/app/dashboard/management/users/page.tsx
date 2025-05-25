@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { fetchAllUsers } from '@/api/user.api';
 import { UserProfile } from '@/lib/types/response.type';
 import { Users, Verified, BarChart3, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import BackButton from '@/components/ui/BackButton';
+import { useRouter } from 'next/navigation';
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
@@ -25,6 +27,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 const UsersPage = () => {
+  const router = useRouter();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [verifiedUsers, setVerifiedUsers] = useState(0);
@@ -113,8 +116,16 @@ const UsersPage = () => {
 
   return (
     <div className="container mx-auto p-6 space-y-8">
+      <div className="mb-4">
+        <BackButton 
+          onClick={() => router.push("/dashboard/management")} 
+          label="Back to Management"
+          className="mb-4"
+        />
+      </div>
+      
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">User Management Dashboard</h1>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">User Management Dashboard</h1>
         <div className="relative mt-4 md:mt-0">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <Input

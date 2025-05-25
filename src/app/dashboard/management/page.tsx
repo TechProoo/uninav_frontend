@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/authContext";
+import BackButton from "@/components/ui/BackButton";
 import {
   BookOpen,
   FileText,
@@ -119,6 +120,14 @@ const ManagementPage = () => {
 
   return (
     <div className="mx-auto px-4 container">
+      <div className="mb-4">
+        <BackButton 
+          onClick={() => router.push("/dashboard")} 
+          label="Back to Dashboard"
+          className="mb-4"
+        />
+      </div>
+      
       <h1 className="mb-2 font-bold text-3xl">Site Management</h1>
       <p className="mb-8 text-gray-600">
         Manage and review content submissions across the platform.

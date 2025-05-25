@@ -4,13 +4,6 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   BookOpen,
-  Users,
-  Settings,
-  LogOut,
-  Bell,
-  Search,
-  Menu,
-  X,
   ShieldCheck,
   AlertCircle,
   User,
@@ -28,6 +21,7 @@ import ProtectedRoute from "@/auth/ProtectedRoute";
 import { BadgeDemo } from "@/components/ui/BadgeUi";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/blog/dashboard-sidebar";
+import UserAvatar from "@/components/ui/UserAvatar";
 
 const getMenuItems = (role?: string) => {
   const items = [
@@ -124,7 +118,8 @@ const SidebarLayout: React.FC<LayoutProp> = ({ children }) => {
                   onMouseEnter={(e) => (e.currentTarget.style.color = "#aaddff")}
                   onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
                 />
-                  <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} />
+                  {/* <BadgeDemo text={`Welcome ${user?.firstName || "User"}`} /> */}
+                  <UserAvatar showName={true}/>
               </div>
               {/* Red alert below the top bar */}
               {!user?.departmentId && (
