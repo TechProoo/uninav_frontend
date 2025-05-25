@@ -37,6 +37,7 @@ const CoursesPage = () => {
   const router = useRouter();
   const [userCourses, setUserCourses] = useState<any[]>([]);
   const [availableCourses, setAvailableCourses] = useState<Course[]>([]);
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +45,8 @@ const CoursesPage = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAllCourses, setShowAllCourses] = useState(false);
+  const [isLoadingAllCourses, setIsLoadingAllCourses] = useState(false);
   const { toast } = useToast();
 
   // Form state for creating a new course
@@ -95,6 +98,34 @@ const CoursesPage = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchAllCourses = async () => {
+    try {
+      setIsLoadingAllCourses(true);
+      const allCoursesRes = await getCourses(); // No filters to get all courses
+      
+      setAllCourses(
+        (allCoursesRes?.data || []).filter(
+          (course) =>
+            !userCourses.some((uc: any) => uc.courseId === course.id)
+        )
+      );
+    } catch (err) {
+      setError("Failed to load all courses");
+      console.error(err);
+    } finally {
+      setIsLoadingAllCourses(false);
+    }
+  };
+
+  const handleToggleAllCourses = async () => {
+    if (!showAllCourses && allCourses.length === 0) {
+      // First time loading all courses
+      await fetchAllCourses();
+    }
+    setShowAllCourses(!showAllCourses);
+    setSearchTerm(""); // Clear search when toggling
   };
 
   const handleAddCourses = async () => {
@@ -173,7 +204,7 @@ const CoursesPage = () => {
     setNewCourse({ ...newCourse, courseCode: value });
   };
 
-  const filteredCourses = availableCourses.filter((course) =>
+  const filteredCourses = (showAllCourses ? allCourses : availableCourses).filter((course) =>
     course.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course.courseCode.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -192,10 +223,12 @@ const CoursesPage = () => {
         <h1 className="section-heading">Manage Courses</h1>
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button 
-            onClick={() => setIsAddDialogOpen(true)}
+            onClick={() => {
+              setIsAddDialogOpen(true);
+              setSelectedCourses([]); // Reset selected courses when opening dialog
+            }}
             className="w-full sm:w-auto"
           >
-            <Plus className="mr-2 w-4 h-4" />
             Add Courses
           </Button>
           <Button
@@ -250,7 +283,18 @@ const CoursesPage = () => {
       </div>
 
       {/* Add Courses Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+      <Dialog 
+        open={isAddDialogOpen} 
+        onOpenChange={(open) => {
+          setIsAddDialogOpen(open);
+          if (!open) {
+            // Reset state when dialog closes
+            setShowAllCourses(false);
+            setSearchTerm("");
+            setSelectedCourses([]);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add Courses</DialogTitle>
@@ -266,6 +310,28 @@ const CoursesPage = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+            <div className="flex justify-between items-center mt-3">
+              <p className="text-sm text-gray-600">
+                {showAllCourses ? "All Courses" : "Courses for your department & level"}
+              </p>
+              <button
+                type="button"
+                onClick={handleToggleAllCourses}
+                disabled={isLoadingAllCourses}
+                className="text-blue-600 hover:text-blue-700 text-sm underline disabled:opacity-50"
+              >
+                {isLoadingAllCourses ? (
+                  <span className="flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Loading...
+                  </span>
+                ) : showAllCourses ? (
+                  "Show Department Courses"
+                ) : (
+                  "All Courses"
+                )}
+              </button>
+            </div>
           </div>
           <div className="mt-4 max-h-[400px] overflow-y-auto">
             {filteredCourses.length === 0 ? (
@@ -290,9 +356,14 @@ const CoursesPage = () => {
                       }
                     }}
                   />
-                  <div className="ml-3">
+                  <div className="ml-3 flex-1">
                     <h4 className="font-medium">{course.courseName}</h4>
                     <p className="text-gray-500 text-sm">{course.courseCode}</p>
+                    {showAllCourses && course.departments && course.departments.length > 0 && (
+                      <p className="text-gray-400 text-xs mt-1">
+                        Level {course.departments[0].level} • {course.departments[0].department?.name || course.departments[0].departmentId}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))
