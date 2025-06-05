@@ -6,6 +6,7 @@ import { Material } from "@/lib/types/response.type";
 import MaterialDetail from "@/components/materials/MaterialDetail";
 import MaterialForm from "@/components/materials/forms/MaterialForm";
 import { AuthContext } from "@/contexts/authContext";
+import Viewer from "@/components/materials/Pdf_viewer";
 
 export default function MaterialPage() {
   const { materialId } = useParams();
@@ -24,7 +25,9 @@ export default function MaterialPage() {
   };
 
   const handleEditSuccess = (updatedMaterial: Material | Material[]) => {
-    const materialToSet = Array.isArray(updatedMaterial) ? updatedMaterial[0] : updatedMaterial;
+    const materialToSet = Array.isArray(updatedMaterial)
+      ? updatedMaterial[0]
+      : updatedMaterial;
     if (materialToSet) {
       setMaterial(materialToSet);
     }
@@ -38,6 +41,7 @@ export default function MaterialPage() {
 
   return (
     <div className="mx-auto px-4 py-8 max-w-6xl pt-24">
+      {" "}
       {isEditing && material ? (
         <div className="bg-white shadow-md p-6 rounded-lg">
           <h2 className="mb-4 font-medium text-2xl">Edit Material</h2>
@@ -48,11 +52,17 @@ export default function MaterialPage() {
           />
         </div>
       ) : (
-        <MaterialDetail
-          materialId={materialId as string}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <>
+          <MaterialDetail
+            materialId={materialId as string}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+          {/* {material?.type?.toLowerCase() === "pdf" &&
+            material.resource?.resourceAddress && ( */}
+
+          {/* )} */}
+        </>
       )}
     </div>
   );
