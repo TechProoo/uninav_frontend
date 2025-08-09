@@ -26,6 +26,8 @@ import {
   Check,
   Edit,
   Trash2,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -56,6 +58,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import BackButton from "../ui/BackButton";
 import SkeletonLoader from "@/components/ui/SkeletonLoader";
+import PDFViewer from "./PDFViewer";
 
 interface MaterialDetailProps {
   materialId: string;
@@ -88,6 +91,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   // Get user context
   const { user } = useAuth();
@@ -161,7 +165,6 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             <SkeletonLoader height="100px" />
           </div>
         </div>
-        
 
         {/* Main Content Grid Skeleton */}
         <div className="gap-6 sm:gap-8 grid md:grid-cols-2">
@@ -209,8 +212,12 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
         </div>
 
         {/* Collections Section Skeleton (conditional) */}
-         <div className="mt-6 sm:mt-10">
-          <SkeletonLoader width="200px" height="24px" className="mb-2 sm:mb-4" />
+        <div className="mt-6 sm:mt-10">
+          <SkeletonLoader
+            width="200px"
+            height="24px"
+            className="mb-2 sm:mb-4"
+          />
           <div className="gap-3 sm:gap-4 grid grid-cols-2 md:grid-cols-3">
             <SkeletonLoader height="120px" />
             <SkeletonLoader height="120px" />
@@ -516,8 +523,6 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
   return (
     <Card className="space-y-6 sm:space-y-8 bg-white/80 shadow-md backdrop-blur-sm mx-auto p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl max-w-4xl">
-      
-      
       {/* Header Section */}
       <div className="flex justify-between items-start pt-8 sm:pt-0">
         <div className="flex items-start gap-2 sm:gap-4">
@@ -538,7 +543,7 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           </div>
         </div>
         <div className="flex items-end flex-col">
-        <BackButton  label="Back" className="text-xs sm:text-sm" />
+          <BackButton label="Back" className="text-xs sm:text-sm" />
           <Button
             variant="ghost"
             size="icon"
@@ -549,37 +554,97 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             onClick={handleBookmarkToggle}
           >
             <Bookmark
-              className={cn("w-4 h-4 sm:w-5 sm:h-5", isCurrentlyBookmarked && "fill-current")}
+              className={cn(
+                "w-4 h-4 sm:w-5 sm:h-5",
+                isCurrentlyBookmarked && "fill-current"
+              )}
             />
           </Button>
-        </div>
+        </div>{" "}
       </div>
 
-      {/* Edit/Delete Controls */}
-      {isOwner && (
-        <div className="flex justify-end items-center gap-2 sm:gap-3">
-          <Button
-            variant="outline"
-            onClick={handleEdit}
-            className="flex items-center gap-1 text-xs sm:text-sm hover:bg-[#003666] border-[#003666] text-[#003666] hover:text-white transition"
-          >
-            <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
-            Edit
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleDelete}
-            className="flex items-center gap-1 text-xs sm:text-sm hover:bg-red-600 border-red-600 text-red-600 hover:text-white transition"
-            disabled={isDeleting}
-          >
-            <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
-            {isDeleting ? "Deleting..." : "Delete"}
-          </Button>
-        </div>
-      )}
+      {/* Main Content Grid */}
+      <div className="gap-6 sm:gap-8 grid md:grid-cols-2">
+        {/* Left Column: Description, Course, Tags */}
+        <div className="space-y-4 sm:space-y-6">
+          <section>
+            <h3 className="mb-1 sm:mb-2 font-semibold text-gray-800 text-base sm:text-lg">
+              Description
+            </h3>
+            <p className="text-gray-700 text-xs sm:text-sm">
+              {material.description || "No description available"}
+            </p>
+          </section>
 
+          {/* ...rest of the main content... */}
+        </div>
+        {/* ...rest of the columns... */}
+      </div>
+
+      {/* PDF Preview Section - Show only for PDF type materials */}
+      {/* {material?.type?.toLowerCase() === "pdf" &&
+        material.resource?.resourceAddress && ( */}
+      <section className="mt-4 relative">
+        {/* Overlay - render first so it's behind the preview */}
+        {expanded && (
+          <div
+            className="fixed inset-0 mt-20 bg-black/50 z-[55]"
+            onClick={() => setExpanded(false)}
+          />
+        )}
+
+        {/* Preview container */}
+        <div
+          className={cn(
+            "bg-white shadow-md rounded-lg mt-20",
+            expanded ? "fixed inset-0 z-[60]" : "relative p-4"
+          )}
+          style={{
+            transition: "all 0.3s ease",
+          }}
+        >
+          {/* Sticky header */}
+          <div
+            className={cn(
+              "flex items-center justify-between mb-2",
+              expanded ? "sticky top-0 bg-white z-[61] p-4 border-b" : ""
+            )}
+          >
+            <h2 className="text-base font-medium">Document Preview</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setExpanded(!expanded)}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              {expanded ? (
+                <div className="flex items-center gap-2">
+                  <Minimize2 className="h-4 w-4" />
+                  <span className="text-sm">Exit Fullscreen</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Maximize2 className="h-4 w-4" />
+                  <span className="text-sm">Fullscreen</span>
+                </div>
+              )}
+            </Button>
+          </div>
+
+          {/* PDF viewer container */}
+          <div
+            className={cn(
+              "relative w-full",
+              expanded ? "h-[calc(100vh-70px)] p-4" : "h-[400px]"
+            )}
+          >
+            <PDFViewer url={"/vv.pdf"} />
+          </div>
+        </div>
+      </section>
+      {/* )} */}
       {/* Advertisement Section */}
-      {(material.adverts ?? []).length > 0 && (
+      {(material?.adverts ?? []).length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-2 sm:mb-3 text-blue-600">
             <Megaphone className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -601,7 +666,6 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           </div>
         </div>
       )}
-
       {/* Main Content Grid */}
       <div className="gap-6 sm:gap-8 grid md:grid-cols-2">
         {/* Left Column: Description, Course, Tags */}
@@ -632,7 +696,9 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
 
           {material.tags?.length > 0 && (
             <section>
-              <h3 className="mb-1 sm:mb-2 font-semibold text-gray-800 text-base sm:text-lg">Tags</h3>
+              <h3 className="mb-1 sm:mb-2 font-semibold text-gray-800 text-base sm:text-lg">
+                Tags
+              </h3>
               <div className="flex flex-wrap gap-1 sm:gap-2">
                 {material.tags.map((tag) => (
                   <Badge
@@ -676,7 +742,10 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
               )}
             >
               <ThumbsUp
-                className={cn("w-3 h-3 sm:w-4 sm:h-4", material.isLiked && "fill-current")}
+                className={cn(
+                  "w-3 h-3 sm:w-4 sm:h-4",
+                  material.isLiked && "fill-current"
+                )}
               />
               <span>{material.likes}</span>
             </Button>
@@ -736,10 +805,11 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           )}
         </div>
       </div>
-
       {/* Share Section */}
       <div className="space-y-2 sm:space-y-3 pt-4 sm:pt-6 border-gray-200 border-t">
-        <h3 className="font-semibold text-gray-800 text-base sm:text-lg">Share Material</h3>
+        <h3 className="font-semibold text-gray-800 text-base sm:text-lg">
+          Share Material
+        </h3>
 
         <Button
           onClick={handleShareMaterial}
@@ -776,7 +846,6 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
             </Button>
           )}
       </div>
-
       {/* Collections Section */}
       {(material.collections ?? []).length > 0 && (
         <div className="mt-6 sm:mt-10">
@@ -791,7 +860,6 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           />
         </div>
       )}
-
       {/* Advertisement Detail Modal */}
       {selectedAdvert && (
         <AdvertDetail
@@ -801,7 +869,6 @@ const MaterialDetail: React.FC<MaterialDetailProps> = ({
           isOpen={!!selectedAdvert}
         />
       )}
-
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <AlertDialogContent>

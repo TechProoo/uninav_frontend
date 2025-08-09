@@ -140,10 +140,8 @@ export default function Dashboard() {
             <Image src={Book} alt="Books on Shelf" width={100} height={100} />
           </div>
         </div>
-
         {/* Course Slider */}
         <CourseSlider />
-
         {/* Bookmarks Section */}
         <section className="mb-8">
           <h2 className="section-heading">Your Bookmarks</h2>
@@ -153,7 +151,6 @@ export default function Dashboard() {
             error={error.bookmarks}
           />
         </section>
-
         {/* Recommendations Section */}
         <section className="mb-8">
           <div className="flex justify-between items-center mb-4">
@@ -164,12 +161,7 @@ export default function Dashboard() {
             onMaterialClick={handleMaterialClick}
             viewMode="grid"
           />
-        </section>
-
-        <section> 
-          <h1>PDF Viewer</h1>
-          <PdfViewer fileUrl="https://uninav-docs.c8c3.va01.idrivee2-92.com/bb2e7114-9f15-4c02-a2f2-17a372086c47-Lecture_1_-_BASIC_CIRCUIT_THEORY.pptx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=moxoTkL9woPGDyu33V5Q%2F20250522%2FVirginia%2Fs3%2Faws4_request&X-Amz-Date=20250522T122154Z&X-Amz-Expires=604800&X-Amz-Signature=15b8596181d569f6cd06b099a9ce01f91f0cb601fef68ad5214cce190d7d1638&X-Amz-SignedHeaders=host&response-content-disposition=attachment&x-amz-checksum-mode=ENABLED&x-id=GetObject" />
-        </section> 
+        </section>{" "}
       </div>
     </div>
   );
