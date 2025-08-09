@@ -12,7 +12,12 @@ import { useRouter } from "next/navigation";
 import { UserProfile } from "@/lib/types/response.type";
 import { fetchUserProfile } from "@/api/user.api";
 import { logout as logoutApi } from "@/api/auth.api";
-import { deleteSession, getSession,  updateAuthToken, storeSession } from "@/lib/utils";
+import {
+  deleteSession,
+  getSession,
+  updateAuthToken,
+  storeSession,
+} from "@/lib/utils";
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -22,7 +27,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   loading: boolean;
   setAuthLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  refreshUserProfile: () => Promise<void>;
+  refreshUserProfile: () => Promise<UserProfile | null | undefined>;
   needsEmailVerification: () => boolean;
   setAuthTokenAndFetchUser: (token: string) => Promise<void>;
 }
@@ -40,7 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setIsAuthenticated(false);
     deleteSession();
-    updateAuthToken('');
+    updateAuthToken("");
   };
 
   const refreshUserProfile = useCallback(async () => {
@@ -49,36 +54,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (profileData) {
         setUser(profileData);
         setIsAuthenticated(true);
-        storeSession({profile:profileData});
+        storeSession({ profile: profileData });
       } else {
         clearAuthData();
       }
-      return profileData
+      return profileData;
     } catch (error) {
       console.error("Error refreshing user profile:", error);
       clearAuthData();
     }
   }, [setUser, setIsAuthenticated]);
 
-  const setAuthTokenAndFetchUser = useCallback(async (token: string) => {
-    setLoading(true);
-    try {
-      const sessionToken = token;
-      storeSession({token: sessionToken});
-      updateAuthToken(sessionToken);
-      await refreshUserProfile();
-      const {token: storedToken} = getSession();
-      if (!storedToken) {
-        throw new Error("Authentication failed after token processing.")
+  const setAuthTokenAndFetchUser = useCallback(
+    async (token: string) => {
+      setLoading(true);
+      try {
+        const sessionToken = token;
+        storeSession({ token: sessionToken });
+        updateAuthToken(sessionToken);
+        await refreshUserProfile();
+        const { token: storedToken } = getSession();
+        if (!storedToken) {
+          throw new Error("Authentication failed after token processing.");
+        }
+      } catch (error) {
+        console.error("Failed to set auth token and fetch user:", error);
+        clearAuthData();
+        throw error;
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to set auth token and fetch user:", error);
-      clearAuthData();
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, [refreshUserProfile]);
+    },
+    [refreshUserProfile]
+  );
 
   const needsEmailVerification = () => {
     return !!user && user.auth && user.auth.emailVerified === false;
@@ -86,14 +94,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const loadUserProfileOnMount = async () => {
-      const {token, profile} = getSession()
-      if(token && profile){
-        console.log('profile found in cookies', profile )
+      const { token, profile } = getSession();
+      if (token && profile) {
+        console.log("profile found in cookies", profile);
         setUser(profile);
         setIsAuthenticated(true);
         setLoading(false);
-      } else if (token ) {
-        console.log('loading user profile on mount', token, profile)
+      } else if (token) {
+        console.log("loading user profile on mount", token, profile);
         setLoading(true);
         updateAuthToken(token);
         await refreshUserProfile();
@@ -104,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     loadUserProfileOnMount();
-  }, []);
+  }, [refreshUserProfile]);
 
   const logout = useCallback(async () => {
     setLoading(true);

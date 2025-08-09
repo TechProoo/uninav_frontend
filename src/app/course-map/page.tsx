@@ -15,7 +15,9 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const page = () => {
-  const [faculties, setFaculties] = useState<Response<FacultyWithDepartments[]> | null>(null);
+  const [faculties, setFaculties] = useState<Response<
+    FacultyWithDepartments[]
+  > | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -62,11 +64,7 @@ const page = () => {
     }
 
     return faculties?.data.length ? (
-      
-      <Accordion
-        type="multiple"
-        className="w-full max-w-4xl mx-auto space-y-4"
-      >
+      <Accordion type="multiple" className="w-full max-w-4xl mx-auto space-y-4">
         {faculties.data.map((faculty) => (
           <AccordionItem
             key={faculty.id}
@@ -77,7 +75,9 @@ const page = () => {
               <div className="flex items-center justify-between gap-3 w-full">
                 <div className="flex items-center gap-3">
                   <School className="h-6 w-6 text-blue-600" />
-                  <span className="text-base md:text-lg font-semibold text-[#003666]">{faculty.name}</span>
+                  <span className="text-base md:text-lg font-semibold text-[#003666]">
+                    {faculty.name}
+                  </span>
                 </div>
                 {/* Default chevron from shadcn/ui will appear here */}
               </div>
